@@ -1,11 +1,9 @@
-// src/locales/translations.js
-
 export const translations = {
     en: {
         dashboard: "Dashboard",
         tracker: "Tracker",
         api: "API Explorer",
-        footer: "© 2026 QA Task Hub. Student Project.",
+        footer: "© 2026 QA Task Manager. Student Project.",
 
         // Dashboard
         dash_title: "📊 Dashboard Live",
@@ -15,6 +13,12 @@ export const translations = {
         status_done: "Status 'Done'",
         critical: "Critical",
         attention: "Requires attention!",
+        recent_activity: "Recent Activity",
+
+        // --- NEW METRICS ---
+        project_health: "Project Health",
+        success_rate: "Success Rate (Fixed)",
+        critical_density: "Critical Density",
 
         // Tracker
         tracker_title: "🐞 Bug Tracker Pro",
@@ -41,7 +45,7 @@ export const translations = {
         dashboard: "Panel",
         tracker: "Śledzenie",
         api: "Eksplorator API",
-        footer: "© 2026 QA Task Hub. Projekt Studencki.",
+        footer: "© 2026 QA Task Manager. Projekt Studencki.",
 
         dash_title: "📊 Panel Główny",
         total_bugs: "Wszystkie Błędy",
@@ -50,6 +54,12 @@ export const translations = {
         status_done: "Status 'Gotowe'",
         critical: "Krytyczne",
         attention: "Wymaga uwagi!",
+        recent_activity: "Ostatnia Aktywność",
+
+        // --- NEW METRICS ---
+        project_health: "Zdrowie Projektu",
+        success_rate: "Wskaźnik Sukcesu (Naprawione)",
+        critical_density: "Zagęszczenie Krytycznych",
 
         tracker_title: "🐞 Śledzenie Błędów",
         search_placeholder: "🔍 Szukaj błędu...",
@@ -73,7 +83,7 @@ export const translations = {
         dashboard: "Дашборд",
         tracker: "Трекер",
         api: "API Провідник",
-        footer: "© 2026 QA Task Hub. Студентський проект.",
+        footer: "© 2026 QA Task Manager. Студентський проект.",
 
         dash_title: "📊 Дашборд Live",
         total_bugs: "Всього багів",
@@ -82,6 +92,12 @@ export const translations = {
         status_done: "Статус 'Готово'",
         critical: "Критичні",
         attention: "Потребує уваги!",
+        recent_activity: "Остання Активність",
+
+        // --- NEW METRICS ---
+        project_health: "Здоров'я Проекту",
+        success_rate: "Успішність (Виправлено)",
+        critical_density: "Щільність Критичних",
 
         tracker_title: "🐞 Баг Трекер Pro",
         search_placeholder: "🔍 Знайти баг...",
@@ -105,7 +121,7 @@ export const translations = {
         dashboard: "Дашборд",
         tracker: "Трекер",
         api: "API Эксплорер",
-        footer: "© 2026 QA Task Hub. Студенческий проект.",
+        footer: "© 2026 QA Task Manager. Студенческий проект.",
 
         dash_title: "📊 Дашборд Live",
         total_bugs: "Всего багов",
@@ -114,6 +130,12 @@ export const translations = {
         status_done: "Статус 'Готово'",
         critical: "Критические",
         attention: "Требует внимания!",
+        recent_activity: "Последняя Активность",
+
+        // --- NEW METRICS ---
+        project_health: "Здоровье Проекта",
+        success_rate: "Успешность (Исправлено)",
+        critical_density: "Плотность Критических",
 
         tracker_title: "🐞 Баг Трекер Pro",
         search_placeholder: "🔍 Найти баг...",

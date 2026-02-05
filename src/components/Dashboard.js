@@ -5,9 +5,7 @@ import {
 } from 'recharts';
 
 const Dashboard = ({ bugs, t }) => {
-    // --- Подготовка данных для графиков ---
-
-    // 1. Данные по Приоритетам (для BarChart)
+    // --- Данные для графиков ---
     const priorityData = [
         { name: t.priority.Low, count: bugs.filter(b => b.priority === 'Low').length, color: '#22c55e' },
         { name: t.priority.Medium, count: bugs.filter(b => b.priority === 'Medium').length, color: '#eab308' },
@@ -15,24 +13,26 @@ const Dashboard = ({ bugs, t }) => {
         { name: t.priority.Critical, count: bugs.filter(b => b.priority === 'Critical').length, color: '#b91c1c' },
     ];
 
-    // 2. Данные по Статусам (для PieChart)
     const statusData = [
         { name: t.status_opt.Open, value: bugs.filter(b => b.status === 'Open').length, color: '#3b82f6' },
         { name: t.status_opt.InProgress, value: bugs.filter(b => b.status === 'In Progress').length, color: '#8b5cf6' },
         { name: t.status_opt.Done, value: bugs.filter(b => b.status === 'Done').length, color: '#10b981' },
     ];
 
-    // Основные цифры (как были раньше)
     const totalBugs = bugs.length;
     const criticalBugs = bugs.filter(bug => bug.priority === 'Critical').length;
     const fixedBugs = bugs.filter(bug => bug.status === 'Done').length;
+    const recentBugs = bugs.slice(0, 5);
+
+    // --- НОВАЯ ЛОГИКА: Считаем проценты для Progress Bars ---
+    const completionRate = totalBugs > 0 ? Math.round((fixedBugs / totalBugs) * 100) : 0;
+    const criticalRate = totalBugs > 0 ? Math.round((criticalBugs / totalBugs) * 100) : 0;
 
     return (
-        <div className="space-y-8 animate-fade-in">
-            {/* Заголовок */}
+        <div className="space-y-8 animate-fade-in pb-10">
             <h2 className="text-3xl font-bold text-gray-800">{t.dash_title}</h2>
 
-            {/* --- Блок 1: Карточки с цифрами (KPI) --- */}
+            {/* 1. Карточки KPI */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500 hover:shadow-md transition">
                     <h3 className="text-gray-500 text-sm font-medium uppercase">{t.total_bugs}</h3>
@@ -51,10 +51,46 @@ const Dashboard = ({ bugs, t }) => {
                 </div>
             </div>
 
-            {/* --- Блок 2: Графики --- */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* 2. НОВЫЙ БЛОК: Project Health (Progress Bars) */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 className="text-lg font-bold text-gray-700 mb-6">{t.project_health}</h3>
 
-                {/* График 1: Приоритеты */}
+                <div className="space-y-6">
+                    {/* Bar 1: Success Rate */}
+                    <div>
+                        <div className="flex justify-between mb-1">
+                            <span className="text-sm font-medium text-gray-700">{t.success_rate}</span>
+                            <span className="text-sm font-medium text-green-600">{completionRate}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div
+                                className="bg-green-500 h-2.5 rounded-full transition-all duration-1000 ease-out"
+                                style={{ width: `${completionRate}%` }}
+                            ></div>
+                        </div>
+                    </div>
+
+                    {/* Bar 2: Critical Density */}
+                    <div>
+                        <div className="flex justify-between mb-1">
+                            <span className="text-sm font-medium text-gray-700">{t.critical_density}</span>
+                            <span className={`text-sm font-medium ${criticalRate > 20 ? 'text-red-600' : 'text-gray-600'}`}>{criticalRate}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div
+                                className={`h-2.5 rounded-full transition-all duration-1000 ease-out ${criticalRate > 0 ? 'bg-red-500' : 'bg-gray-300'}`}
+                                style={{ width: `${criticalRate}%` }}
+                            ></div>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1">
+                            {criticalRate > 20 ? "⚠️ High risk level!" : "✅ Risk level acceptable"}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* 3. Графики */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <h3 className="text-lg font-bold text-gray-700 mb-4">Priority Breakdown</h3>
                     <div className="h-64">
@@ -74,21 +110,12 @@ const Dashboard = ({ bugs, t }) => {
                     </div>
                 </div>
 
-                {/* График 2: Статусы */}
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <h3 className="text-lg font-bold text-gray-700 mb-4">Project Status</h3>
                     <div className="h-64 flex justify-center">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
-                                <Pie
-                                    data={statusData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
+                                <Pie data={statusData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
                                     {statusData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                     ))}
@@ -99,8 +126,37 @@ const Dashboard = ({ bugs, t }) => {
                         </ResponsiveContainer>
                     </div>
                 </div>
-
             </div>
+
+            {/* 4. Recent Activity */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="p-6 border-b border-gray-100">
+                    <h3 className="text-lg font-bold text-gray-700">{t.recent_activity}</h3>
+                </div>
+                <div className="divide-y divide-gray-50">
+                    {recentBugs.map(bug => (
+                        <div key={bug.id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition">
+                            <div className="flex items-center gap-4">
+                                <div className={`w-2 h-2 rounded-full ${bug.priority === 'Critical' ? 'bg-red-500' : bug.priority === 'High' ? 'bg-orange-500' : 'bg-green-500'}`}></div>
+                                <div>
+                                    <p className="font-medium text-gray-800">{bug.title}</p>
+                                    <p className="text-xs text-gray-400">{bug.date} • {bug.assignee}</p>
+                                </div>
+                            </div>
+                            <span className={`px-3 py-1 text-xs rounded-full font-medium ${bug.status === 'Done' ? 'bg-green-100 text-green-700' :
+                                    bug.status === 'In Progress' ? 'bg-purple-100 text-purple-700' :
+                                        'bg-blue-100 text-blue-700'
+                                }`}>
+                                {bug.status}
+                            </span>
+                        </div>
+                    ))}
+                    {recentBugs.length === 0 && (
+                        <div className="p-8 text-center text-gray-400">No activity yet...</div>
+                    )}
+                </div>
+            </div>
+
         </div>
     );
 };
