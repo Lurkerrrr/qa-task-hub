@@ -137,9 +137,11 @@ const translations = {
   }
 };
 
-// --- Компоненты теперь принимают `t` (функцию перевода) ---
+// --- КОМПОНЕНТЫ ---
 
+// 1. Dashboard (Теперь получает данные bugs из пропсов!)
 const Dashboard = ({ bugs, t }) => {
+  // Считаем статистику на лету
   const totalBugs = bugs.length;
   const criticalBugs = bugs.filter(bug => bug.priority === 'Critical').length;
   const fixedBugs = bugs.filter(bug => bug.status === 'Done').length;
@@ -169,6 +171,7 @@ const Dashboard = ({ bugs, t }) => {
   );
 };
 
+// 2. External API (Остается без изменений, работает автономно)
 const ExternalAPI = ({ t }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -268,6 +271,7 @@ const ExternalAPI = ({ t }) => {
   );
 };
 
+// 3. Bug Tracker (Больше не хранит bugs сам, а получает их из App)
 const BugTracker = ({ bugs, setBugs, t }) => {
   const [newBug, setNewBug] = useState('');
   const [priority, setPriority] = useState('Medium');
@@ -276,7 +280,7 @@ const BugTracker = ({ bugs, setBugs, t }) => {
   const [errors, setErrors] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => { localStorage.setItem('bugs', JSON.stringify(bugs)); }, [bugs]);
+  // LocalStorage теперь управляется в App, тут удалили
 
   const validateForm = () => {
     let tempErrors = {};
@@ -364,11 +368,11 @@ const BugTracker = ({ bugs, setBugs, t }) => {
   );
 };
 
-// --- MAIN APP ---
+// --- MAIN APP (ГЛАВНЫЙ КОМПОНЕНТ) ---
 function App() {
-  // 1. Инициализация языка (из LocalStorage или 'en')
   const [lang, setLang] = useState(() => localStorage.getItem('app_lang') || 'en');
 
+  // !!! ГЛАВНОЕ ИЗМЕНЕНИЕ: Состояние bugs теперь здесь !!!
   const [bugs, setBugs] = useState(() => {
     const saved = localStorage.getItem('bugs');
     return saved ? JSON.parse(saved) : [
@@ -376,14 +380,16 @@ function App() {
     ];
   });
 
-  // Сохраняем язык при изменении
+  // Сохраняем язык
   useEffect(() => {
     localStorage.setItem('app_lang', lang);
   }, [lang]);
 
-  useEffect(() => { localStorage.setItem('bugs', JSON.stringify(bugs)); }, [bugs]);
+  // Сохраняем баги (теперь сохраняет App, а не Tracker!)
+  useEffect(() => {
+    localStorage.setItem('bugs', JSON.stringify(bugs));
+  }, [bugs]);
 
-  // Функция для получения текущего перевода
   const t = translations[lang];
 
   return (
@@ -391,7 +397,6 @@ function App() {
       <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
         <header className="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
           <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
-            {/* ИЗМЕНЕНИЕ ЗДЕСЬ: div заменен на Link */}
             <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
               <span className="text-2xl">🛡️</span>
               <div className="text-xl font-bold tracking-wider text-blue-400">QA Task Hub</div>
@@ -404,7 +409,6 @@ function App() {
                 <li><Link to="/api" className="hover:text-blue-400 transition-colors">{t.api}</Link></li>
               </ul>
 
-              {/* ЯЗЫКОВОЙ ПЕРЕКЛЮЧАТЕЛЬ */}
               <select
                 value={lang}
                 onChange={(e) => setLang(e.target.value)}
@@ -421,8 +425,12 @@ function App() {
 
         <main className="container mx-auto px-6 py-8 flex-grow max-w-6xl">
           <Routes>
+            {/* Передаем bugs в Dashboard (только для чтения) */}
             <Route path="/" element={<Dashboard bugs={bugs} t={t} />} />
+
+            {/* Передаем bugs и setBugs в Tracker (для чтения и записи) */}
             <Route path="/tracker" element={<BugTracker bugs={bugs} setBugs={setBugs} t={t} />} />
+
             <Route path="/api" element={<ExternalAPI t={t} />} />
           </Routes>
         </main>
