@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 
-// Импорт данных (Словарь)
+// Импорт данных
 import { translations } from './locales/translations';
 
-// Импорт компонентов (Смотри, как чисто стало! 😍)
+// Импорт компонентов
 import Header from './components/Header';
-import Dashboard from './components/Dashboard';
-import BugTracker from './components/BugTracker';
-import ExternalAPI from './components/ExternalAPI';
+import AnimatedRoutes from './components/AnimatedRoutes'; // <-- Подключаем анимацию
 
 function App() {
-  // --- Global State (Глобальное состояние приложения) ---
-
-  // 1. Язык
+  // --- Global State ---
   const [lang, setLang] = useState(() => localStorage.getItem('app_lang') || 'en');
 
-  // 2. Баги (Lifting State Up - состояние живет здесь)
   const [bugs, setBugs] = useState(() => {
     const saved = localStorage.getItem('bugs');
     return saved ? JSON.parse(saved) : [
@@ -24,32 +19,22 @@ function App() {
     ];
   });
 
-  // --- Effects (Сохранение данных) ---
+  // --- Effects ---
   useEffect(() => { localStorage.setItem('app_lang', lang); }, [lang]);
   useEffect(() => { localStorage.setItem('bugs', JSON.stringify(bugs)); }, [bugs]);
 
-  // --- Helpers ---
-  // Получаем нужный перевод в зависимости от выбранного языка
   const t = translations[lang];
 
   return (
     <Router>
-      <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
+      {/* overflow-x-hidden нужен, чтобы не появлялась полоса прокрутки во время анимации */}
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col overflow-x-hidden">
 
-        {/* Хедер теперь живет в отдельном файле и получает функции управления языком */}
         <Header lang={lang} setLang={setLang} t={t} />
 
-        <main className="container mx-auto px-6 py-8 flex-grow max-w-6xl">
-          <Routes>
-            {/* Dashboard: только читает данные */}
-            <Route path="/" element={<Dashboard bugs={bugs} t={t} />} />
-
-            {/* Tracker: читает и изменяет данные (setBugs) */}
-            <Route path="/tracker" element={<BugTracker bugs={bugs} setBugs={setBugs} t={t} />} />
-
-            {/* API: работает автономно, нужен только перевод */}
-            <Route path="/api" element={<ExternalAPI t={t} />} />
-          </Routes>
+        <main className="container mx-auto px-6 py-8 flex-grow max-w-6xl relative">
+          {/* Используем AnimatedRoutes вместо обычных Routes */}
+          <AnimatedRoutes bugs={bugs} setBugs={setBugs} t={t} />
         </main>
 
         <footer className="bg-white border-t py-6 mt-auto text-center text-gray-500 text-sm">
