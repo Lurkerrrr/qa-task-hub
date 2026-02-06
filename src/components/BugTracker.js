@@ -10,8 +10,9 @@ const BugTracker = ({ bugs, setBugs, t }) => {
 
     const validateForm = () => {
         let tempErrors = {};
+        // Валидируем ТОЛЬКО название бага
         if (!newBug.trim()) tempErrors.title = t.err_title;
-        if (!steps.trim()) tempErrors.steps = t.err_steps;
+
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
     };
@@ -20,7 +21,10 @@ const BugTracker = ({ bugs, setBugs, t }) => {
         e.preventDefault();
         if (!validateForm()) return;
         const bug = { id: Date.now(), title: newBug, priority: priority, assignee: assignee, steps: steps, status: 'Open', date: new Date().toISOString().split('T')[0], timeSpent: 0 };
-        setBugs([bug, ...bugs]); setNewBug(''); setSteps(''); setErrors({});
+        setBugs([bug, ...bugs]);
+        setNewBug('');
+        setSteps('');
+        setErrors({});
     };
 
     const handleDelete = (id) => setBugs(bugs.filter(bug => bug.id !== id));
@@ -54,8 +58,13 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                         </select>
                     </div>
                     <div>
-                        <textarea placeholder={t.placeholder_steps} className={`w-full p-3 border rounded-lg h-20 resize-none outline-none ${errors.steps ? 'border-red-500' : 'border-gray-200 focus:ring-blue-500'}`} value={steps} onChange={(e) => setSteps(e.target.value)} />
-                        {errors.steps && <p className="text-red-500 text-sm mt-1">{errors.steps}</p>}
+                        {/* Убрали проверку errors.steps в стилях и сообщение об ошибке */}
+                        <textarea
+                            placeholder={t.placeholder_steps}
+                            className="w-full p-3 border border-gray-200 rounded-lg h-20 resize-none outline-none focus:ring-blue-500"
+                            value={steps}
+                            onChange={(e) => setSteps(e.target.value)}
+                        />
                     </div>
                     <button type="submit" className="bg-blue-600 text-white px-8 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">{t.btn_add}</button>
                 </form>
@@ -73,7 +82,8 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                                     {bug.timeSpent > 0 && <span className="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded font-mono">⏱ {bug.timeSpent}h</span>}
                                 </div>
                                 <h3 className={`text-lg font-bold ${bug.status === 'Done' ? 'line-through text-gray-500' : 'text-gray-800'}`}>{bug.title}</h3>
-                                <p className="text-gray-500 text-sm mt-1 bg-gray-50 p-2 rounded">🛠 {bug.steps}</p>
+                                {/* Показываем шаги только если они есть */}
+                                {bug.steps && <p className="text-gray-500 text-sm mt-1 bg-gray-50 p-2 rounded">🛠 {bug.steps}</p>}
                             </div>
                             <div className="flex flex-col items-end gap-2 ml-4">
                                 <select className="text-sm border rounded px-2 py-1 outline-none cursor-pointer mb-2" value={bug.status} onChange={(e) => handleStatusChange(bug.id, e.target.value)}>
