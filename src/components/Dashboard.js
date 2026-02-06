@@ -46,7 +46,8 @@ const Dashboard = ({ bugs, t }) => {
                 </div>
                 <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-red-500 hover:shadow-md transition">
                     <h3 className="text-gray-500 text-sm font-medium uppercase">{t.critical}</h3>
-                    <p className="text-4xl font-bold text-red-600 mt-2">{criticalBugs}</p>
+                    {/* ИСПРАВЛЕНО: Цвет теперь text-gray-800 */}
+                    <p className="text-4xl font-bold text-gray-800 mt-2">{criticalBugs}</p>
                     <p className="text-xs text-gray-400 mt-1">{t.attention}</p>
                 </div>
             </div>
@@ -82,8 +83,9 @@ const Dashboard = ({ bugs, t }) => {
                                 style={{ width: `${criticalRate}%` }}
                             ></div>
                         </div>
+                        {/* ИСПРАВЛЕНО: Используем переменные перевода t.risk_high / t.risk_ok */}
                         <p className="text-xs text-gray-400 mt-1">
-                            {criticalRate > 20 ? "⚠️ High risk level!" : "✅ Risk level acceptable"}
+                            {criticalRate > 20 ? t.risk_high : t.risk_ok}
                         </p>
                     </div>
                 </div>
@@ -144,8 +146,8 @@ const Dashboard = ({ bugs, t }) => {
                                 </div>
                             </div>
                             <span className={`px-3 py-1 text-xs rounded-full font-medium ${bug.status === 'Done' ? 'bg-green-100 text-green-700' :
-                                    bug.status === 'In Progress' ? 'bg-purple-100 text-purple-700' :
-                                        'bg-blue-100 text-blue-700'
+                                bug.status === 'In Progress' ? 'bg-purple-100 text-purple-700' :
+                                    'bg-blue-100 text-blue-700'
                                 }`}>
                                 {bug.status}
                             </span>
