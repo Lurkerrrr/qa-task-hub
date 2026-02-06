@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 
 const Header = ({ lang, setLang, t }) => {
     return (
-        <header className="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        // БЫЛО: sticky top-0 z-50
+        // СТАЛО: fixed top-0 left-0 w-full z-50
+        <header className="bg-slate-900 text-white shadow-lg fixed top-0 left-0 w-full z-50">
             <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
                 <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
                     <span className="text-2xl">🛡️</span>
-                    <div className="text-xl font-bold tracking-wider text-blue-400">QA Task Hub</div>
+                    <div className="text-xl font-bold tracking-wider text-blue-400">QA Task Manager</div>
                 </Link>
 
                 <div className="flex items-center gap-8">

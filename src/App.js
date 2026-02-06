@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
+import ScrollToTop from './components/ScrollToTop';
 
 // Импорт данных
 import { translations } from './locales/translations';
 
 // Импорт компонентов
 import Header from './components/Header';
-import AnimatedRoutes from './components/AnimatedRoutes'; // <-- Подключаем анимацию
+import AnimatedRoutes from './components/AnimatedRoutes';
 
 function App() {
   // --- Global State ---
@@ -27,15 +28,16 @@ function App() {
 
   return (
     <Router>
-      {/* overflow-x-hidden нужен, чтобы не появлялась полоса прокрутки во время анимации */}
       <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col overflow-x-hidden">
 
         <Header lang={lang} setLang={setLang} t={t} />
 
-        <main className="container mx-auto px-6 py-8 flex-grow max-w-6xl relative">
-          {/* Используем AnimatedRoutes вместо обычных Routes */}
+        {/* ИСПРАВЛЕНО: Добавили pt-24, чтобы контент не прятался под закрепленным хедером */}
+        <main className="container mx-auto px-6 py-8 flex-grow max-w-6xl relative pt-24">
           <AnimatedRoutes bugs={bugs} setBugs={setBugs} t={t} />
         </main>
+
+        <ScrollToTop />
 
         <footer className="bg-white border-t py-6 mt-auto text-center text-gray-500 text-sm">
           <p>{t.footer}</p>
