@@ -1,70 +1,79 @@
-# Getting Started with Create React App
+# 🛡️ QA Task Manager
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### A modern, interactive dashboard for tracking software quality assurance metrics, managing bugs, and analyzing project health.
 
-## Available Scripts
+![Dashboard Overview](assets/dashboard-main.png)
 
-In the project directory, you can run:
+## 📋 About The Project
 
-### `npm start`
+**QA Task Manager** is a specialized tool designed for QA Leads and Testers. It provides a real-time overview of the testing process, visualizes critical data through interactive charts, and helps teams make data-driven decisions.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+This project was built as a Student Project (2026) to demonstrate modern frontend development practices using React ecosystem.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## ✨ Key Features
 
-### `npm test`
+* **📊 Interactive Analytics:** Visual breakdown of bugs by Priority and Status using `Recharts`.
+* **🩺 Project Health Metrics:** Real-time calculation of Success Rate and Critical Density with automated risk assessment.
+* **⚡ Activity Feed:** Live stream of recent actions and bug updates.
+* **🌍 Internationalization (i18n):** Full support for **English, Polish, Ukrainian, and Russian** with a custom flag selector.
+* **🚀 Smooth UX:** Page transitions powered by `Framer Motion`, sticky navigation, and "Scroll to Top" functionality.
+* **🐞 Bug Tracker:** Interface for creating, tracking, and filtering software issues.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 📸 Screenshots
 
-### `npm run build`
+### 📊 KPI & Health Metrics
+Monitor the pulse of your project with visual progress bars and risk indicators.
+![Project Health](assets/metrics.png)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 🌍 Localization
+Seamless switching between languages with a custom UI component.
+![Language Selector](assets/localization.png)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🛠️ Tech Stack
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* **Core:** React.js (Hooks, Context API)
+* **Styling:** Tailwind CSS
+* **Charts:** Recharts
+* **Animations:** Framer Motion
+* **Routing:** React Router v6
+* **Assets:** React World Flags
 
-### `npm run eject`
+## 🚀 Getting Started
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+To run this project locally, follow these steps:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Prerequisites
+* Node.js (v14 or higher)
+* npm
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Installation
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1.  **Clone the repository**
+    ```bash
+    git clone [https://github.com/YOUR_USERNAME/qa-task-hub.git](https://github.com/YOUR_USERNAME/qa-task-hub.git)
+    ```
 
-## Learn More
+2.  **Navigate to project directory**
+    ```bash
+    cd qa-task-hub
+    ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+3.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+4.  **Start the application**
+    ```bash
+    npm start
+    ```
+    The app will run at `http://localhost:3000`.
 
-### Code Splitting
+## 👤 Author
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+**Viktor Pylypenko**
+* **Role:** iOS QA Engineer / Frontend Developer
+* **LinkedIn:** [Viktor Pylypenko](https://www.linkedin.com/in/viktor-pylypenko-98960625b/)
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+© 2026 QA Task Manager. All Rights Reserved.
