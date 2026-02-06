@@ -56,9 +56,3 @@ To run this project locally, follow these steps:
     npm start
     ```
     The app will run at `http://localhost:3000`.
-
-## 👤 Author
-
-
----
-© 2026 QA Task Manager. All Rights Reserved.
