@@ -69,11 +69,6 @@ To run this project locally, follow these steps:
     ```
     The app will run at `http://localhost:3000`.
 
-## 👤 Author
-
-**Viktor Pylypenko**
-* **Role:** iOS QA Engineer / Frontend Developer
-* **LinkedIn:** [Viktor Pylypenko](https://www.linkedin.com/in/viktor-pylypenko-98960625b/)
 
 ---
 © 2026 QA Task Manager. All Rights Reserved.
