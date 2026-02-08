@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import PrioritySelector from './PrioritySelector';
 import UserSelector from './UserSelector';
+import SeveritySelector from './SeveritySelector';
 
 const BugTracker = ({ bugs, setBugs, t }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [newBug, setNewBug] = useState('');
     const [priority, setPriority] = useState('Medium');
+    const [severity, setSeverity] = useState('Moderate');
     const [assignee, setAssignee] = useState('Viktor');
     const [steps, setSteps] = useState('');
     const [errors, setErrors] = useState({});
@@ -20,13 +23,12 @@ const BugTracker = ({ bugs, setBugs, t }) => {
         return Object.keys(tempErrors).length === 0;
     };
 
-    // --- НОВАЯ ФУНКЦИЯ: Очистка формы при закрытии ---
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        // Сбрасываем все поля к дефолтным значениям
         setNewBug('');
         setSteps('');
         setPriority('Medium');
+        setSeverity('Moderate');
         setAssignee('Viktor');
         setErrors({});
     };
@@ -38,6 +40,7 @@ const BugTracker = ({ bugs, setBugs, t }) => {
             id: Date.now(),
             title: newBug,
             priority: priority,
+            severity: severity,
             assignee: assignee,
             steps: steps,
             status: 'Open',
@@ -45,7 +48,7 @@ const BugTracker = ({ bugs, setBugs, t }) => {
             timeSpent: 0
         };
         setBugs([bug, ...bugs]);
-        handleCloseModal(); // Используем нашу функцию закрытия (она и почистит форму)
+        handleCloseModal();
     };
 
     const handleDelete = (id) => setBugs(bugs.filter(bug => bug.id !== id));
@@ -56,6 +59,28 @@ const BugTracker = ({ bugs, setBugs, t }) => {
     };
 
     const filteredBugs = bugs.filter(bug => bug.title.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const getPriorityIcon = (p) => {
+        switch (p) {
+            case 'Highest': return <svg className="w-4 h-4 text-red-700" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5.41V21h-2V5.41l-7.29 7.29L2.3 11.3 12 1.6l9.7 9.7-1.41 1.41z" /></svg>;
+            case 'High': return <svg className="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M13 7.83V20h-2V7.83l-5.59 5.59L4 12l8-8 8 8-1.41 1.41z" /></svg>;
+            case 'Medium': return <svg className="w-4 h-4 text-orange-500" viewBox="0 0 24 24" fill="currentColor"><path d="M4 11h16v2H4z" /></svg>;
+            case 'Low': return <svg className="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="currentColor"><path d="M13 16.17V4h-2v12.17l-5.59-5.59L4 12l8 8 8-8-1.41-1.41z" /></svg>;
+            case 'Lowest': return <svg className="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M13 18.59V3h-2v15.59l-7.29-7.29L2.3 12.7 12 22.4l9.7-9.7-1.41-1.41z" /></svg>;
+            default: return null;
+        }
+    };
+
+    const getSeverityBadge = (s) => {
+        const map = {
+            'Critical': { label: 'S1', color: 'bg-red-600' },
+            'Major': { label: 'S2', color: 'bg-orange-500' },
+            'Moderate': { label: 'S3', color: 'bg-blue-500' },
+            'Low': { label: 'S4', color: 'bg-green-500' }
+        };
+        const config = map[s] || map['Moderate'];
+        return <span className={`${config.color} text-white text-[10px] font-bold px-1.5 py-0.5 rounded mr-1`}>{config.label}</span>;
+    };
 
     return (
         <div className="space-y-6 animate-fade-in relative">
@@ -73,8 +98,6 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
-
-                    {/* ИСПРАВЛЕНИЕ 1: Убрали лишний <span>+</span>, оставили только текст из перевода */}
                     <button
                         onClick={() => setIsModalOpen(true)}
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition flex items-center gap-2 whitespace-nowrap shadow-md hover:shadow-lg transform active:scale-95"
@@ -95,15 +118,17 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                         <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                             <div className="flex-grow">
                                 <div className="flex flex-wrap items-center gap-3 mb-2">
-                                    <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase flex items-center gap-1 
-                                        ${bug.priority === 'Critical' ? 'bg-red-100 text-red-700' :
-                                            bug.priority === 'High' ? 'bg-orange-100 text-orange-700' :
-                                                bug.priority === 'Medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}`}>
-                                        {/* Иконки остаются тут, так как мы их убрали из translations.js */}
-                                        {bug.priority === 'Critical' ? '🔥' : bug.priority === 'High' ? '🔴' : bug.priority === 'Medium' ? '🟡' : '🟢'}
-                                        {t.priority[bug.priority] || bug.priority}
-                                    </span>
-                                    <span className="text-xs text-gray-400">{bug.date}</span>
+                                    <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded border border-gray-100" title="Priority">
+                                        {getPriorityIcon(bug.priority)}
+                                        <span className="text-xs font-bold text-gray-700 uppercase">{t.priority[bug.priority]}</span>
+                                    </div>
+
+                                    <div className="flex items-center" title="Severity">
+                                        {getSeverityBadge(bug.severity || 'Moderate')}
+                                    </div>
+
+                                    <span className="text-xs text-gray-400">| {bug.date}</span>
+
                                     <span className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded flex items-center gap-1 border border-slate-200">
                                         👤 {bug.assignee}
                                     </span>
@@ -137,91 +162,98 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                 ))}
             </div>
 
-            <AnimatePresence>
-                {isModalOpen && (
-                    <>
-                        {/* ИСПРАВЛЕНИЕ 2: При клике на фон вызываем handleCloseModal для очистки формы */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={handleCloseModal}
-                            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60]"
-                        />
+            {/* ИСПРАВЛЕННАЯ СТРУКТУРА ПОРТАЛА */}
+            {ReactDOM.createPortal(
+                <AnimatePresence>
+                    {isModalOpen && (
+                        <>
+                            <motion.div
+                                key="backdrop"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={handleCloseModal}
+                                className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9990]"
+                            />
 
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none"
-                        >
-                            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden pointer-events-auto border border-gray-100">
-                                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                    <h3 className="text-xl font-bold text-gray-800">New Bug Report</h3>
-                                    {/* ИСПРАВЛЕНИЕ 2: Кнопка крестик тоже очищает форму */}
-                                    <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 transition">
-                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                    </button>
-                                </div>
+                            <motion.div
+                                key="modal"
+                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                                className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none"
+                            >
+                                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden pointer-events-auto border border-gray-100">
+                                    <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                                        <h3 className="text-xl font-bold text-gray-800">{t.modal_title}</h3>
+                                        <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 transition">
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </div>
 
-                                <div className="p-6">
-                                    <form onSubmit={handleAddBug} className="space-y-5">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">{t.placeholder_title} <span className="text-red-500">*</span></label>
-                                            <input
-                                                type="text"
-                                                placeholder="E.g. Login button not working..."
-                                                className={`w-full p-3 border rounded-lg outline-none transition ${errors.title ? 'border-red-500' : 'border-gray-200 focus:ring-blue-500 focus:border-blue-500'}`}
-                                                value={newBug}
-                                                onChange={(e) => setNewBug(e.target.value)}
-                                            />
-                                            {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="p-6">
+                                        <form onSubmit={handleAddBug} className="space-y-5">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                                                <PrioritySelector priority={priority} setPriority={setPriority} t={t} />
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">{t.placeholder_title} <span className="text-red-500">*</span></label>
+                                                <input
+                                                    type="text"
+                                                    placeholder={t.placeholder_desc}
+                                                    className={`w-full p-3 border rounded-lg outline-none transition ${errors.title ? 'border-red-500' : 'border-gray-200 focus:ring-blue-500 focus:border-blue-500'}`}
+                                                    value={newBug}
+                                                    onChange={(e) => setNewBug(e.target.value)}
+                                                />
+                                                {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
                                             </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.label_priority}</label>
+                                                    <PrioritySelector priority={priority} setPriority={setPriority} t={t} />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.label_severity}</label>
+                                                    <SeveritySelector severity={severity} setSeverity={setSeverity} t={t} />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.label_assignee}</label>
+                                                    <UserSelector assignee={assignee} setAssignee={setAssignee} />
+                                                </div>
+                                            </div>
+
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Assignee</label>
-                                                <UserSelector assignee={assignee} setAssignee={setAssignee} />
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">{t.label_steps}</label>
+                                                <textarea
+                                                    placeholder={t.placeholder_steps}
+                                                    className="w-full p-3 border border-gray-200 rounded-lg h-32 resize-none outline-none focus:ring-blue-500 focus:border-blue-500 transition"
+                                                    value={steps}
+                                                    onChange={(e) => setSteps(e.target.value)}
+                                                />
                                             </div>
-                                        </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Steps to Reproduce</label>
-                                            <textarea
-                                                placeholder={t.placeholder_steps}
-                                                className="w-full p-3 border border-gray-200 rounded-lg h-32 resize-none outline-none focus:ring-blue-500 focus:border-blue-500 transition"
-                                                value={steps}
-                                                onChange={(e) => setSteps(e.target.value)}
-                                            />
-                                        </div>
-
-                                        <div className="flex justify-end gap-3 pt-2">
-                                            {/* ИСПРАВЛЕНИЕ 2: Кнопка Cancel очищает форму */}
-                                            <button
-                                                type="button"
-                                                onClick={handleCloseModal}
-                                                className="px-5 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition"
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button
-                                                type="submit"
-                                                className="bg-blue-600 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 hover:shadow-blue-300 transform active:scale-95"
-                                            >
-                                                {t.btn_add}
-                                            </button>
-                                        </div>
-                                    </form>
+                                            <div className="flex justify-end gap-3 pt-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={handleCloseModal}
+                                                    className="px-5 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition"
+                                                >
+                                                    {t.btn_cancel}
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    className="bg-blue-600 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 hover:shadow-blue-300 transform active:scale-95"
+                                                >
+                                                    {t.btn_add}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
         </div>
     );
 };

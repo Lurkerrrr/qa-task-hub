@@ -4,7 +4,6 @@ import Flag from 'react-world-flags';
 const UserSelector = ({ assignee, setAssignee }) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    // Список пользователей с флагами (Diversity)
     const users = [
         { id: 'Viktor', name: 'Viktor', role: 'QA Lead', country: 'UA' },
         { id: 'John', name: 'John', role: 'Senior Dev', country: 'US' },
@@ -15,15 +14,15 @@ const UserSelector = ({ assignee, setAssignee }) => {
     const current = users.find(u => u.id === assignee) || users[0];
 
     return (
-        <div className="relative w-full md:w-64">
+        // ИСПРАВЛЕНИЕ: Убрали 'md:w-64', оставили только 'w-full'
+        <div className="relative w-full">
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={`w-full flex items-center justify-between p-3 border rounded-lg transition-all ${isOpen ? 'ring-2 ring-blue-500 border-transparent' : 'border-gray-200 hover:border-gray-300'} bg-white`}
             >
-                <div className="flex items-center gap-3">
-                    {/* Аватарка с флагом */}
-                    <div className="relative">
+                <div className="flex items-center gap-3 overflow-hidden">
+                    <div className="relative flex-shrink-0">
                         <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">
                             {current.name.charAt(0)}
                         </div>
@@ -32,12 +31,12 @@ const UserSelector = ({ assignee, setAssignee }) => {
                         </div>
                     </div>
 
-                    <div className="flex flex-col items-start leading-none">
+                    <div className="flex flex-col items-start leading-none truncate">
                         <span className="font-medium text-sm text-gray-800">{current.name}</span>
                         <span className="text-xs text-gray-400">{current.role}</span>
                     </div>
                 </div>
-                <svg className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                <svg className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
 
             {isOpen && (
