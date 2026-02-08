@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion'; // <-- Импорт анимаций
+import { motion, AnimatePresence } from 'framer-motion';
 import PrioritySelector from './PrioritySelector';
 import UserSelector from './UserSelector';
 
 const BugTracker = ({ bugs, setBugs, t }) => {
-    // Состояние для открытия/закрытия модального окна
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [newBug, setNewBug] = useState('');
@@ -21,6 +20,17 @@ const BugTracker = ({ bugs, setBugs, t }) => {
         return Object.keys(tempErrors).length === 0;
     };
 
+    // --- НОВАЯ ФУНКЦИЯ: Очистка формы при закрытии ---
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        // Сбрасываем все поля к дефолтным значениям
+        setNewBug('');
+        setSteps('');
+        setPriority('Medium');
+        setAssignee('Viktor');
+        setErrors({});
+    };
+
     const handleAddBug = (e) => {
         e.preventDefault();
         if (!validateForm()) return;
@@ -35,10 +45,7 @@ const BugTracker = ({ bugs, setBugs, t }) => {
             timeSpent: 0
         };
         setBugs([bug, ...bugs]);
-        setNewBug('');
-        setSteps('');
-        setErrors({});
-        setIsModalOpen(false); // <-- Закрываем окно после создания
+        handleCloseModal(); // Используем нашу функцию закрытия (она и почистит форму)
     };
 
     const handleDelete = (id) => setBugs(bugs.filter(bug => bug.id !== id));
@@ -52,7 +59,6 @@ const BugTracker = ({ bugs, setBugs, t }) => {
 
     return (
         <div className="space-y-6 animate-fade-in relative">
-            {/* Верхняя панель: Заголовок + Поиск + КНОПКА СОЗДАНИЯ */}
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
                     {t.tracker_title}
@@ -67,17 +73,17 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    {/* Кнопка открытия модального окна */}
+
+                    {/* ИСПРАВЛЕНИЕ 1: Убрали лишний <span>+</span>, оставили только текст из перевода */}
                     <button
                         onClick={() => setIsModalOpen(true)}
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition flex items-center gap-2 whitespace-nowrap shadow-md hover:shadow-lg transform active:scale-95"
                     >
-                        <span>+</span> {t.btn_add}
+                        {t.btn_add}
                     </button>
                 </div>
             </div>
 
-            {/* Список багов (Теперь занимает больше места, так как формы нет) */}
             <div className="space-y-4">
                 {filteredBugs.length === 0 ? (
                     <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
@@ -93,6 +99,7 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                                         ${bug.priority === 'Critical' ? 'bg-red-100 text-red-700' :
                                             bug.priority === 'High' ? 'bg-orange-100 text-orange-700' :
                                                 bug.priority === 'Medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}`}>
+                                        {/* Иконки остаются тут, так как мы их убрали из translations.js */}
                                         {bug.priority === 'Critical' ? '🔥' : bug.priority === 'High' ? '🔴' : bug.priority === 'Medium' ? '🟡' : '🟢'}
                                         {t.priority[bug.priority] || bug.priority}
                                     </span>
@@ -130,20 +137,18 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                 ))}
             </div>
 
-            {/* --- MODAL WINDOW (AnimatePresence позволяет анимировать удаление из DOM) --- */}
             <AnimatePresence>
                 {isModalOpen && (
                     <>
-                        {/* 1. Backdrop (Затемнение фона) */}
+                        {/* ИСПРАВЛЕНИЕ 2: При клике на фон вызываем handleCloseModal для очистки формы */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            onClick={() => setIsModalOpen(false)}
+                            onClick={handleCloseModal}
                             className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60]"
                         />
 
-                        {/* 2. Modal Content (Само окно) */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -151,15 +156,14 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                             className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none"
                         >
                             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden pointer-events-auto border border-gray-100">
-                                {/* Заголовок окна */}
                                 <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                                     <h3 className="text-xl font-bold text-gray-800">New Bug Report</h3>
-                                    <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition">
+                                    {/* ИСПРАВЛЕНИЕ 2: Кнопка крестик тоже очищает форму */}
+                                    <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 transition">
                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                     </button>
                                 </div>
 
-                                {/* Форма */}
                                 <div className="p-6">
                                     <form onSubmit={handleAddBug} className="space-y-5">
                                         <div>
@@ -196,9 +200,10 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                                         </div>
 
                                         <div className="flex justify-end gap-3 pt-2">
+                                            {/* ИСПРАВЛЕНИЕ 2: Кнопка Cancel очищает форму */}
                                             <button
                                                 type="button"
-                                                onClick={() => setIsModalOpen(false)}
+                                                onClick={handleCloseModal}
                                                 className="px-5 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition"
                                             >
                                                 Cancel
