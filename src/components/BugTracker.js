@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import PrioritySelector from './PrioritySelector'; // <-- Импорт
-import UserSelector from './UserSelector';         // <-- Импорт
+import { motion, AnimatePresence } from 'framer-motion'; // <-- Импорт анимаций
+import PrioritySelector from './PrioritySelector';
+import UserSelector from './UserSelector';
 
 const BugTracker = ({ bugs, setBugs, t }) => {
+    // Состояние для открытия/закрытия модального окна
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const [newBug, setNewBug] = useState('');
     const [priority, setPriority] = useState('Medium');
     const [assignee, setAssignee] = useState('Viktor');
@@ -34,6 +38,7 @@ const BugTracker = ({ bugs, setBugs, t }) => {
         setNewBug('');
         setSteps('');
         setErrors({});
+        setIsModalOpen(false); // <-- Закрываем окно после создания
     };
 
     const handleDelete = (id) => setBugs(bugs.filter(bug => bug.id !== id));
@@ -46,58 +51,44 @@ const BugTracker = ({ bugs, setBugs, t }) => {
     const filteredBugs = bugs.filter(bug => bug.title.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return (
-        <div className="space-y-6 animate-fade-in">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <h2 className="text-3xl font-bold text-gray-800">{t.tracker_title}</h2>
-                <input type="text" placeholder={t.search_placeholder} className="w-full md:w-64 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+        <div className="space-y-6 animate-fade-in relative">
+            {/* Верхняя панель: Заголовок + Поиск + КНОПКА СОЗДАНИЯ */}
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    {t.tracker_title}
+                    <span className="text-sm font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{filteredBugs.length}</span>
+                </h2>
+
+                <div className="flex gap-3 w-full md:w-auto">
+                    <input
+                        type="text"
+                        placeholder={t.search_placeholder}
+                        className="w-full md:w-64 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {/* Кнопка открытия модального окна */}
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition flex items-center gap-2 whitespace-nowrap shadow-md hover:shadow-lg transform active:scale-95"
+                    >
+                        <span>+</span> {t.btn_add}
+                    </button>
+                </div>
             </div>
 
-            {/* Карточка создания бага */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <form onSubmit={handleAddBug} className="space-y-4">
-                    <div className="flex flex-col md:flex-row gap-4 items-start">
-                        {/* Поле названия */}
-                        <div className="flex-grow w-full">
-                            <input
-                                type="text"
-                                placeholder={t.placeholder_title}
-                                className={`w-full p-3 border rounded-lg outline-none transition ${errors.title ? 'border-red-500' : 'border-gray-200 focus:ring-blue-500 focus:border-blue-500'}`}
-                                value={newBug}
-                                onChange={(e) => setNewBug(e.target.value)}
-                            />
-                            {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
-                        </div>
-
-                        {/* Новые селекторы */}
-                        <PrioritySelector priority={priority} setPriority={setPriority} t={t} />
-                        <UserSelector assignee={assignee} setAssignee={setAssignee} />
-                    </div>
-
-                    <div>
-                        <textarea
-                            placeholder={t.placeholder_steps}
-                            className="w-full p-3 border border-gray-200 rounded-lg h-24 resize-none outline-none focus:ring-blue-500 focus:border-blue-500 transition"
-                            value={steps}
-                            onChange={(e) => setSteps(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="flex justify-end">
-                        <button type="submit" className="bg-blue-600 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 hover:shadow-blue-300 transform active:scale-95">
-                            {t.btn_add}
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            {/* Список багов */}
+            {/* Список багов (Теперь занимает больше места, так как формы нет) */}
             <div className="space-y-4">
-                {filteredBugs.length === 0 ? <p className="text-center text-gray-400 mt-10">No bugs found...</p> : filteredBugs.map((bug) => (
+                {filteredBugs.length === 0 ? (
+                    <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
+                        <p className="text-gray-400 mb-4">No bugs found...</p>
+                        <button onClick={() => setIsModalOpen(true)} className="text-blue-500 font-medium hover:underline">Create your first bug</button>
+                    </div>
+                ) : filteredBugs.map((bug) => (
                     <div key={bug.id} className={`bg-white p-5 rounded-xl shadow-sm border-l-4 transition hover:shadow-md ${bug.status === 'Done' ? 'border-green-400 opacity-70' : 'border-blue-500'}`}>
                         <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                             <div className="flex-grow">
                                 <div className="flex flex-wrap items-center gap-3 mb-2">
-                                    {/* Бэйджик приоритета */}
                                     <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase flex items-center gap-1 
                                         ${bug.priority === 'Critical' ? 'bg-red-100 text-red-700' :
                                             bug.priority === 'High' ? 'bg-orange-100 text-orange-700' :
@@ -105,14 +96,10 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                                         {bug.priority === 'Critical' ? '🔥' : bug.priority === 'High' ? '🔴' : bug.priority === 'Medium' ? '🟡' : '🟢'}
                                         {t.priority[bug.priority] || bug.priority}
                                     </span>
-
                                     <span className="text-xs text-gray-400">{bug.date}</span>
-
-                                    {/* Бэйджик Assignee */}
                                     <span className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded flex items-center gap-1 border border-slate-200">
                                         👤 {bug.assignee}
                                     </span>
-
                                     {bug.timeSpent > 0 && <span className="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded font-mono border border-purple-100">⏱ {bug.timeSpent}h</span>}
                                 </div>
                                 <h3 className={`text-lg font-bold ${bug.status === 'Done' ? 'line-through text-gray-500' : 'text-gray-800'}`}>{bug.title}</h3>
@@ -142,6 +129,94 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                     </div>
                 ))}
             </div>
+
+            {/* --- MODAL WINDOW (AnimatePresence позволяет анимировать удаление из DOM) --- */}
+            <AnimatePresence>
+                {isModalOpen && (
+                    <>
+                        {/* 1. Backdrop (Затемнение фона) */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsModalOpen(false)}
+                            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60]"
+                        />
+
+                        {/* 2. Modal Content (Само окно) */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none"
+                        >
+                            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden pointer-events-auto border border-gray-100">
+                                {/* Заголовок окна */}
+                                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                                    <h3 className="text-xl font-bold text-gray-800">New Bug Report</h3>
+                                    <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition">
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                </div>
+
+                                {/* Форма */}
+                                <div className="p-6">
+                                    <form onSubmit={handleAddBug} className="space-y-5">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">{t.placeholder_title} <span className="text-red-500">*</span></label>
+                                            <input
+                                                type="text"
+                                                placeholder="E.g. Login button not working..."
+                                                className={`w-full p-3 border rounded-lg outline-none transition ${errors.title ? 'border-red-500' : 'border-gray-200 focus:ring-blue-500 focus:border-blue-500'}`}
+                                                value={newBug}
+                                                onChange={(e) => setNewBug(e.target.value)}
+                                            />
+                                            {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                                                <PrioritySelector priority={priority} setPriority={setPriority} t={t} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Assignee</label>
+                                                <UserSelector assignee={assignee} setAssignee={setAssignee} />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Steps to Reproduce</label>
+                                            <textarea
+                                                placeholder={t.placeholder_steps}
+                                                className="w-full p-3 border border-gray-200 rounded-lg h-32 resize-none outline-none focus:ring-blue-500 focus:border-blue-500 transition"
+                                                value={steps}
+                                                onChange={(e) => setSteps(e.target.value)}
+                                            />
+                                        </div>
+
+                                        <div className="flex justify-end gap-3 pt-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsModalOpen(false)}
+                                                className="px-5 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                className="bg-blue-600 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 hover:shadow-blue-300 transform active:scale-95"
+                                            >
+                                                {t.btn_add}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
