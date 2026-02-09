@@ -5,7 +5,8 @@ import PrioritySelector from './PrioritySelector';
 import UserSelector from './UserSelector';
 import SeveritySelector from './SeveritySelector';
 
-const BugTracker = ({ bugs, setBugs, t }) => {
+// Принимаем новые пропсы: onAddBug, onDeleteBug, onUpdateStatus
+const BugTracker = ({ bugs, t, onAddBug, onDeleteBug, onUpdateStatus }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [newBug, setNewBug] = useState('');
@@ -33,11 +34,12 @@ const BugTracker = ({ bugs, setBugs, t }) => {
         setErrors({});
     };
 
-    const handleAddBug = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         if (!validateForm()) return;
+
         const bug = {
-            id: Date.now(),
+            id: Date.now(), // Временный ID, сервер заменит его
             title: newBug,
             priority: priority,
             severity: severity,
@@ -47,18 +49,17 @@ const BugTracker = ({ bugs, setBugs, t }) => {
             date: new Date().toISOString().split('T')[0],
             timeSpent: 0
         };
-        setBugs([bug, ...bugs]);
+
+        // ВЫЗЫВАЕМ ФУНКЦИЮ ИЗ APP.JS
+        onAddBug(bug);
+
         handleCloseModal();
     };
 
-    const handleDelete = (id) => setBugs(bugs.filter(bug => bug.id !== id));
-    const handleStatusChange = (id, newStatus) => setBugs(bugs.map(bug => bug.id === id ? { ...bug, status: newStatus } : bug));
-    const handleLogTime = (id) => {
-        const hours = prompt("Hours spent?");
-        if (hours && !isNaN(hours)) setBugs(bugs.map(bug => bug.id === id ? { ...bug, timeSpent: bug.timeSpent + parseFloat(hours) } : bug));
-    };
-
-    const filteredBugs = bugs.filter(bug => bug.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    // ФИЛЬТРАЦИЯ
+    const filteredBugs = bugs.filter(bug =>
+        bug.title && bug.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     const getPriorityIcon = (p) => {
         switch (p) {
@@ -110,8 +111,8 @@ const BugTracker = ({ bugs, setBugs, t }) => {
             <div className="space-y-4">
                 {filteredBugs.length === 0 ? (
                     <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
-                        <p className="text-gray-400 mb-4">No bugs found...</p>
-                        <button onClick={() => setIsModalOpen(true)} className="text-blue-500 font-medium hover:underline">Create your first bug</button>
+                        <p className="text-gray-400 mb-4">{t.empty_tracker}</p>
+                        <button onClick={() => setIsModalOpen(true)} className="text-blue-500 font-medium hover:underline">{t.btn_create_first}</button>
                     </div>
                 ) : filteredBugs.map((bug) => (
                     <div key={bug.id} className={`bg-white p-5 rounded-xl shadow-sm border-l-4 transition hover:shadow-md ${bug.status === 'Done' ? 'border-green-400 opacity-70' : 'border-blue-500'}`}>
@@ -132,7 +133,6 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                                     <span className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded flex items-center gap-1 border border-slate-200">
                                         👤 {bug.assignee}
                                     </span>
-                                    {bug.timeSpent > 0 && <span className="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded font-mono border border-purple-100">⏱ {bug.timeSpent}h</span>}
                                 </div>
                                 <h3 className={`text-lg font-bold ${bug.status === 'Done' ? 'line-through text-gray-500' : 'text-gray-800'}`}>{bug.title}</h3>
                                 {bug.steps && <p className="text-gray-500 text-sm mt-2 bg-slate-50 p-3 rounded-lg border border-slate-100 italic">"{bug.steps}"</p>}
@@ -144,15 +144,14 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                                     ${bug.status === 'Done' ? 'bg-green-50 text-green-700 border-green-200' :
                                             bug.status === 'In Progress' ? 'bg-purple-50 text-purple-700 border-purple-200' : 'bg-white text-gray-600 border-gray-200'}`}
                                     value={bug.status}
-                                    onChange={(e) => handleStatusChange(bug.id, e.target.value)}
+                                    onChange={(e) => onUpdateStatus(bug.id, e.target.value)}
                                 >
                                     {Object.keys(t.status_opt).map(key =>
                                         <option key={key} value={key === 'InProgress' ? 'In Progress' : key}>{t.status_opt[key]}</option>
                                     )}
                                 </select>
                                 <div className="flex gap-2">
-                                    <button onClick={() => handleLogTime(bug.id)} className="text-xs bg-gray-50 hover:bg-gray-100 text-gray-600 px-3 py-1.5 rounded border border-gray-200 transition">+ Time</button>
-                                    <button onClick={() => handleDelete(bug.id)} className="text-gray-300 hover:text-red-500 transition p-1">
+                                    <button onClick={() => onDeleteBug(bug.id)} className="text-gray-300 hover:text-red-500 transition p-1">
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 </div>
@@ -162,7 +161,7 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                 ))}
             </div>
 
-            {/* ИСПРАВЛЕННАЯ СТРУКТУРА ПОРТАЛА */}
+            {/* Модальное окно */}
             {ReactDOM.createPortal(
                 <AnimatePresence>
                     {isModalOpen && (
@@ -192,7 +191,7 @@ const BugTracker = ({ bugs, setBugs, t }) => {
                                     </div>
 
                                     <div className="p-6">
-                                        <form onSubmit={handleAddBug} className="space-y-5">
+                                        <form onSubmit={handleSubmit} className="space-y-5">
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">{t.placeholder_title} <span className="text-red-500">*</span></label>
                                                 <input

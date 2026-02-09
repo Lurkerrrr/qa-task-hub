@@ -1,164 +1,230 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-    PieChart, Pie, Cell
-} from 'recharts';
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement,
+} from 'chart.js';
+import { Bar, Doughnut } from 'react-chartjs-2';
 
-const Dashboard = ({ bugs, t }) => {
-    // --- Данные для графиков ---
-    const priorityData = [
-        { name: t.priority.Low, count: bugs.filter(b => b.priority === 'Low').length, color: '#22c55e' },
-        { name: t.priority.Medium, count: bugs.filter(b => b.priority === 'Medium').length, color: '#eab308' },
-        { name: t.priority.High, count: bugs.filter(b => b.priority === 'High').length, color: '#ef4444' },
-        { name: t.priority.Critical, count: bugs.filter(b => b.priority === 'Critical').length, color: '#b91c1c' },
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
+
+const Dashboard = ({ t, bugs = [] }) => {
+
+    // --- ДАННЫЕ ---
+    const priorityCounts = [
+        bugs.filter(b => b.priority === 'Highest').length,
+        bugs.filter(b => b.priority === 'High').length,
+        bugs.filter(b => b.priority === 'Medium').length,
+        bugs.filter(b => b.priority === 'Low').length,
+        bugs.filter(b => b.priority === 'Lowest').length,
     ];
 
-    const statusData = [
-        { name: t.status_opt.Open, value: bugs.filter(b => b.status === 'Open').length, color: '#3b82f6' },
-        { name: t.status_opt.InProgress, value: bugs.filter(b => b.status === 'In Progress').length, color: '#8b5cf6' },
-        { name: t.status_opt.Done, value: bugs.filter(b => b.status === 'Done').length, color: '#10b981' },
-    ];
+    const barData = {
+        labels: [t.priority.Highest, t.priority.High, t.priority.Medium, t.priority.Low, t.priority.Lowest],
+        datasets: [
+            {
+                label: 'Bug Count',
+                data: priorityCounts,
+                backgroundColor: ['#DC2626', '#EA580C', '#EAB308', '#22C55E', '#64748B'],
+                borderRadius: 4,
+                barThickness: 30,
+            },
+        ],
+    };
 
+    const barOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f3f4f6' } },
+            x: { grid: { display: false } }
+        }
+    };
+
+    // 2. Status Counts
+    const doneCount = bugs.filter(b => b.status === 'Done').length;
+    const wipCount = bugs.filter(b => b.status === 'In Progress' || b.status === 'InProgress').length;
+    const openCount = bugs.filter(b => b.status === 'Open').length;
+
+    const totalStatus = doneCount + wipCount + openCount;
+    const isEmpty = totalStatus === 0;
+
+    const doughnutData = {
+        labels: [t.status_opt.Done, t.status_opt.InProgress, t.status_opt.Open],
+        datasets: [
+            {
+                data: isEmpty ? [1] : [doneCount, wipCount, openCount],
+                backgroundColor: isEmpty ? ['#F3F4F6'] : ['#22C55E', '#3B82F6', '#EF4444'],
+                borderWidth: 0,
+                hoverOffset: isEmpty ? 0 : 4,
+            },
+        ],
+    };
+
+    const doughnutOptions = {
+        cutout: '70%',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { enabled: !isEmpty } },
+    };
+
+    // --- ЛОГИКА МЕТРИК ---
     const totalBugs = bugs.length;
-    const criticalBugs = bugs.filter(bug => bug.priority === 'Critical').length;
-    const fixedBugs = bugs.filter(bug => bug.status === 'Done').length;
-    const recentBugs = bugs.slice(0, 5);
+    const fixedBugs = doneCount;
+    const activeBugs = totalBugs - fixedBugs;
 
-    // --- НОВАЯ ЛОГИКА: Считаем проценты для Progress Bars ---
-    const completionRate = totalBugs > 0 ? Math.round((fixedBugs / totalBugs) * 100) : 0;
-    const criticalRate = totalBugs > 0 ? Math.round((criticalBugs / totalBugs) * 100) : 0;
+    const activeCriticalBugs = bugs.filter(b =>
+        (b.priority === 'Highest' || b.severity === 'Critical') &&
+        b.status !== 'Done'
+    ).length;
+
+    const successRate = totalBugs === 0 ? 0 : Math.round((fixedBugs / totalBugs) * 100);
+    const criticalDensity = totalBugs === 0 ? 0 : Math.round((activeCriticalBugs / totalBugs) * 100);
+
+    const recentActivity = [...bugs].sort((a, b) => b.id - a.id).slice(0, 5);
+
+    // --- УСЛОВИЕ ДЛЯ ПЛАШКИ ---
+    // Появляется ТОЛЬКО если (критических >= 80% И баги вообще есть)
+    const showWarningBanner = totalBugs > 0 && criticalDensity >= 80;
 
     return (
-        <div className="space-y-8 animate-fade-in pb-10">
-            <h2 className="text-3xl font-bold text-gray-800">{t.dash_title}</h2>
+        <div className="space-y-6 animate-fade-in pb-10">
+            {/* Header */}
+            <div className="flex justify-between items-end">
+                <div>
+                    <h2 className="text-3xl font-bold text-gray-800">{t.dash_title}</h2>
+                    <p className="text-gray-500 mt-1">{new Date().toLocaleDateString()} • {t.active_tasks}: <span className="font-bold text-blue-600">{activeBugs}</span></p>
+                </div>
+            </div>
 
-            {/* 1. Карточки KPI */}
+            {/* Карточки KPI */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500 hover:shadow-md transition">
-                    <h3 className="text-gray-500 text-sm font-medium uppercase">{t.total_bugs}</h3>
-                    <p className="text-4xl font-bold text-gray-800 mt-2">{totalBugs}</p>
-                    <p className="text-xs text-gray-400 mt-1">{t.active_tasks}</p>
-                </div>
-                <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500 hover:shadow-md transition">
-                    <h3 className="text-gray-500 text-sm font-medium uppercase">{t.fixed}</h3>
-                    <p className="text-4xl font-bold text-gray-800 mt-2">{fixedBugs}</p>
-                    <p className="text-xs text-gray-400 mt-1">{t.status_done}</p>
-                </div>
-                <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-red-500 hover:shadow-md transition">
-                    <h3 className="text-gray-500 text-sm font-medium uppercase">{t.critical}</h3>
-                    {/* ИСПРАВЛЕНО: Цвет теперь text-gray-800 */}
-                    <p className="text-4xl font-bold text-gray-800 mt-2">{criticalBugs}</p>
-                    <p className="text-xs text-gray-400 mt-1">{t.attention}</p>
-                </div>
+                <motion.div whileHover={{ y: -5 }} className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-500">
+                    <p className="text-gray-400 text-sm font-medium uppercase">{t.total_bugs}</p>
+                    <h3 className="text-4xl font-bold text-gray-800 mt-2">{totalBugs}</h3>
+                </motion.div>
+                <motion.div whileHover={{ y: -5 }} className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-green-500">
+                    <p className="text-gray-400 text-sm font-medium uppercase">{t.fixed}</p>
+                    <h3 className="text-4xl font-bold text-green-600 mt-2">{fixedBugs}</h3>
+                </motion.div>
+                <motion.div whileHover={{ y: -5 }} className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-red-500">
+                    <p className="text-gray-400 text-sm font-medium uppercase">{t.critical}</p>
+                    <h3 className={`text-4xl font-bold mt-2 ${activeCriticalBugs > 0 ? 'text-red-600' : 'text-gray-800'}`}>{activeCriticalBugs}</h3>
+                    {activeCriticalBugs > 0 && <p className="text-xs text-red-500 mt-1 font-bold animate-pulse">{t.attention}</p>}
+                </motion.div>
             </div>
 
-            {/* 2. НОВЫЙ БЛОК: Project Health (Progress Bars) */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 className="text-lg font-bold text-gray-700 mb-6">{t.project_health}</h3>
-
-                <div className="space-y-6">
-                    {/* Bar 1: Success Rate */}
-                    <div>
-                        <div className="flex justify-between mb-1">
-                            <span className="text-sm font-medium text-gray-700">{t.success_rate}</span>
-                            <span className="text-sm font-medium text-green-600">{completionRate}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                            <div
-                                className="bg-green-500 h-2.5 rounded-full transition-all duration-1000 ease-out"
-                                style={{ width: `${completionRate}%` }}
-                            ></div>
-                        </div>
-                    </div>
-
-                    {/* Bar 2: Critical Density */}
-                    <div>
-                        <div className="flex justify-between mb-1">
-                            <span className="text-sm font-medium text-gray-700">{t.critical_density}</span>
-                            <span className={`text-sm font-medium ${criticalRate > 20 ? 'text-red-600' : 'text-gray-600'}`}>{criticalRate}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                            <div
-                                className={`h-2.5 rounded-full transition-all duration-1000 ease-out ${criticalRate > 0 ? 'bg-red-500' : 'bg-gray-300'}`}
-                                style={{ width: `${criticalRate}%` }}
-                            ></div>
-                        </div>
-                        {/* ИСПРАВЛЕНО: Используем переменные перевода t.risk_high / t.risk_ok */}
-                        <p className="text-xs text-gray-400 mt-1">
-                            {criticalRate > 20 ? t.risk_high : t.risk_ok}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {/* 3. Графики */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h3 className="text-lg font-bold text-gray-700 mb-4">Priority Breakdown</h3>
-                    <div className="h-64">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={priorityData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                                <YAxis allowDecimals={false} />
-                                <Tooltip cursor={{ fill: 'transparent' }} />
-                                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                                    {priorityData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Bar>
-                            </BarChart>
-                        </ResponsiveContainer>
+            {/* ГРАФИКИ */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                    <h3 className="text-lg font-bold text-gray-700 mb-6">{t.chart_priority}</h3>
+                    <div className="flex-grow min-h-[250px] relative">
+                        <Bar options={barOptions} data={barData} />
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h3 className="text-lg font-bold text-gray-700 mb-4">Project Status</h3>
-                    <div className="h-64 flex justify-center">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie data={statusData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                                    {statusData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                                <Legend verticalAlign="bottom" height={36} />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </div>
-
-            {/* 4. Recent Activity */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-100">
-                    <h3 className="text-lg font-bold text-gray-700">{t.recent_activity}</h3>
-                </div>
-                <div className="divide-y divide-gray-50">
-                    {recentBugs.map(bug => (
-                        <div key={bug.id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition">
-                            <div className="flex items-center gap-4">
-                                <div className={`w-2 h-2 rounded-full ${bug.priority === 'Critical' ? 'bg-red-500' : bug.priority === 'High' ? 'bg-orange-500' : 'bg-green-500'}`}></div>
-                                <div>
-                                    <p className="font-medium text-gray-800">{bug.title}</p>
-                                    <p className="text-xs text-gray-400">{bug.date} • {bug.assignee}</p>
-                                </div>
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                    <h3 className="text-lg font-bold text-gray-700 mb-6">{t.chart_status}</h3>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-10 h-full">
+                        <div className="relative w-48 h-48 flex-shrink-0">
+                            <Doughnut data={doughnutData} options={doughnutOptions} />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <span className="text-3xl font-extrabold text-gray-800">{successRate}%</span>
+                                <span className="text-xs text-gray-400 uppercase font-semibold">{t.status_opt.Done}</span>
                             </div>
-                            <span className={`px-3 py-1 text-xs rounded-full font-medium ${bug.status === 'Done' ? 'bg-green-100 text-green-700' :
-                                bug.status === 'In Progress' ? 'bg-purple-100 text-purple-700' :
-                                    'bg-blue-100 text-blue-700'
-                                }`}>
-                                {bug.status}
-                            </span>
                         </div>
-                    ))}
-                    {recentBugs.length === 0 && (
-                        <div className="p-8 text-center text-gray-400">No activity yet...</div>
+
+                        <div className="flex flex-col justify-center gap-4 w-full sm:w-auto">
+                            <div className="flex items-center justify-between sm:justify-start gap-4 w-full min-w-[140px]">
+                                <div className="flex items-center gap-3">
+                                    <span className="w-3 h-3 rounded bg-green-500"></span>
+                                    <span className="text-sm font-semibold text-gray-700">{t.status_opt.Done}</span>
+                                </div>
+                                <span className="text-sm font-bold text-gray-800 ml-auto">{doneCount}</span>
+                            </div>
+                            <div className="flex items-center justify-between sm:justify-start gap-4 w-full min-w-[140px]">
+                                <div className="flex items-center gap-3">
+                                    <span className="w-3 h-3 rounded bg-blue-500"></span>
+                                    <span className="text-sm font-semibold text-gray-700">{t.status_opt.InProgress}</span>
+                                </div>
+                                <span className="text-sm font-bold text-gray-800 ml-auto">{wipCount}</span>
+                            </div>
+                            <div className="flex items-center justify-between sm:justify-start gap-4 w-full min-w-[140px]">
+                                <div className="flex items-center gap-3">
+                                    <span className="w-3 h-3 rounded bg-red-500"></span>
+                                    <span className="text-sm font-semibold text-gray-700">{t.status_opt.Open}</span>
+                                </div>
+                                <span className="text-sm font-bold text-gray-800 ml-auto">{openCount}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Metrics Bars */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h3 className="text-xl font-bold text-gray-800 mb-6">{t.project_health}</h3>
+                <div className="space-y-6">
+                    <div>
+                        <div className="flex justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-600">{t.success_rate}</span>
+                            <span className="text-sm font-bold text-blue-600">{successRate}%</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-3">
+                            <div className="bg-green-500 h-3 rounded-full transition-all duration-1000" style={{ width: `${successRate}%` }}></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="flex justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-600">{t.critical_density}</span>
+                            {/* ТЕКСТ: Становится ярко-красным, если >= 80%, иначе серый */}
+                            <span className={`text-sm font-bold ${criticalDensity >= 80 ? 'text-red-600' : 'text-gray-600'}`}>{criticalDensity}%</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-3">
+                            {/* ПОЛОСКА: ВСЕГДА КРАСНАЯ (bg-red-500), независимо от процента */}
+                            <div className="h-3 rounded-full transition-all duration-1000 bg-red-500" style={{ width: `${criticalDensity}%` }}></div>
+                        </div>
+                    </div>
+
+                    {/* ПЛАШКА РИСКА: Появляется ТОЛЬКО если >= 80% */}
+                    {showWarningBanner && (
+                        <div className="mt-4 p-4 bg-red-50 rounded-xl border border-red-100 animate-pulse">
+                            <div className="flex items-center gap-3 text-red-600 font-bold">
+                                <span>{t.risk_high}</span>
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>
 
+            {/* Recent Activity */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">{t.recent_activity}</h3>
+                <div className="space-y-4">
+                    {recentActivity.map(bug => (
+                        <div key={bug.id} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition border-b border-gray-50 last:border-0">
+                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${bug.priority === 'Highest' || bug.priority === 'Critical' ? 'bg-red-500' :
+                                    bug.priority === 'High' ? 'bg-orange-500' : 'bg-green-500'
+                                }`}></div>
+                            <div className="overflow-hidden">
+                                <p className="text-sm font-bold text-gray-800 truncate">{bug.title}</p>
+                                <p className="text-xs text-gray-400">{bug.date} • {bug.assignee}</p>
+                            </div>
+                            <span className={`ml-auto text-[10px] px-2 py-0.5 rounded font-bold uppercase ${bug.status === 'Done' ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-700'
+                                }`}>
+                                {bug.status === 'Done' ? 'DONE' : 'WIP'}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };

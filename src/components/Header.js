@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import LanguageSelector from './LanguageSelector'; // <-- Импортируем наш новый компонент
+import LanguageSelector from './LanguageSelector';
 
-const Header = ({ lang, setLang, t }) => {
+const Header = ({ language, setLanguage, t }) => {
     return (
         <header className="bg-slate-900 text-white shadow-lg fixed top-0 left-0 w-full z-50">
-            <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
+            <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
                 {/* Логотип */}
                 <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
                     <span className="text-2xl">🛡️</span>
-                    <div className="text-xl font-bold tracking-wider text-blue-400">QA Task Manager</div>
+                    <div className="text-xl font-bold tracking-wider text-blue-400">QA TaskHub</div>
                 </Link>
 
                 <div className="flex items-center gap-8">
@@ -20,9 +20,8 @@ const Header = ({ lang, setLang, t }) => {
                         <li><Link to="/api" className="hover:text-blue-400 transition-colors">{t.api}</Link></li>
                     </ul>
 
-                    {/* Вставляем наш новый красивый селектор */}
-                    <LanguageSelector lang={lang} setLang={setLang} />
-
+                    {/* Селектор языка */}
+                    <LanguageSelector language={language} setLanguage={setLanguage} />
                 </div>
             </nav>
         </header>
