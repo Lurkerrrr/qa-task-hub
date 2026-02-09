@@ -1,58 +1,112 @@
-# 🛡️ QA Task Manager
+QA Task Manager
+QA Task Manager is a full-stack web application designed for tracking software quality assurance metrics, managing bug lifecycles, and visualizing project health data. The system utilizes a React-based frontend for the user interface and a Node.js/Express backend with SQLite for persistent data storage.
 
-### A modern, interactive dashboard for tracking software quality assurance metrics, managing bugs, and analyzing project health.
+Project Overview
+This application serves as a centralized hub for QA engineers to log defects, monitor testing progress, and analyze critical quality indicators such as defect density and fix rates. Unlike static dashboards, this project implements a complete client-server architecture, allowing for Create, Read, Update, and Delete (CRUD) operations on a persistent database.
 
-## 📋 About The Project
+Technical Architecture
+The project follows a standard MVC (Model-View-Controller) pattern adapted for a modern JavaScript stack:
 
-**QA Task Manager** is a specialized tool designed for QA Leads and Testers. It provides a real-time overview of the testing process, visualizes critical data through interactive charts, and helps teams make data-driven decisions.
+Frontend (Client): A Single Page Application (SPA) built with React.js. It handles state management, routing, and UI rendering. It communicates with the backend via asynchronous HTTP requests (Fetch API).
 
-This project was built as a Student Project (2026) to demonstrate modern frontend development practices using the React ecosystem.
+Backend (Server): A RESTful API built with Node.js and Express. It processes client requests, applies business logic, and interacts with the database.
 
-## ✨ Key Features
+Database: SQLite. A server-less, file-based relational database engine used for storing bug reports and statuses. This ensures data persistence without requiring external database server configuration.
 
-* **📊 Interactive Analytics:** Visual breakdown of bugs by Priority and Status using `Recharts`.
-* **🩺 Project Health Metrics:** Real-time calculation of Success Rate and Critical Density with automated risk assessment.
-* **⚡ Activity Feed:** Live stream of recent actions and bug updates (e.g., "Login button broken" marked as Critical).
-* **🌍 Internationalization (i18n):** Full support for **English, Polish, Ukrainian, and Russian** with a custom flag selector.
-* **🚀 Smooth UX:** Page transitions powered by `Framer Motion`, sticky navigation, and "Scroll to Top" functionality.
-* **🐞 Bug Tracker:** Interface for creating, tracking, and filtering software issues.
+Technology Stack
+Frontend
+Framework: React.js (v18)
 
-## 🛠️ Tech Stack
+Routing: React Router DOM (v6) for client-side navigation.
 
-* **Core:** React.js (Hooks, Context API)
-* **Styling:** Tailwind CSS
-* **Charts:** Recharts
-* **Animations:** Framer Motion
-* **Routing:** React Router v6
-* **Assets:** React World Flags
+Styling: Tailwind CSS for utility-first, responsive design.
 
-## 🚀 Getting Started
+Visualization: Chart.js and React-Chartjs-2 for rendering statistical graphs.
 
-To run this project locally, follow these steps:
+Animation: Framer Motion for UI transitions.
 
-### Prerequisites
-* Node.js (v14 or higher)
-* npm
+State Management: React Hooks (useState, useEffect, useContext).
 
-### Installation
+Backend
+Runtime: Node.js
 
-1.  **Clone the repository**
-    ```bash
-    git clone [https://github.com/YOUR_USERNAME/qa-task-hub.git](https://github.com/YOUR_USERNAME/qa-task-hub.git)
-    ```
+Framework: Express.js for handling HTTP requests and routing.
 
-2.  **Navigate to project directory**
-    ```bash
-    cd qa-task-hub
-    ```
+Database Driver: sqlite3 (verbose mode enabled).
 
-3.  **Install dependencies**
-    ```bash
-    npm install
-    ```
+Middleware: CORS (Cross-Origin Resource Sharing) to allow communication between the frontend (port 3000) and backend (port 5000).
 
-4.  **Start the application**
-    ```bash
-    npm start
-    ```
-    The app will run at `http://localhost:3000`.
+DevOps & Tooling
+Version Control: Git
+
+Package Manager: npm
+
+Process Management: Concurrently (allows running both client and server via a single command).
+
+API Documentation
+The backend exposes the following REST endpoints at http://localhost:5000:
+
+GET /bugs Retrieves the list of all bug reports stored in the database.
+
+POST /bugs Creates a new bug report. Accepts a JSON payload containing title, priority, severity, assignee, description, and steps.
+
+PUT /bugs/:id Updates an existing bug report (e.g., changing status from 'Open' to 'Done'). Accepts JSON payload.
+
+DELETE /bugs/:id Permanently removes a bug report from the database based on its unique ID.
+
+Directory Structure
+backend/: Contains server-side logic, API route definitions, and the SQLite database file.
+
+src/: Contains the React source code.
+
+components/: Reusable UI components (Dashboard, BugTracker, Header).
+
+locales/: Translation files for internationalization.
+
+public/: Static assets and entry HTML file.
+
+Installation and Setup
+Prerequisites: Node.js (v16 or higher) and npm must be installed on your machine.
+
+1. Clone the Repository
+Bash
+git clone https://github.com/YOUR_USERNAME/qa-task-hub.git
+cd qa-task-hub
+2. Install Dependencies
+This project requires dependencies for both the root (frontend) and the backend directory.
+
+Root dependencies:
+
+Bash
+npm install
+Backend dependencies:
+
+Bash
+cd backend
+npm install
+cd ..
+3. Running the Application
+The project is configured to run both the frontend and backend servers simultaneously using a single command.
+
+Development Mode:
+
+Bash
+npm run dev
+This command executes concurrently, which starts:
+
+The Node.js backend server on port 5000.
+
+The React development server on port 3000.
+
+Access the application by navigating to http://localhost:3000 in your web browser.
+
+Features
+Persistent Bug Tracking: Issues created in the interface are saved to backend/database.sqlite and persist after server restarts.
+
+Dashboard Analytics: Automated calculation of project success rates and critical bug density.
+
+Search and Filtering: Real-time filtering of bug lists by title or keyword.
+
+Internationalization: Built-in support for multiple languages (English, Polish, Ukrainian, Russian).
+
+Responsive Design: Fully adaptive layout for desktop and mobile interfaces.
