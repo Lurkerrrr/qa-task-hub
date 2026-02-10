@@ -24,7 +24,7 @@ const login = (email, password) => {
             if (!passwordIsValid) return reject(new Error('Invalid Password'));
 
             const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
-                expiresIn: 86400 // 24 hours
+                expiresIn: 86400
             });
 
             resolve({ auth: true, token, user: { id: user.id, name: user.name, role: user.role } });
