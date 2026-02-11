@@ -16,7 +16,6 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 
 const Dashboard = ({ t, bugs = [] }) => {
 
-    // --- ДАННЫЕ ---
     const priorityCounts = [
         bugs.filter(b => b.priority === 'Highest').length,
         bugs.filter(b => b.priority === 'High').length,
@@ -48,7 +47,6 @@ const Dashboard = ({ t, bugs = [] }) => {
         }
     };
 
-    // 2. Status Counts
     const doneCount = bugs.filter(b => b.status === 'Done').length;
     const wipCount = bugs.filter(b => b.status === 'In Progress' || b.status === 'InProgress').length;
     const openCount = bugs.filter(b => b.status === 'Open').length;
@@ -75,7 +73,6 @@ const Dashboard = ({ t, bugs = [] }) => {
         plugins: { legend: { display: false }, tooltip: { enabled: !isEmpty } },
     };
 
-    // --- ЛОГИКА МЕТРИК ---
     const totalBugs = bugs.length;
     const fixedBugs = doneCount;
     const activeBugs = totalBugs - fixedBugs;
@@ -90,13 +87,10 @@ const Dashboard = ({ t, bugs = [] }) => {
 
     const recentActivity = [...bugs].sort((a, b) => b.id - a.id).slice(0, 5);
 
-    // --- УСЛОВИЕ ДЛЯ ПЛАШКИ ---
-    // Появляется ТОЛЬКО если (критических >= 80% И баги вообще есть)
     const showWarningBanner = totalBugs > 0 && criticalDensity >= 80;
 
     return (
         <div className="space-y-6 animate-fade-in pb-10">
-            {/* Header */}
             <div className="flex justify-between items-end">
                 <div>
                     <h2 className="text-3xl font-bold text-gray-800">{t.dash_title}</h2>
@@ -104,7 +98,6 @@ const Dashboard = ({ t, bugs = [] }) => {
                 </div>
             </div>
 
-            {/* Карточки KPI */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <motion.div whileHover={{ y: -5 }} className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-500">
                     <p className="text-gray-400 text-sm font-medium uppercase">{t.total_bugs}</p>
@@ -121,7 +114,6 @@ const Dashboard = ({ t, bugs = [] }) => {
                 </motion.div>
             </div>
 
-            {/* ГРАФИКИ */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
                     <h3 className="text-lg font-bold text-gray-700 mb-6">{t.chart_priority}</h3>
@@ -168,14 +160,14 @@ const Dashboard = ({ t, bugs = [] }) => {
                 </div>
             </div>
 
-            {/* Metrics Bars */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <h3 className="text-xl font-bold text-gray-800 mb-6">{t.project_health}</h3>
                 <div className="space-y-6">
                     <div>
                         <div className="flex justify-between mb-2">
                             <span className="text-sm font-medium text-gray-600">{t.success_rate}</span>
-                            <span className="text-sm font-bold text-blue-600">{successRate}%</span>
+                            {/* Changed from text-blue-600 to text-gray-600 */}
+                            <span className="text-sm font-bold text-gray-600">{successRate}%</span>
                         </div>
                         <div className="w-full bg-gray-100 rounded-full h-3">
                             <div className="bg-green-500 h-3 rounded-full transition-all duration-1000" style={{ width: `${successRate}%` }}></div>
@@ -184,16 +176,13 @@ const Dashboard = ({ t, bugs = [] }) => {
                     <div>
                         <div className="flex justify-between mb-2">
                             <span className="text-sm font-medium text-gray-600">{t.critical_density}</span>
-                            {/* ТЕКСТ: Становится ярко-красным, если >= 80%, иначе серый */}
                             <span className={`text-sm font-bold ${criticalDensity >= 80 ? 'text-red-600' : 'text-gray-600'}`}>{criticalDensity}%</span>
                         </div>
                         <div className="w-full bg-gray-100 rounded-full h-3">
-                            {/* ПОЛОСКА: ВСЕГДА КРАСНАЯ (bg-red-500), независимо от процента */}
                             <div className="h-3 rounded-full transition-all duration-1000 bg-red-500" style={{ width: `${criticalDensity}%` }}></div>
                         </div>
                     </div>
 
-                    {/* ПЛАШКА РИСКА: Появляется ТОЛЬКО если >= 80% */}
                     {showWarningBanner && (
                         <div className="mt-4 p-4 bg-red-50 rounded-xl border border-red-100 animate-pulse">
                             <div className="flex items-center gap-3 text-red-600 font-bold">
@@ -204,14 +193,13 @@ const Dashboard = ({ t, bugs = [] }) => {
                 </div>
             </div>
 
-            {/* Recent Activity */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <h3 className="text-xl font-bold text-gray-800 mb-4">{t.recent_activity}</h3>
                 <div className="space-y-4">
                     {recentActivity.map(bug => (
                         <div key={bug.id} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition border-b border-gray-50 last:border-0">
                             <div className={`w-2 h-2 rounded-full flex-shrink-0 ${bug.priority === 'Highest' || bug.priority === 'Critical' ? 'bg-red-500' :
-                                    bug.priority === 'High' ? 'bg-orange-500' : 'bg-green-500'
+                                bug.priority === 'High' ? 'bg-orange-500' : 'bg-green-500'
                                 }`}></div>
                             <div className="overflow-hidden">
                                 <p className="text-sm font-bold text-gray-800 truncate">{bug.title}</p>
