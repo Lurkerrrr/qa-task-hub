@@ -14,7 +14,6 @@ const UserSelector = ({ assignee, setAssignee }) => {
     const current = users.find(u => u.id === assignee) || users[0];
 
     return (
-        // ИСПРАВЛЕНИЕ: Убрали 'md:w-64', оставили только 'w-full'
         <div className="relative w-full">
             <button
                 type="button"

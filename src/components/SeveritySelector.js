@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 const SeveritySelector = ({ severity, setSeverity, t }) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    // Конфигурация уровней Severity (S1-S4)
     const levels = [
         { id: 'Critical', label: 'S1', color: 'bg-red-600', text: 'text-red-700' },
         { id: 'Major', label: 'S2', color: 'bg-orange-500', text: 'text-orange-700' },

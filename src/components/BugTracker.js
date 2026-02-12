@@ -5,7 +5,6 @@ import PrioritySelector from './PrioritySelector';
 import UserSelector from './UserSelector';
 import SeveritySelector from './SeveritySelector';
 
-// Принимаем новые пропсы: onAddBug, onDeleteBug, onUpdateStatus
 const BugTracker = ({ bugs, t, onAddBug, onDeleteBug, onUpdateStatus }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -39,7 +38,7 @@ const BugTracker = ({ bugs, t, onAddBug, onDeleteBug, onUpdateStatus }) => {
         if (!validateForm()) return;
 
         const bug = {
-            id: Date.now(), // Временный ID, сервер заменит его
+            id: Date.now(),
             title: newBug,
             priority: priority,
             severity: severity,
@@ -50,13 +49,11 @@ const BugTracker = ({ bugs, t, onAddBug, onDeleteBug, onUpdateStatus }) => {
             timeSpent: 0
         };
 
-        // ВЫЗЫВАЕМ ФУНКЦИЮ ИЗ APP.JS
         onAddBug(bug);
 
         handleCloseModal();
     };
 
-    // ФИЛЬТРАЦИЯ
     const filteredBugs = bugs.filter(bug =>
         bug.title && bug.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -161,7 +158,6 @@ const BugTracker = ({ bugs, t, onAddBug, onDeleteBug, onUpdateStatus }) => {
                 ))}
             </div>
 
-            {/* Модальное окно */}
             {ReactDOM.createPortal(
                 <AnimatePresence>
                     {isModalOpen && (

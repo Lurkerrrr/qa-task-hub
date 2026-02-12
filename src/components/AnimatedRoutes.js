@@ -2,7 +2,6 @@ import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 
-// Импортируем твои страницы
 import Dashboard from './Dashboard';
 import BugTracker from './BugTracker';
 import ExternalAPI from './ExternalAPI';
@@ -10,7 +9,6 @@ import ExternalAPI from './ExternalAPI';
 const AnimatedRoutes = ({ bugs, setBugs, t }) => {
     const location = useLocation();
 
-    // 1. Определяем порядок вкладок (чтобы знать, куда ехать: влево или вправо)
     const order = {
         "/": 1,
         "/tracker": 2,
@@ -20,14 +18,12 @@ const AnimatedRoutes = ({ bugs, setBugs, t }) => {
     const pageIndex = order[location.pathname] || 0;
     const prevIndex = React.useRef(pageIndex);
 
-    // Если идем на вкладку с большим номером -> едем вправо (slideLeft), иначе влево
     const direction = pageIndex > prevIndex.current ? 1 : -1;
 
     React.useEffect(() => {
         prevIndex.current = pageIndex;
     }, [pageIndex]);
 
-    // Настройки анимации
     const variants = {
         initial: (direction) => ({
             opacity: 0,
@@ -72,7 +68,6 @@ const AnimatedRoutes = ({ bugs, setBugs, t }) => {
     );
 };
 
-// Обертка для анимации страницы
 const PageWrapper = ({ children, custom, variants }) => {
     return (
         <motion.div

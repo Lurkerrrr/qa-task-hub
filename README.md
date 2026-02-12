@@ -2,11 +2,7 @@
 
 **QA Task Manager** is a full-stack web application designed for tracking software quality assurance metrics, managing bug lifecycles, and visualizing project health data. The system utilizes a React-based frontend for the user interface and a Node.js/Express backend with SQLite for persistent data storage.
 
----
-
-## Project Overview
-
-This application serves as a centralized hub for QA engineers to log defects, monitor testing progress, and analyze critical quality indicators such as defect density and fix rates. Unlike static dashboards, this project implements a complete client-server architecture, allowing for Create, Read, Update, and Delete (CRUD) operations on a persistent database.
+The application implements a decoupled client-server architecture with stateless authentication via JSON Web Tokens (JWT), ensuring secure and scalable user session management.
 
 ---
 
@@ -15,21 +11,63 @@ This application serves as a centralized hub for QA engineers to log defects, mo
 The project follows a standard MVC (Model-View-Controller) pattern adapted for a modern JavaScript stack.
 
 ### 1. Frontend (Client)
-* **Framework:** React.js (v18)
-* **Routing:** React Router DOM (v6) for client-side navigation.
-* **State Management:** React Hooks (useState, useEffect) for local state and data fetching.
-* **Visualization:** Chart.js and React-Chartjs-2 for rendering statistical graphs.
-* **UI/UX:** Tailwind CSS for styling and Framer Motion for interface transitions.
+* **Framework:** React.js (v18) utilizing Functional Components and Hooks.
+* **Routing:** React Router DOM (v6) for client-side navigation and protected route management.
+* **State Management:** React Hooks (useState, useEffect, useContext) for local state and global user session handling.
+* **Visualization:** Chart.js and React-Chartjs-2 for rendering statistical graphs (Bar, Doughnut).
+* **UI/UX:** Tailwind CSS for utility-first styling and Framer Motion for interface transitions.
+* **Internationalization:** Custom i18n implementation supporting English, Polish, Ukrainian, and Russian.
 
 ### 2. Backend (Server)
-* **Runtime:** Node.js
-* **Framework:** Express.js for handling HTTP requests and routing.
-* **Database:** SQLite (file-based relational database).
-* **Middleware:** CORS (Cross-Origin Resource Sharing) enabled for local development.
+* **Runtime:** Node.js.
+* **Framework:** Express.js for handling HTTP requests, routing, and middleware integration.
+* **Database:** SQLite (file-based relational database) for zero-configuration persistence.
+* **Authentication:** * **JsonWebToken (JWT):** Generates signed tokens for stateless authentication.
+    * **Bcrypt.js:** Implements cryptographic salting and hashing for password storage.
+* **Middleware:** CORS (Cross-Origin Resource Sharing) and custom auth verification middleware.
 
-### 3. DevOps & Tooling
-* **Version Control:** Git
-* **Process Management:** Concurrently (executes client and server simultaneously).
+### 3. Data Flow
+1.  **Request:** Client sends HTTP request with `Authorization: Bearer <token>` header (for protected routes).
+2.  **Verification:** Middleware verifies the JWT signature.
+3.  **Execution:** Controller processes the request and interacts with the SQLite database.
+4.  **Response:** Server returns JSON data to the client.
+
+---
+
+## Database Schema
+
+The application uses a relational database structure with two primary entities: **Users** and **Bugs**.
+
+### Table: users
+| Column | Type | Constraint | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | INTEGER | PRIMARY KEY | Auto-incrementing unique identifier. |
+| `email` | TEXT | UNIQUE, NOT NULL | User login credential. |
+| `password` | TEXT | NOT NULL | Hashed password string (bcrypt). |
+| `name` | TEXT | NOT NULL | Display name of the user. |
+
+### Table: bugs
+| Column | Type | Constraint | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | INTEGER | PRIMARY KEY | Auto-incrementing unique identifier. |
+| `title` | TEXT | NOT NULL | Summary of the defect. |
+| `priority` | TEXT | NOT NULL | Level: Highest, High, Medium, Low, Lowest. |
+| `severity` | TEXT | NOT NULL | Impact: Critical (S1), Major (S2), Moderate (S3), Low (S4). |
+| `status` | TEXT | DEFAULT 'Open' | Workflow state: Open, In Progress, Done. |
+| `assignee` | TEXT | OPTIONAL | Name of the team member assigned. |
+| `date` | TEXT | NOT NULL | ISO 8601 formatted date string. |
+
+---
+
+## Application Previews
+
+| Dashboard Analytics | Bug Tracker Interface |
+|---------------------|-----------------------|
+| ![Dashboard](./screenshots/dashboard.png) | ![Tracker](./screenshots/tracker.png) |
+
+| Authentication | API Explorer |
+|----------------|--------------|
+| ![Login](./screenshots/login.png) | ![API](./screenshots/api.png) |
 
 ---
 
@@ -37,48 +75,51 @@ The project follows a standard MVC (Model-View-Controller) pattern adapted for a
 
 The backend exposes a RESTful API running on port `5000`.
 
-| Method | Endpoint       | Description                                      | Payload Example |
-|--------|----------------|--------------------------------------------------|-----------------|
-| **GET**| `/bugs`        | Retrieves the full list of bug reports.          | N/A             |
-| **POST**| `/bugs`       | Creates a new bug report in the database.        | `{ "title": "...", "priority": "High" }` |
-| **PUT** | `/bugs/:id`    | Updates the status or details of a specific bug. | `{ "status": "Done" }` |
-| **DELETE**| `/bugs/:id` | Permanently removes a bug report.                | N/A             |
+### Authentication
+| Method | Endpoint | Description | Auth Required |
+|:--- |:--- |:--- |:--- |
+| **POST** | `/auth/register` | Registers a new user and saves hashed credentials. | No |
+| **POST** | `/auth/login` | Authenticates user and returns JWT + User Data. | No |
 
----
-
-## Key Features
-
-* **Persistent Data Storage:** All defect data is stored in a local SQLite database (`backend/database.sqlite`), ensuring data persistence across server restarts.
-* **Real-time Analytics:** Dashboard calculates Success Rate and Critical Density automatically based on active data.
-* **Bug Tracker:** Fully functional interface for creating, filtering, and managing software issues.
-* **Internationalization (i18n):** Built-in support for multiple languages (English, Polish, Ukrainian, Russian).
-* **Responsive Layout:** Adaptive design supporting various screen sizes.
+### Bug Management
+| Method | Endpoint | Description | Auth Required |
+|:--- |:--- |:--- |:--- |
+| **GET** | `/bugs` | Retrieves the full list of bug reports. | Yes |
+| **POST** | `/bugs` | Creates a new bug report in the database. | Yes |
+| **PUT** | `/bugs/:id` | Updates the status or details of a specific bug. | Yes |
+| **DELETE** | `/bugs/:id` | Permanently removes a bug report. | Yes |
 
 ---
 
 ## Installation and Setup
 
-**Prerequisites:** Node.js (v16+) and npm.
+**Prerequisites:** Node.js (v14+) and npm.
 
-1.  **Clone the Repository**
-    ```bash
-    git clone [https://github.com/YOUR_USERNAME/qa-task-hub.git](https://github.com/YOUR_USERNAME/qa-task-hub.git)
-    cd qa-task-hub
-    ```
+### 1. Clone the Repository
+```bash
+git clone [https://github.com/YOUR_USERNAME/qa-task-manager.git](https://github.com/YOUR_USERNAME/qa-task-manager.git)
+cd qa-task-manager
+```
 
-2.  **Install Dependencies**
-    ```bash
-    # Install Root (Frontend) dependencies
-    npm install
+---
 
-    # Install Backend dependencies
-    cd backend
-    npm install
-    cd ..
-    ```
+### 2. Backend Configuration
+```bash
+cd backend
+npm install
+```
 
-3.  **Run the Application**
-    ```bash
-    npm run dev
-    ```
-    This command executes `concurrently`, launching both the Backend Server (`http://localhost:5000`) and Frontend Client (`http://localhost:3000`).
+---
+
+### 3. Frontend Configuration
+```bash
+cd ..
+npm install
+```
+
+---
+
+### 4. Execution
+```bash
+npm run dev
+```

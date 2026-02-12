@@ -3,11 +3,10 @@ import React, { useState } from 'react';
 const PrioritySelector = ({ priority, setPriority, t }) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    // Jira Style Icons (Arrows)
     const icons = {
         Highest: <svg className="w-5 h-5 text-red-700" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5.41V21h-2V5.41l-7.29 7.29L2.3 11.3 12 1.6l9.7 9.7-1.41 1.41z" /></svg>,
         High: <svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M13 7.83V20h-2V7.83l-5.59 5.59L4 12l8-8 8 8-1.41 1.41z" /></svg>,
-        Medium: <svg className="w-5 h-5 text-orange-500" viewBox="0 0 24 24" fill="currentColor"><path d="M4 11h16v2H4z" /></svg>, // Иногда в Jira это две полоски, но часто используют оранжевую стрелку или линию
+        Medium: <svg className="w-5 h-5 text-orange-500" viewBox="0 0 24 24" fill="currentColor"><path d="M4 11h16v2H4z" /></svg>,
         Low: <svg className="w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="currentColor"><path d="M13 16.17V4h-2v12.17l-5.59-5.59L4 12l8 8 8-8-1.41-1.41z" /></svg>,
         Lowest: <svg className="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M13 18.59V3h-2v15.59l-7.29-7.29L2.3 12.7 12 22.4l9.7-9.7-1.41-1.41z" /></svg>
     };

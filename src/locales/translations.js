@@ -1,8 +1,12 @@
 export const translations = {
     en: {
-        dashboard: "Dashboard",
-        tracker: "Tracker",
-        api: "API Explorer",
+        // --- FIX: Menu Object Added ---
+        menu: {
+            dashboard: "Dashboard",
+            tracker: "Tracker",
+            api: "API Explorer"
+        },
+        // -----------------------------
         footer: "© 2026 QA Task Manager",
 
         // Dashboard
@@ -22,7 +26,7 @@ export const translations = {
         risk_high: "⚠️ Stability: Low (High Risk)",
         risk_ok: "✅ Stability: High (Release Ready)",
 
-        // Charts (NEW)
+        // Charts
         chart_priority: "Priority Breakdown",
         chart_status: "Project Status",
 
@@ -35,7 +39,7 @@ export const translations = {
         err_title: "⚠️ Bug title is required!",
         err_steps: "⚠️ Steps are required!",
 
-        // Empty State (NEW)
+        // Empty State
         empty_tracker: "No bugs found...",
         btn_create_first: "Create your first bug",
 
@@ -50,7 +54,6 @@ export const translations = {
 
         priority: { Highest: "Highest", High: "High", Medium: "Medium", Low: "Low", Lowest: "Lowest" },
         severity: { Critical: "Critical", Major: "Major", Moderate: "Moderate", Low: "Low" },
-
         status_opt: { Open: "Open", InProgress: "In Progress", Done: "Done" },
 
         api_title: "🌐 API Explorer",
@@ -61,9 +64,13 @@ export const translations = {
         time: "TIME"
     },
     pl: {
-        dashboard: "Panel",
-        tracker: "Śledzenie",
-        api: "Eksplorator API",
+        // --- FIX: Menu Object Added ---
+        menu: {
+            dashboard: "Panel",
+            tracker: "Śledzenie",
+            api: "Eksplorator API"
+        },
+        // -----------------------------
         footer: "© 2026 QA Task Manager",
 
         dash_title: "📊 Panel Główny",
@@ -81,7 +88,6 @@ export const translations = {
         risk_high: "⚠️ Stabilność: Niska (Wysokie Ryzyko)",
         risk_ok: "✅ Stabilność: Wysoka (Gotowe do wydania)",
 
-        // Charts (NEW)
         chart_priority: "Rozkład Priorytetów",
         chart_status: "Status Projektu",
 
@@ -93,11 +99,9 @@ export const translations = {
         err_title: "⚠️ Tytuł jest wymagany!",
         err_steps: "⚠️ Kroki są wymagane!",
 
-        // Empty State (NEW)
         empty_tracker: "Nie znaleziono błędów...",
         btn_create_first: "Utwórz swój pierwszy błąd",
 
-        // Modal
         modal_title: "Nowy błęd",
         label_priority: "Priorytet",
         label_severity: "Ważność",
@@ -108,7 +112,6 @@ export const translations = {
 
         priority: { Highest: "Najwyższy", High: "Wysoki", Medium: "Średni", Low: "Niski", Lowest: "Najniższy" },
         severity: { Critical: "Krytyczny", Major: "Poważny", Moderate: "Umiarkowany", Low: "Niski" },
-
         status_opt: { Open: "Otwarty", InProgress: "W Trakcie", Done: "Zrobione" },
 
         api_title: "🌐 Eksplorator API",
@@ -119,9 +122,13 @@ export const translations = {
         time: "CZAS"
     },
     ua: {
-        dashboard: "Дашборд",
-        tracker: "Трекер",
-        api: "API Провідник",
+        // --- FIX: Menu Object Added ---
+        menu: {
+            dashboard: "Дашборд",
+            tracker: "Трекер",
+            api: "API Провідник"
+        },
+        // -----------------------------
         footer: "© 2026 QA Task Manager",
 
         dash_title: "📊 Дашборд Live",
@@ -139,7 +146,6 @@ export const translations = {
         risk_high: "⚠️ Стабільність: Низька (Високий Ризик)",
         risk_ok: "✅ Стабільність: Висока (Готово до релізу)",
 
-        // Charts (NEW)
         chart_priority: "Розподіл за Пріоритетом",
         chart_status: "Статус Проекту",
 
@@ -151,11 +157,9 @@ export const translations = {
         err_title: "⚠️ Назва обов'язкова!",
         err_steps: "⚠️ Кроки обов'язкові!",
 
-        // Empty State (NEW)
         empty_tracker: "Багів не знайдено...",
         btn_create_first: "Створити свій перший баг",
 
-        // Modal
         modal_title: "Новий баг",
         label_priority: "Пріоритет",
         label_severity: "Серйозність",
@@ -166,7 +170,6 @@ export const translations = {
 
         priority: { Highest: "Найвищий", High: "Високий", Medium: "Середній", Low: "Низький", Lowest: "Найнижчий" },
         severity: { Critical: "Критичний", Major: "Значний", Moderate: "Помірний", Low: "Низький" },
-
         status_opt: { Open: "Відкрито", InProgress: "В роботі", Done: "Готово" },
 
         api_title: "🌐 API Провідник",
@@ -177,9 +180,13 @@ export const translations = {
         time: "ЧАС"
     },
     ru: {
-        dashboard: "Дашборд",
-        tracker: "Трекер",
-        api: "API Эксплорер",
+        // --- FIX: Menu Object Added ---
+        menu: {
+            dashboard: "Дашборд",
+            tracker: "Трекер",
+            api: "API Эксплорер"
+        },
+        // -----------------------------
         footer: "© 2026 QA Task Manager",
 
         dash_title: "📊 Дашборд Live",
@@ -197,7 +204,6 @@ export const translations = {
         risk_high: "⚠️ Стабильность: Низкая (Высокий Риск)",
         risk_ok: "✅ Стабильность: Высокая (Готово к релизу)",
 
-        // Charts (NEW)
         chart_priority: "Распределение Приоритетов",
         chart_status: "Статус Проекта",
 
@@ -209,11 +215,9 @@ export const translations = {
         err_title: "⚠️ Название обязательно!",
         err_steps: "⚠️ Шаги обязательны!",
 
-        // Empty State (NEW)
         empty_tracker: "Багов не найдено...",
         btn_create_first: "Создать свой первый баг",
 
-        // Modal
         modal_title: "Новая ошибка",
         label_priority: "Приоритет",
         label_severity: "Серьезность",
@@ -224,7 +228,6 @@ export const translations = {
 
         priority: { Highest: "Наивысший", High: "Высокий", Medium: "Средний", Low: "Низкий", Lowest: "Самый низкий" },
         severity: { Critical: "Критический", Major: "Значительный", Moderate: "Умеренный", Low: "Низкий" },
-
         status_opt: { Open: "Открыто", InProgress: "В работе", Done: "Готово" },
 
         api_title: "🌐 API Эксплорер",
