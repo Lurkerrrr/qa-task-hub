@@ -27,7 +27,7 @@ const Auth = ({ onLogin }) => {
             const response = await fetch(`${API_URL}${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
             });
 
             const data = await response.json();
@@ -60,7 +60,9 @@ const Auth = ({ onLogin }) => {
                 </h2>
 
                 {error && (
-                    <div className={`p-3 mb-4 text-sm rounded ${error.includes('successfully') ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                    <div
+                        className={`p-3 mb-4 text-sm rounded ${error.includes('successfully') ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}
+                    >
                         {error}
                     </div>
                 )}

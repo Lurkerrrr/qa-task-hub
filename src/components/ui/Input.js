@@ -1,9 +1,20 @@
 import React from 'react';
 
-const Input = ({ label, type = 'text', name, value, onChange, required, autoComplete, className = '' }) => {
+const Input = ({
+    label,
+    type = 'text',
+    name,
+    value,
+    onChange,
+    required,
+    autoComplete,
+    className = '',
+}) => {
     return (
         <div className={`mb-4 ${className}`}>
-            {label && <label className="block mb-1 text-sm font-bold text-slate-700">{label}</label>}
+            {label && (
+                <label className="block mb-1 text-sm font-bold text-slate-700">{label}</label>
+            )}
             <input
                 type={type}
                 name={name}

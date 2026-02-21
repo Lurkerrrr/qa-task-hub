@@ -3,7 +3,9 @@ import React from 'react';
 const Select = ({ label, name, value, onChange, options = [], className = '' }) => {
     return (
         <div className={`mb-4 ${className}`}>
-            {label && <label className="block mb-1 text-sm font-bold text-slate-700">{label}</label>}
+            {label && (
+                <label className="block mb-1 text-sm font-bold text-slate-700">{label}</label>
+            )}
             <select
                 name={name}
                 value={value}
