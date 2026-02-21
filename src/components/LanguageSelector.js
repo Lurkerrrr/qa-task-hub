@@ -5,7 +5,7 @@ const LanguageSelector = ({ language, setLanguage }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const languages = [
-        { code: 'en', country: 'US', label: 'English' },
+        { code: 'en', country: 'GBR', label: 'English' }, ,
         { code: 'pl', country: 'PL', label: 'Polski' },
         { code: 'ua', country: 'UA', label: 'Українська' },
         { code: 'ru', country: 'RU', label: 'Русский' },

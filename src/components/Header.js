@@ -8,7 +8,7 @@ const Header = ({ language, setLanguage, t, user, onLogout }) => {
     const [isLangOpen, setIsLangOpen] = useState(false);
 
     const languages = [
-        { code: 'en', label: 'English', country: 'US' },
+        { code: 'en', label: 'English', country: 'GB' },
         { code: 'pl', label: 'Polski', country: 'PL' },
         { code: 'ua', label: 'Українська', country: 'UA' },
         { code: 'ru', label: 'Русский', country: 'RU' },
