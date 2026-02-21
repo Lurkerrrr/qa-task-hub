@@ -16,12 +16,15 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 
 const Dashboard = ({ t, bugs = [] }) => {
 
+    // ВАЖНО: Предохранитель. Если сервер вернул ошибку, делаем пустой массив, чтобы .filter не сломал приложение
+    const safeBugs = Array.isArray(bugs) ? bugs : [];
+
     const priorityCounts = [
-        bugs.filter(b => b.priority === 'Highest').length,
-        bugs.filter(b => b.priority === 'High').length,
-        bugs.filter(b => b.priority === 'Medium').length,
-        bugs.filter(b => b.priority === 'Low').length,
-        bugs.filter(b => b.priority === 'Lowest').length,
+        safeBugs.filter(b => b.priority === 'Highest').length,
+        safeBugs.filter(b => b.priority === 'High').length,
+        safeBugs.filter(b => b.priority === 'Medium').length,
+        safeBugs.filter(b => b.priority === 'Low').length,
+        safeBugs.filter(b => b.priority === 'Lowest').length,
     ];
 
     const barData = {
@@ -47,9 +50,9 @@ const Dashboard = ({ t, bugs = [] }) => {
         }
     };
 
-    const doneCount = bugs.filter(b => b.status === 'Done').length;
-    const wipCount = bugs.filter(b => b.status === 'In Progress' || b.status === 'InProgress').length;
-    const openCount = bugs.filter(b => b.status === 'Open').length;
+    const doneCount = safeBugs.filter(b => b.status === 'Done').length;
+    const wipCount = safeBugs.filter(b => b.status === 'In Progress' || b.status === 'InProgress').length;
+    const openCount = safeBugs.filter(b => b.status === 'Open').length;
 
     const totalStatus = doneCount + wipCount + openCount;
     const isEmpty = totalStatus === 0;
@@ -73,11 +76,11 @@ const Dashboard = ({ t, bugs = [] }) => {
         plugins: { legend: { display: false }, tooltip: { enabled: !isEmpty } },
     };
 
-    const totalBugs = bugs.length;
+    const totalBugs = safeBugs.length;
     const fixedBugs = doneCount;
     const activeBugs = totalBugs - fixedBugs;
 
-    const activeCriticalBugs = bugs.filter(b =>
+    const activeCriticalBugs = safeBugs.filter(b =>
         (b.priority === 'Highest' || b.severity === 'Critical') &&
         b.status !== 'Done'
     ).length;
@@ -85,7 +88,7 @@ const Dashboard = ({ t, bugs = [] }) => {
     const successRate = totalBugs === 0 ? 0 : Math.round((fixedBugs / totalBugs) * 100);
     const criticalDensity = totalBugs === 0 ? 0 : Math.round((activeCriticalBugs / totalBugs) * 100);
 
-    const recentActivity = [...bugs].sort((a, b) => b.id - a.id).slice(0, 5);
+    const recentActivity = [...safeBugs].sort((a, b) => b.id - a.id).slice(0, 5);
 
     const showWarningBanner = totalBugs > 0 && criticalDensity >= 80;
 
@@ -166,7 +169,6 @@ const Dashboard = ({ t, bugs = [] }) => {
                     <div>
                         <div className="flex justify-between mb-2">
                             <span className="text-sm font-medium text-gray-600">{t.success_rate}</span>
-                            {/* Changed from text-blue-600 to text-gray-600 */}
                             <span className="text-sm font-bold text-gray-600">{successRate}%</span>
                         </div>
                         <div className="w-full bg-gray-100 rounded-full h-3">

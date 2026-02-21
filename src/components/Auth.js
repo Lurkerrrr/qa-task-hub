@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Button from './ui/Button';
+import Input from './ui/Input';
 
 const Auth = ({ onLogin }) => {
     const [isLogin, setIsLogin] = useState(true);
@@ -7,7 +9,6 @@ const Auth = ({ onLogin }) => {
 
     const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-    // Reset form data and errors when switching between Login and Register modes
     useEffect(() => {
         setFormData({ email: '', password: '', name: '' });
         setError('');
@@ -35,14 +36,11 @@ const Auth = ({ onLogin }) => {
                 throw new Error(data.message || 'Authentication failed');
             }
 
-            // If registration was successful, switch to login mode with an Enterprise-level message
             if (!isLogin) {
                 setIsLogin(true);
-                // UPDATED: Professional success message
                 setError('Account created successfully. Please sign in to continue.');
             }
 
-            // If login was successful, pass token to parent component
             if (data.token) {
                 onLogin(data.token, data.user);
             }
@@ -54,7 +52,6 @@ const Auth = ({ onLogin }) => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-slate-100">
             <div
-                // The 'key' prop forces React to remount the component when mode changes, clearing browser autofill
                 key={isLogin ? 'login' : 'register'}
                 className="p-8 bg-white rounded-xl shadow-lg w-96 border border-slate-200"
             >
@@ -63,7 +60,6 @@ const Auth = ({ onLogin }) => {
                 </h2>
 
                 {error && (
-                    // Logic: If message contains 'successfully', show green styling. Otherwise, show red.
                     <div className={`p-3 mb-4 text-sm rounded ${error.includes('successfully') ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
                         {error}
                     </div>
@@ -71,60 +67,51 @@ const Auth = ({ onLogin }) => {
 
                 <form onSubmit={handleSubmit} autoComplete="off">
                     {!isLogin && (
-                        <div className="mb-4">
-                            <label className="block mb-1 text-sm font-bold text-slate-700">Name</label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required={!isLogin}
-                                autoComplete="off"
-                            />
-                        </div>
+                        <Input
+                            label="Name"
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required={!isLogin}
+                            autoComplete="off"
+                        />
                     )}
 
-                    <div className="mb-4">
-                        <label className="block mb-1 text-sm font-bold text-slate-700">Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                            autoComplete="new-password"
-                        />
-                    </div>
+                    <Input
+                        label="Email"
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required={true}
+                        autoComplete="new-password"
+                    />
 
-                    <div className="mb-6">
-                        <label className="block mb-1 text-sm font-bold text-slate-700">Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                            autoComplete="new-password"
-                        />
-                    </div>
+                    <Input
+                        label="Password"
+                        type="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required={true}
+                        autoComplete="new-password"
+                        className="mb-6"
+                    />
 
-                    <button
-                        type="submit"
-                        className="w-full py-3 text-white font-bold rounded-lg shadow-md bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all transform active:scale-95"
-                    >
+                    <Button type="submit" variant="primary">
                         {isLogin ? 'Sign In' : 'Sign Up'}
-                    </button>
+                    </Button>
                 </form>
 
-                <button
+                <Button
+                    type="button"
+                    variant="ghost"
                     onClick={() => setIsLogin(!isLogin)}
-                    className="w-full mt-6 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                    className="mt-6"
                 >
                     {isLogin ? 'Need an account? Register' : 'Have an account? Login'}
-                </button>
+                </Button>
             </div>
         </div>
     );
