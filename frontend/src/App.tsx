@@ -97,10 +97,17 @@ const App: React.FC = () => {
     if (!token) return <Auth onLogin={handleLogin} />;
 
     return (
-        <div className="flex flex-col min-h-screen bg-slate-50 overflow-x-hidden">
-            <Header language={language} setLanguage={setLanguage} t={t} user={user} onLogout={handleLogout} />
+        <div className="flex flex-col min-h-screen bg-[#f8fafc]"> {/* Світлий фон як на скринах */}
+            <Header
+                language={language}
+                setLanguage={setLanguage}
+                t={t}
+                user={user}
+                onLogout={handleLogout}
+            />
 
-            <main className="flex-grow w-full max-w-7xl mx-auto px-4 pt-24 pb-12">
+            {/* Контейнер-обгортка, що штовхає футер вниз */}
+            <main className="flex-grow w-full max-w-7xl mx-auto px-4 pt-28 pb-12">
                 <AnimatedRoutes
                     bugs={bugs}
                     setBugs={setBugs}
@@ -111,8 +118,8 @@ const App: React.FC = () => {
                 />
             </main>
 
-            <footer className="py-6 text-center text-sm text-gray-400 border-t border-slate-200 bg-white">
-                <p>{t.footer}</p>
+            <footer className="w-full bg-white border-t border-slate-200 py-8 text-center">
+                <p className="text-gray-400 text-sm">{t.footer}</p>
             </footer>
 
             <ScrollToTop />
