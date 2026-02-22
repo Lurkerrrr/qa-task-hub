@@ -1,23 +1,33 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 
-// Log about starting
 console.log("Starting Server...");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Mitigates common web vulnerabilities by setting secure HTTP headers
+app.use(helmet());
+
 app.use(cors());
 app.use(express.json());
 
-try {
-    console.log("Attempting to load authRoutes from ./src/routes/authRoutes...");
-    const authRoutes = require('./src/routes/authRoutes');
-    console.log("authRoutes loaded successfully!");
+// Prevents brute-force and DDoS attacks by limiting requests per IP window
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { message: 'Too many requests from this IP, please try again after 15 minutes' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
-    app.use('/auth', authRoutes);
+try {
+    const authRoutes = require('./src/routes/authRoutes');
+    app.use('/auth', apiLimiter, authRoutes);
     console.log("/auth route connected");
 } catch (error) {
     console.error("FAILED to load authRoutes:", error.message);
@@ -25,7 +35,7 @@ try {
 
 try {
     const bugRoutes = require('./src/routes/bugRoutes');
-    app.use('/bugs', bugRoutes);
+    app.use('/bugs', apiLimiter, bugRoutes);
     console.log("/bugs route connected");
 } catch (error) {
     console.error("FAILED to load bugRoutes:", error.message);
