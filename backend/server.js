@@ -14,7 +14,12 @@ const PORT = process.env.PORT || 5000;
 // Mitigates common web vulnerabilities by setting secure HTTP headers
 app.use(helmet());
 
-app.use(cors());
+// Restrict cross-origin requests to our specific frontend URL
+app.use(cors({
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
 app.use(express.json());
 
 // Prevents brute-force and DDoS attacks by limiting requests per IP window
