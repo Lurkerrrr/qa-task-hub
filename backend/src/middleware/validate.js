@@ -26,12 +26,13 @@ const schemas = {
 // Middleware interceptor to validate request body against the specified schema
 const validate = (schemaName) => {
     return (req, res, next) => {
-        const { error } = schemas[schemaName].validate(req.body, { abortEarly: false });
+        // allowUnknown: true разрешает фронтенду присылать лишние поля без падения ошибки
+        const { error } = schemas[schemaName].validate(req.body, { abortEarly: false, allowUnknown: true });
 
         if (error) {
-            // Extracts all error messages and returns a 400 Bad Request
-            const errorMessages = error.details.map(detail => detail.message);
-            return res.status(400).json({ message: "Validation failed", errors: errorMessages });
+            // Склеиваем все ошибки в одну строку
+            const errorMessages = error.details.map(detail => detail.message).join(', ');
+            return res.status(400).json({ message: `Validation error: ${errorMessages}` });
         }
 
         next();
