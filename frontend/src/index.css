@@ -1,3 +1,38 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    /* Захист від вильотів анімації вбік */
+    overflow-y: auto;
+    background-color: #f8fafc;
+    /* bg-slate-50 */
+}
+
+/* Прибираємо "скачки" скролбару при зміні контенту */
+body {
+    scrollbar-gutter: stable;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

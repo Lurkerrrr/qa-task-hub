@@ -4,8 +4,9 @@
     "description": "Backend API for QA Task Manager",
     "main": "server.js",
     "scripts": {
-        "start": "node server.js",
-        "dev": "node server.js"
+        "start": "node dist/server.js",
+        "build": "tsc",
+        "dev": "nodemon --watch src --ext ts --exec ts-node src/server.ts"
     },
     "dependencies": {
         "bcryptjs": "^3.0.3",
@@ -17,5 +18,16 @@
         "joi": "^18.0.2",
         "jsonwebtoken": "^9.0.3",
         "sqlite3": "^5.1.7"
+    },
+    "devDependencies": {
+        "@types/bcryptjs": "^2.4.6",
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.6",
+        "@types/jsonwebtoken": "^9.0.10",
+        "@types/node": "^25.3.0",
+        "@types/sqlite3": "^3.1.11",
+        "nodemon": "^3.1.14",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.3"
     }
 }

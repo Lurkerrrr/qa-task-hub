@@ -1,0 +1,10 @@
+import { Response, NextFunction } from 'express';
+import { AuthRequest } from '../controllers/bugController';
+import { AppError } from '../utils/AppError';
+
+export const checkIsAdmin = (req: AuthRequest, res: Response, next: NextFunction): void => {
+    if (req.userRole !== 'admin') {
+        return next(new AppError('Require Admin Role!', 403));
+    }
+    next();
+};
