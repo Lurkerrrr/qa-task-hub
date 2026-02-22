@@ -16,6 +16,7 @@ app.use(helmet());
 
 // Restrict cross-origin requests to our specific frontend URL
 app.use(cors({
+    //bring to env
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true

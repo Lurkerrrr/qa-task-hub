@@ -1,5 +1,5 @@
 const Joi = require('joi');
-
+// Define validation schemas for different routes and operations through variables not object
 const schemas = {
     register: Joi.object({
         name: Joi.string().min(2).max(50).required(),
@@ -22,7 +22,6 @@ const schemas = {
         timeSpent: Joi.number().min(0).optional()
     })
 };
-
 // Middleware interceptor to validate request body against the specified schema
 const validate = (schemaName) => {
     return (req, res, next) => {

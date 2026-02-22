@@ -7,7 +7,10 @@ import ExternalAPI from './components/ExternalAPI';
 import Auth from './components/Auth';
 import { translations } from './locales/translations';
 import ScrollToTop from './components/ScrollToTop';
+// folder pages for the components which are rendered on react router paths
 
+// github pipelines husky pre-commit hook to run tests and linting before allowing commit
+// github on pr run automation tests, furthermore, make it dependant on where the changes are made FE/BE ( optional, but would be great)
 const App = () => {
     const [bugs, setBugs] = useState([]);
     const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -123,7 +126,7 @@ const App = () => {
                 user={user}
                 onLogout={handleLogout}
             />
-
+            //insert bem classes (or ids at least) to select on automation tools
             <main className="flex-grow w-full max-w-7xl mx-auto px-4 pt-24 pb-8">
                 <Routes>
                     <Route path="/" element={<Dashboard t={t} bugs={bugs} />} />
