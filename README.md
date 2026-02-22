@@ -24,7 +24,8 @@ The project follows a standard MVC (Model-View-Controller) pattern adapted for a
 * **Database:** SQLite (file-based relational database) for zero-configuration persistence.
 * **Authentication:** * **JsonWebToken (JWT):** Generates signed tokens for stateless authentication.
     * **Bcrypt.js:** Implements cryptographic salting and hashing for password storage.
-* **Middleware:** CORS (Cross-Origin Resource Sharing) and custom auth verification middleware.
+* **Security & Validation:** Joi (strict payload validation), Helmet (HTTP headers protection), Express Rate Limit (DDoS and brute-force prevention).
+* **Middleware:** CORS (Cross-Origin Resource Sharing), Global Error Handler, and custom auth verification middleware.
 
 ### 3. Data Flow
 1.  **Request:** Client sends HTTP request with `Authorization: Bearer <token>` header (for protected routes).
