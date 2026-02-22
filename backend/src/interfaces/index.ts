@@ -18,12 +18,15 @@ export interface AuthRequest extends Request {
     userRole?: string;
 }
 
+// backend/src/interfaces/index.ts
 export interface IBug {
     id: number;
     title: string;
     priority: 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
-    severity: 'Critical' | 'Major' | 'Moderate' | 'Low'; // Оновив під твій UI
+    // Aligning with the UI labels S1, S2, S3, S4 and the state values
+    severity: 'Critical' | 'Major' | 'Moderate' | 'Low';
     status: 'Open' | 'In Progress' | 'Done';
     assignee?: string;
+    steps?: string; // Added steps as it is handled in the frontend
     date: string;
 }

@@ -1,3 +1,4 @@
+// backend/src/middleware/validate.ts
 import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 
@@ -17,9 +18,12 @@ const schemas: ISchemas = {
         password: Joi.string().required()
     }),
     bug: Joi.object({
-        title: Joi.string().min(5).max(100).required(),
+        // Changed min length to 3 to be more flexible
+        title: Joi.string().min(3).max(100).required(),
+        // Matches frontend priority levels
         priority: Joi.string().valid('Lowest', 'Low', 'Medium', 'High', 'Highest').required(),
-        severity: Joi.string().valid('Minor', 'Major', 'Critical').required(),
+        // Matches the values handled in getSeverityBadge ('Critical', 'Major', 'Moderate', 'Low')
+        severity: Joi.string().valid('Critical', 'Major', 'Moderate', 'Low').required(),
         assignee: Joi.string().allow('').optional(),
         steps: Joi.string().allow('').optional(),
         status: Joi.string().valid('Open', 'In Progress', 'Done').required(),
@@ -35,10 +39,12 @@ export const validate = (schemaName: string) => {
             return res.status(500).json({ message: `Schema ${schemaName} not found` });
         }
 
+        // allowUnknown: true is already here, which is good for ignoring the 'id' sent by frontend
         const { error } = schema.validate(req.body, { abortEarly: false, allowUnknown: true });
 
         if (error) {
             const errorMessages = error.details.map(detail => detail.message).join(', ');
+            console.error('Validation Error Details:', errorMessages); // Log for debugging
             return res.status(400).json({ status: 'error', message: `Validation error: ${errorMessages}` });
         }
 
