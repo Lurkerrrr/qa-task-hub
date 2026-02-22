@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const errorHandler = require('./src/middleware/errorHandler');
 
 console.log("Starting Server...");
 
@@ -40,6 +41,16 @@ try {
 } catch (error) {
     console.error("FAILED to load bugRoutes:", error.message);
 }
+
+// Catch-all unhandled routes (404)
+app.use((req, res, next) => {
+    const error = new Error('Route not found');
+    error.statusCode = 404;
+    next(error);
+});
+
+// Global Error Handler (MUST be the last middleware)
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
