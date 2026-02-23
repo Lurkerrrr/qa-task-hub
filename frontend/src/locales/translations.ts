@@ -1,4 +1,3 @@
-// 1. Описуємо чітку структуру одного мовного пакету
 export interface TranslationSchema {
     menu: {
         dashboard: string;
@@ -43,7 +42,7 @@ export interface TranslationSchema {
         Medium: string;
         Low: string;
         Lowest: string;
-        [key: string]: string; // Для динамічного доступу за ключем
+        [key: string]: string;
     };
     severity: {
         Critical: string;
@@ -66,7 +65,6 @@ export interface TranslationSchema {
     time: string;
 }
 
-// 2. Створюємо об'єкт з усіма перекладами (без жодних змін у тексті)
 export const translations: Record<string, TranslationSchema> = {
     en: {
         menu: {

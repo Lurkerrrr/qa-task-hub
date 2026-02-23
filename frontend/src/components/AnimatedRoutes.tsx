@@ -14,7 +14,7 @@ interface AnimatedRoutesProps {
     onAddBug: (bug: Omit<IBug, 'id'>) => Promise<void>;
     onDeleteBug: (id: number) => Promise<void>;
     onUpdateStatus: (id: number, status: string) => Promise<void>;
-    t: TranslationSchema; // Тепер суворий тип!
+    t: TranslationSchema;
 }
 
 const AnimatedRoutes: React.FC<AnimatedRoutesProps> = ({
@@ -26,7 +26,6 @@ const AnimatedRoutes: React.FC<AnimatedRoutesProps> = ({
 }) => {
     const location = useLocation();
 
-    // Скрол вгору тільки при зміні сторінки
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [location.pathname]);
@@ -82,7 +81,7 @@ const PageWrapper: React.FC<{ children: React.ReactNode; custom: number; variant
         initial="initial"
         animate="enter"
         exit="exit"
-        className="w-full min-h-[60vh]" // ВИДАЛИЛИ h-full, залишили тільки мінімальну висоту
+        className="w-full min-h-[60vh]"
     >
         {children}
     </motion.div>

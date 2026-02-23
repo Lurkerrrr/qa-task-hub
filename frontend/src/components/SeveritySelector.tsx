@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { IBug } from '../types/interfaces';
 
-// 1. Визначаємо структуру об'єкта рівня серйозності
 interface SeverityLevel {
     id: IBug['severity'];
     label: string;
@@ -9,7 +8,6 @@ interface SeverityLevel {
     text: string;
 }
 
-// 2. Типізуємо пропси
 interface SeveritySelectorProps {
     severity: IBug['severity'];
     setSeverity: (val: IBug['severity']) => void;
@@ -19,7 +17,6 @@ interface SeveritySelectorProps {
 const SeveritySelector: React.FC<SeveritySelectorProps> = ({ severity, setSeverity, t }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
-    // 3. Типізуємо масив рівнів (зберігаємо твої S1-S4)
     const levels: SeverityLevel[] = [
         { id: 'Critical', label: 'S1', color: 'bg-red-600', text: 'text-red-700' },
         { id: 'Major', label: 'S2', color: 'bg-orange-500', text: 'text-orange-700' },

@@ -27,7 +27,6 @@ const App: React.FC = () => {
         setUser(null);
     }, []);
 
-    // Стабільне отримання даних
     useEffect(() => {
         if (!token) return;
 
@@ -64,7 +63,6 @@ const App: React.FC = () => {
         setUser(newUser);
     };
 
-    // Обгортки для функцій керування багами
     const handleAddBug = async (newBug: Omit<IBug, 'id'>) => {
         const response = await fetch(`${API_URL}/bugs`, {
             method: 'POST',
@@ -97,7 +95,7 @@ const App: React.FC = () => {
     if (!token) return <Auth onLogin={handleLogin} />;
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#f8fafc]"> {/* Світлий фон як на скринах */}
+        <div className="flex flex-col min-h-screen bg-[#f8fafc]">
             <Header
                 language={language}
                 setLanguage={setLanguage}
@@ -106,7 +104,6 @@ const App: React.FC = () => {
                 onLogout={handleLogout}
             />
 
-            {/* Контейнер-обгортка, що штовхає футер вниз */}
             <main className="flex-grow w-full max-w-7xl mx-auto px-4 pt-28 pb-12">
                 <AnimatedRoutes
                     bugs={bugs}

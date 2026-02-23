@@ -6,7 +6,6 @@ const ScrollToTop: React.FC = () => {
 
     useEffect(() => {
         const toggleVisibility = () => {
-            // Кнопка з'являється тільки якщо проскролили більше 300px
             if (window.pageYOffset > 300) {
                 setIsVisible(true);
             } else {

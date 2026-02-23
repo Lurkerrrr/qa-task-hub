@@ -14,13 +14,10 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    /* Захист від вильотів анімації вбік */
     overflow-y: auto;
     background-color: #f8fafc;
-    /* bg-slate-50 */
 }
 
-/* Прибираємо "скачки" скролбару при зміні контенту */
 body {
     scrollbar-gutter: stable;
 }

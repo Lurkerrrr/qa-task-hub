@@ -1,6 +1,4 @@
-// backend/src/server.ts
 import dotenv from 'dotenv';
-// dotenv має бути ПЕРШИМ
 dotenv.config();
 
 import express, { Application } from 'express';
@@ -18,11 +16,9 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Маршрути
 app.use('/auth', authRoutes);
 app.use('/bugs', bugRoutes);
 
-// ОБОВ'ЯЗКОВО: errorHandler має бути ОСТАННІМ
 app.use(errorHandler);
 
 app.listen(PORT, () => {

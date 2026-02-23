@@ -44,7 +44,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
             }
         } catch (err: any) {
             setError(err.message);
-        } // Тепер catch на місці!
+        }
     };
 
     return (

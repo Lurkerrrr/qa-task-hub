@@ -27,6 +27,7 @@ const ExternalAPI: React.FC<ExternalAPIProps> = ({ t }) => {
             const startTimestamp = performance.now();
 
             try {
+                // Apply limit param only to valid endpoints, excluding error simulations
                 const queryParam = resource.includes('http') ? '' : '?limit=5';
                 const response = await fetch(`${fullUrl}${queryParam}`);
 
@@ -57,7 +58,6 @@ const ExternalAPI: React.FC<ExternalAPIProps> = ({ t }) => {
 
     return (
         <div className="space-y-6 animate-fade-in">
-            {/* Використовуємо t.api_title, якщо він є у словнику, інакше дефолтний текст (на випадок якщо ми його ще не додали) */}
             <h2 className="text-3xl font-bold text-gray-800">{(t as any).api_title || 'API Explorer'}</h2>
 
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">

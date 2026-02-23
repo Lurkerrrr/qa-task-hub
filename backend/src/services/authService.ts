@@ -1,4 +1,3 @@
-// backend/src/services/authService.ts
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import db from '../database';
@@ -6,7 +5,6 @@ import { AppError } from '../utils/AppError';
 import { IUser, ITokenPayload } from '../interfaces';
 
 class AuthService {
-    // Використовуємо ОДИНАКОВИЙ секретний ключ
     private readonly jwtSecret = process.env.JWT_SECRET || 'super_secret_key_123';
 
     public async register(name: string, email: string, passwordRaw: string): Promise<Omit<IUser, 'password'>> {

@@ -25,7 +25,6 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
     const safeBugs = Array.isArray(bugs) ? bugs : [];
 
-    // --- Data Calculations ---
     const priorityCounts = [
         safeBugs.filter((b) => b.priority === 'Highest').length,
         safeBugs.filter((b) => b.priority === 'High').length,
@@ -46,11 +45,9 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
         (b) => (b.priority === 'Highest' || b.priority === 'Critical') && b.status !== 'Done'
     ).length;
 
-    // ВІДНОВЛЕНО: Логіка для Project Health
     const criticalDensity = totalBugs === 0 ? 0 : Math.round((activeCriticalBugs / totalBugs) * 100);
     const showWarningBanner = totalBugs > 0 && criticalDensity >= 80;
 
-    // --- Chart Configurations ---
     const barOptions: ChartOptions<'bar'> = {
         responsive: true,
         maintainAspectRatio: false,
@@ -112,7 +109,6 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
 
     return (
         <div className="space-y-8 animate-fade-in pb-12">
-            {/* Header section */}
             <div>
                 <h2 className="text-3xl font-extrabold text-slate-800 flex items-center gap-3">
                     {t.dash_title}
@@ -123,7 +119,6 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                 </p>
             </div>
 
-            {/* Metrics cards - ВІДНОВЛЕНО АНІМАЦІЮ motion.div */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <motion.div
                     whileHover={{ y: -5 }}
@@ -159,7 +154,6 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                 </motion.div>
             </div>
 
-            {/* Charts section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 h-[480px] flex flex-col">
                     <h3 className="text-xl font-bold text-slate-800 mb-8">{t.chart_priority}</h3>
@@ -185,7 +179,6 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* ВІДНОВЛЕНО: Блок Project Health */}
                 <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
                     <h3 className="text-xl font-bold text-slate-800 mb-6">{(t as any).project_health || 'Project Health'}</h3>
                     <div className="space-y-6">
@@ -226,7 +219,6 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                     </div>
                 </div>
 
-                {/* ВІДНОВЛЕНО: Дизайн Recent activity */}
                 <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
                     <h3 className="text-xl font-bold text-slate-800 mb-6">{t.recent_activity}</h3>
                     <div className="space-y-4">
@@ -237,10 +229,10 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                             >
                                 <div
                                     className={`w-2 h-2 rounded-full flex-shrink-0 ${bug.priority === 'Highest' || bug.priority === 'Critical'
-                                            ? 'bg-red-500'
-                                            : bug.priority === 'High'
-                                                ? 'bg-orange-500'
-                                                : 'bg-blue-500'
+                                        ? 'bg-red-500'
+                                        : bug.priority === 'High'
+                                            ? 'bg-orange-500'
+                                            : 'bg-blue-500'
                                         }`}
                                 ></div>
                                 <div className="overflow-hidden flex-grow">
@@ -253,8 +245,8 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                                 </div>
                                 <span
                                     className={`ml-auto text-[10px] px-2 py-0.5 rounded font-bold uppercase ${bug.status === 'Done'
-                                            ? 'bg-green-100 text-green-700'
-                                            : 'bg-blue-50 text-blue-700'
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-blue-50 text-blue-700'
                                         }`}
                                 >
                                     {bug.status === 'Done' ? 'DONE' : 'WIP'}

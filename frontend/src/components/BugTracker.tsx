@@ -22,8 +22,6 @@ const BugTracker: React.FC<BugTrackerProps> = ({ bugs, t, onAddBug, onDeleteBug,
     const [assignee, setAssignee] = useState('Viktor');
     const [steps, setSteps] = useState('');
     const [errors, setErrors] = useState<{ title?: string }>({});
-
-    // ВІДНОВЛЕНО: Стан для пошуку
     const [searchQuery, setSearchQuery] = useState('');
 
     const validateForm = () => {
@@ -62,12 +60,10 @@ const BugTracker: React.FC<BugTrackerProps> = ({ bugs, t, onAddBug, onDeleteBug,
         handleCloseModal();
     };
 
-    // ВІДНОВЛЕНО: Логіка фільтрації
     const filteredBugs = bugs.filter(
         (bug) => bug.title && bug.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // ВІДНОВЛЕНО: Іконки пріоритетів для карток
     const getPriorityIcon = (p: string) => {
         switch (p) {
             case 'Highest': return <svg className="w-4 h-4 text-red-700" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5.41V21h-2V5.41l-7.29 7.29L2.3 11.3 12 1.6l9.7 9.7-1.41 1.41z" /></svg>;
@@ -96,7 +92,6 @@ const BugTracker: React.FC<BugTrackerProps> = ({ bugs, t, onAddBug, onDeleteBug,
 
     return (
         <div className="space-y-6 animate-fade-in relative">
-            {/* Верхня панель */}
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
                     {t.tracker_title}
@@ -106,7 +101,6 @@ const BugTracker: React.FC<BugTrackerProps> = ({ bugs, t, onAddBug, onDeleteBug,
                 </h2>
 
                 <div className="flex gap-3 w-full md:w-auto">
-                    {/* ВІДНОВЛЕНО: Поле пошуку */}
                     <input
                         type="text"
                         placeholder={t.search_placeholder || 'Search bug...'}
@@ -123,9 +117,7 @@ const BugTracker: React.FC<BugTrackerProps> = ({ bugs, t, onAddBug, onDeleteBug,
                 </div>
             </div>
 
-            {/* Список багів */}
             <div className="space-y-4">
-                {/* ВІДНОВЛЕНО: Пустий стан */}
                 {filteredBugs.length === 0 ? (
                     <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
                         <p className="text-gray-400 mb-4">{t.empty_tracker || 'No bugs found.'}</p>
@@ -140,13 +132,11 @@ const BugTracker: React.FC<BugTrackerProps> = ({ bugs, t, onAddBug, onDeleteBug,
                     filteredBugs.map((bug) => (
                         <div
                             key={bug.id}
-                            // ВІДНОВЛЕНО: Прозорість та зелена рамка для Done
                             className={`bg-white p-5 rounded-xl shadow-sm border-l-4 transition hover:shadow-md ${bug.status === 'Done' ? 'border-green-400 opacity-70' : 'border-blue-500'}`}
                         >
                             <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                                 <div className="flex-grow">
                                     <div className="flex flex-wrap items-center gap-3 mb-2">
-                                        {/* ВІДНОВЛЕНО: Іконка пріоритету в сірій плашці */}
                                         <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded border border-gray-100" title="Priority">
                                             {getPriorityIcon(bug.priority)}
                                             <span className="text-xs font-bold text-gray-700 uppercase">
@@ -162,7 +152,6 @@ const BugTracker: React.FC<BugTrackerProps> = ({ bugs, t, onAddBug, onDeleteBug,
                                         </span>
                                     </div>
                                     <h3
-                                        // ВІДНОВЛЕНО: Перекреслений текст для Done
                                         className={`text-lg font-bold ${bug.status === 'Done' ? 'line-through text-gray-500' : 'text-gray-800'}`}
                                     >
                                         {bug.title}
@@ -176,12 +165,11 @@ const BugTracker: React.FC<BugTrackerProps> = ({ bugs, t, onAddBug, onDeleteBug,
 
                                 <div className="flex flex-row md:flex-col items-center md:items-end gap-3 w-full md:w-auto mt-2 md:mt-0">
                                     <select
-                                        // ВІДНОВЛЕНО: Кольорові селектори в залежності від статусу
                                         className={`text-sm border rounded-lg px-3 py-1.5 outline-none cursor-pointer font-medium transition ${bug.status === 'Done'
-                                                ? 'bg-green-50 text-green-700 border-green-200'
-                                                : bug.status === 'In Progress'
-                                                    ? 'bg-purple-50 text-purple-700 border-purple-200'
-                                                    : 'bg-white text-gray-600 border-gray-200'
+                                            ? 'bg-green-50 text-green-700 border-green-200'
+                                            : bug.status === 'In Progress'
+                                                ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                                : 'bg-white text-gray-600 border-gray-200'
                                             }`}
                                         value={bug.status}
                                         onChange={(e) => onUpdateStatus(bug.id, e.target.value)}
@@ -209,7 +197,7 @@ const BugTracker: React.FC<BugTrackerProps> = ({ bugs, t, onAddBug, onDeleteBug,
                 )}
             </div>
 
-            {/* Портал модального вікна (без змін) */}
+            {/* Portal required to ignore parent layout constraints */}
             {ReactDOM.createPortal(
                 <AnimatePresence>
                     {isModalOpen && (

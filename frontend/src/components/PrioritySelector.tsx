@@ -10,7 +10,6 @@ interface PrioritySelectorProps {
 const PrioritySelector: React.FC<PrioritySelectorProps> = ({ priority, setPriority, t }) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    // Використовуємо React.ReactElement для усунення помилки Namespace JSX
     const icons: Record<IBug['priority'], React.ReactElement> = {
         Highest: (
             <svg className="w-5 h-5 text-red-700" viewBox="0 0 24 24" fill="currentColor">
@@ -37,7 +36,7 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({ priority, setPriori
                 <path d="M13 18.59V3h-2v15.59l-7.29-7.29L2.3 12.7 12 22.4l9.7-9.7-1.41-1.41z" />
             </svg>
         ),
-        Critical: ( // Додаємо Critical, щоб не було помилки Property missing
+        Critical: (
             <svg className="w-5 h-5 text-red-900" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M13 5.41V21h-2V5.41l-7.29 7.29L2.3 11.3 12 1.6l9.7 9.7-1.41 1.41z" />
             </svg>

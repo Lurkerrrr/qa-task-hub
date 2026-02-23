@@ -1,4 +1,3 @@
-// backend/src/middleware/authMiddleware.ts
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { AuthRequest } from '../interfaces';
@@ -9,7 +8,6 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
 
     if (!token) return res.status(401).json({ message: 'No token provided' });
 
-    // Секрет має бути ідентичним тому, що в authService
     const secret = process.env.JWT_SECRET || 'super_secret_key_123';
 
     jwt.verify(token, secret, (err: any, decoded: any) => {
