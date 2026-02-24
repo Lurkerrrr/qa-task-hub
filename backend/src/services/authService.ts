@@ -34,7 +34,12 @@ class AuthService {
                 const isMatch = await bcrypt.compare(passwordRaw, user.password!);
                 if (!isMatch) return reject(new AppError('Invalid email or password', 401));
 
-                const payload: ITokenPayload = { id: user.id, email: user.email };
+                const payload: ITokenPayload = {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name
+                };
+
                 const token = jwt.sign(payload, this.jwtSecret, { expiresIn: '24h' });
 
                 const { password, ...userWithoutPassword } = user;
