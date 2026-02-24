@@ -13,9 +13,15 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
 
     jwt.verify(token, secret, (err: any, decoded: any) => {
         if (err) {
-            console.error('JWT Verify Error:', err.message);
-            return next(new UnauthorizedError('Invalid token signature'));
+            if (err.name === 'TokenExpiredError') {
+                return next(new UnauthorizedError('Token has expired. Please log in again.'));
+            }
+            if (err.name === 'JsonWebTokenError') {
+                return next(new UnauthorizedError('Invalid token signature.'));
+            }
+            return next(new UnauthorizedError('Authentication failed.'));
         }
+
         req.userId = decoded.id;
         req.userName = decoded.name;
         next();
