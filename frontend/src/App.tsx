@@ -75,7 +75,7 @@ const App: React.FC = () => {
             setBugs(prev => [saved, ...prev]);
         } else if (response.status === 403) {
             const errorData = await response.json();
-            alert(`Security Alert: ${errorData.message}`);
+            alert(`Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`);
         } else {
             console.error('Failed to add bug');
         }
@@ -91,7 +91,7 @@ const App: React.FC = () => {
             setBugs(prev => prev.filter(b => b.id !== id));
         } else if (response.status === 403) {
             const errorData = await response.json();
-            alert(`Security Alert: ${errorData.message}`);
+            alert(`Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`);
         }
     };
 
@@ -106,7 +106,7 @@ const App: React.FC = () => {
             setBugs(prev => prev.map(b => b.id === id ? { ...b, status: status as any } : b));
         } else if (response.status === 403) {
             const errorData = await response.json();
-            alert(`Security Alert: ${errorData.message}`);
+            alert(`Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`);
         }
     };
 
