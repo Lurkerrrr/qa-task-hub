@@ -10,6 +10,7 @@ export interface IUser {
 export interface ITokenPayload {
     id: number;
     email: string;
+    name: string;
 }
 
 export interface AuthRequest extends Request {
