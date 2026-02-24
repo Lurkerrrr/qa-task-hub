@@ -2,6 +2,7 @@ import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { AuthRequest } from '../interfaces';
 import { UnauthorizedError } from '../utils/AppError';
+import { JWT_SECRET } from '../utils/config';
 
 export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction) => {
     const authHeader = req.headers['authorization'];
@@ -9,9 +10,7 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
 
     if (!token) return next(new UnauthorizedError('No token provided'));
 
-    const secret = process.env.JWT_SECRET || 'super_secret_key_123';
-
-    jwt.verify(token, secret, (err: any, decoded: any) => {
+    jwt.verify(token, JWT_SECRET, (err: any, decoded: any) => {
         if (err) {
             if (err.name === 'TokenExpiredError') {
                 return next(new UnauthorizedError('Token has expired. Please log in again.'));

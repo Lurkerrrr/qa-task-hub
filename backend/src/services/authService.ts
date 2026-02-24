@@ -3,9 +3,9 @@ import jwt from 'jsonwebtoken';
 import db from '../database';
 import { AppError } from '../utils/AppError';
 import { IUser, ITokenPayload } from '../interfaces';
+import { JWT_SECRET } from '../utils/config';
 
 class AuthService {
-    private readonly jwtSecret = process.env.JWT_SECRET || 'super_secret_key_123';
 
     public async register(name: string, email: string, passwordRaw: string): Promise<Omit<IUser, 'password'>> {
         const salt = await bcrypt.genSalt(10);
@@ -40,7 +40,7 @@ class AuthService {
                     name: user.name
                 };
 
-                const token = jwt.sign(payload, this.jwtSecret, { expiresIn: '24h' });
+                const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
 
                 const { password, ...userWithoutPassword } = user;
                 resolve({ token, user: userWithoutPassword });
