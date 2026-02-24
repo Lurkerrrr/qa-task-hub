@@ -6,7 +6,6 @@ import { IUser, ITokenPayload } from '../interfaces';
 import { JWT_SECRET } from '../utils/config';
 
 class AuthService {
-
     public async register(name: string, email: string, passwordRaw: string): Promise<Omit<IUser, 'password'>> {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(passwordRaw, salt);
