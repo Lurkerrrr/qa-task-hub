@@ -39,6 +39,26 @@ class BugService {
             });
         });
     }
+
+    public updateBugStatus(id: number, status: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const sql = `UPDATE bugs SET status = ? WHERE id = ?`;
+            db.run(sql, [status, id], function (err: Error | null) {
+                if (err) reject(new AppError('Failed to update bug status', 500));
+                resolve();
+            });
+        });
+    }
+
+    public deleteBug(id: number): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const sql = `DELETE FROM bugs WHERE id = ?`;
+            db.run(sql, [id], function (err: Error | null) {
+                if (err) reject(new AppError('Failed to delete bug', 500));
+                resolve();
+            });
+        });
+    }
 }
 
 export const bugService = new BugService();
