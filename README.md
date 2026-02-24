@@ -108,8 +108,8 @@ The backend exposes a RESTful API running on port `5000`.
 **Prerequisites:** Node.js (v18+) and npm.
 
 ### 1. Clone the Repository
-``bash
-git clone https://github.com/YOUR_USERNAME/qa-task-manager.git
+```bash
+git clone [https://github.com/YOUR_USERNAME/qa-task-manager.git](https://github.com/YOUR_USERNAME/qa-task-manager.git)
 cd qa-task-manager
 
 ---
