@@ -10,4 +10,10 @@ export class AppError extends Error {
 
         Error.captureStackTrace(this, this.constructor);
     }
+
+    export class UnauthorizedError extends AppError {
+    constructor(message: string = 'Unauthorized') {
+        super(message, 401);
+    }
+}
 }
