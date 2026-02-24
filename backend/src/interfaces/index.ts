@@ -16,6 +16,7 @@ export interface ITokenPayload {
 export interface AuthRequest extends Request {
     userId?: number;
     userRole?: string;
+    userName?: string;
 }
 
 export interface IBug {
