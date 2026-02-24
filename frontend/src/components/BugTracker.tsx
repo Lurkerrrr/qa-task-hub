@@ -15,11 +15,16 @@ interface BugTrackerProps {
 }
 
 const BugTracker: React.FC<BugTrackerProps> = ({ bugs, t, onAddBug, onDeleteBug, onUpdateStatus }) => {
+    const savedUser = localStorage.getItem('user');
+    const currentUser = savedUser ? JSON.parse(savedUser) : { name: 'Unassigned' };
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newBug, setNewBug] = useState('');
     const [priority, setPriority] = useState<IBug['priority']>('Medium');
     const [severity, setSeverity] = useState<IBug['severity']>('Moderate' as any);
-    const [assignee, setAssignee] = useState('Viktor');
+
+    const [assignee, setAssignee] = useState(currentUser.name);
+
     const [steps, setSteps] = useState('');
     const [errors, setErrors] = useState<{ title?: string }>({});
     const [searchQuery, setSearchQuery] = useState('');
@@ -37,7 +42,9 @@ const BugTracker: React.FC<BugTrackerProps> = ({ bugs, t, onAddBug, onDeleteBug,
         setSteps('');
         setPriority('Medium');
         setSeverity('Moderate' as any);
-        setAssignee('Viktor');
+
+        setAssignee(currentUser.name);
+
         setErrors({});
     };
 
