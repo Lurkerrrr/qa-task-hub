@@ -12,7 +12,16 @@ import './database';
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(helmet());
+app.use(helmet({
+    hidePoweredBy: true,
+    hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true
+    },
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+
 app.use(cors());
 app.use(express.json());
 
