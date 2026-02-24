@@ -1,6 +1,6 @@
 import db from '../database';
 import { IBug } from '../interfaces';
-import { AppError } from '../utils/AppError';
+import { AppError, NotFoundError } from '../utils/AppError';
 
 class BugService {
     public getAllBugs(): Promise<IBug[]> {
@@ -9,6 +9,17 @@ class BugService {
             db.all(sql, [], (err: Error | null, rows: IBug[]) => {
                 if (err) reject(new AppError('Failed to fetch bugs', 500));
                 resolve(rows);
+            });
+        });
+    }
+
+    public getBugById(id: number): Promise<IBug> {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * FROM bugs WHERE id = ?`;
+            db.get(sql, [id], (err: Error | null, row: IBug) => {
+                if (err) return reject(new AppError('Failed to fetch bug', 500));
+                if (!row) return reject(new NotFoundError(`Bug with ID ${id} not found`));
+                resolve(row);
             });
         });
     }
