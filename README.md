@@ -2,36 +2,47 @@
 
 **QA Task Manager** is a full-stack web application designed for tracking software quality assurance metrics, managing bug lifecycles, and visualizing project health data. The system utilizes a React-based frontend for the user interface and a Node.js/Express backend with SQLite for persistent data storage.
 
-The application implements a decoupled client-server architecture with stateless authentication via JSON Web Tokens (JWT), ensuring secure and scalable user session management.
+The entire application is strictly typed using **TypeScript**, ensuring highly reliable code, predictable data models, and a robust developer experience. It implements a decoupled client-server architecture with stateless authentication via JSON Web Tokens (JWT), ensuring secure and scalable user session management.
 
 ---
 
 ## Technical Architecture
 
-The project follows a standard MVC (Model-View-Controller) pattern adapted for a modern JavaScript stack.
+The project follows a standard MVC (Model-View-Controller) pattern adapted for a modern JavaScript/TypeScript stack.
 
 ### 1. Frontend (Client)
-* **Framework:** React.js (v18) utilizing Functional Components and Hooks.
+* **Framework:** React.js (v18) with TypeScript, utilizing Functional Components and Hooks.
 * **Routing:** React Router DOM (v6) for client-side navigation and protected route management.
-* **State Management:** React Hooks (useState, useEffect, useContext) for local state and global user session handling.
+* **State Management:** React Hooks (useState, useEffect, useCallback) for local state and global user session handling.
 * **Visualization:** Chart.js and React-Chartjs-2 for rendering statistical graphs (Bar, Doughnut).
 * **UI/UX:** Tailwind CSS for utility-first styling and Framer Motion for interface transitions.
 * **Internationalization:** Custom i18n implementation supporting English, Polish, Ukrainian, and Russian.
 
 ### 2. Backend (Server)
-* **Runtime:** Node.js.
+* **Runtime:** Node.js with TypeScript (`ts-node` for development, `tsc` for production).
 * **Framework:** Express.js for handling HTTP requests, routing, and middleware integration.
 * **Database:** SQLite (file-based relational database) for zero-configuration persistence.
 * **Authentication:** * **JsonWebToken (JWT):** Generates signed tokens for stateless authentication.
     * **Bcrypt.js:** Implements cryptographic salting and hashing for password storage.
 * **Security & Validation:** Joi (strict payload validation), Helmet (HTTP headers protection), Express Rate Limit (DDoS and brute-force prevention).
-* **Middleware:** CORS (Cross-Origin Resource Sharing), Global Error Handler, and custom auth verification middleware.
+* **Middleware:** CORS (Cross-Origin Resource Sharing), Custom Error Handling (`AppError` hierarchy), and Token Owner Binding.
 
 ### 3. Data Flow
 1.  **Request:** Client sends HTTP request with `Authorization: Bearer <token>` header (for protected routes).
-2.  **Verification:** Middleware verifies the JWT signature.
-3.  **Execution:** Controller processes the request and interacts with the SQLite database.
+2.  **Verification:** Middleware verifies the JWT signature and extracts user identity.
+3.  **Execution:** Controller processes the request, applies business/security logic, and interacts with the SQLite database.
 4.  **Response:** Server returns JSON data to the client.
+
+---
+
+## Security Features Implemented
+
+* **Strict TypeScript Interfaces:** End-to-end type safety preventing payload mismatches and runtime errors.
+* **JWT Authentication:** Secure token-based authentication with explicit `TokenExpiredError` and `JsonWebTokenError` signature handling.
+* **IDOR Protection (Token Owner Binding):** Database-level security middleware ensuring users can only edit or delete bugs that belong to their specific JWT identity.
+* **Role-Based Access Control (RBAC):** Admin bypass capabilities for database-level ownership restrictions.
+* **Brute Force Protection:** Strict rate limiting (e.g., max 5 attempts per 15 mins) implemented on authentication routes to prevent credential stuffing.
+* **Helmet Hardening:** Custom HTTP header configuration to obscure stack details (`hidePoweredBy`) and enforce Strict-Transport-Security (HSTS).
 
 ---
 
@@ -86,21 +97,20 @@ The backend exposes a RESTful API running on port `5000`.
 | Method | Endpoint | Description | Auth Required |
 |:--- |:--- |:--- |:--- |
 | **GET** | `/bugs` | Retrieves the full list of bug reports. | Yes |
-| **POST** | `/bugs` | Creates a new bug report in the database. | Yes |
-| **PUT** | `/bugs/:id` | Updates the status or details of a specific bug. | Yes |
-| **DELETE** | `/bugs/:id` | Permanently removes a bug report. | Yes |
+| **POST** | `/bugs` | Creates a new bug report in the database. | Yes (Bound to Token) |
+| **PUT** | `/bugs/:id` | Updates the status or details of a specific bug. | Yes (Owner/Admin) |
+| **DELETE** | `/bugs/:id` | Permanently removes a bug report. | Yes (Owner/Admin) |
 
 ---
 
 ## Installation and Setup
 
-**Prerequisites:** Node.js (v14+) and npm.
+**Prerequisites:** Node.js (v18+) and npm.
 
 ### 1. Clone the Repository
-```bash
-git clone [https://github.com/YOUR_USERNAME/qa-task-manager.git](https://github.com/YOUR_USERNAME/qa-task-manager.git)
+``bash
+git clone https://github.com/YOUR_USERNAME/qa-task-manager.git
 cd qa-task-manager
-```
 
 ---
 
@@ -108,19 +118,14 @@ cd qa-task-manager
 ```bash
 cd backend
 npm install
+npm run dev
 ```
 
 ---
 
 ### 3. Frontend Configuration
 ```bash
-cd ..
+cd frontend
 npm install
-```
-
----
-
-### 4. Execution
-```bash
-npm run dev
+npm start
 ```
