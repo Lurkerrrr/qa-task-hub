@@ -69,27 +69,45 @@ const App: React.FC = () => {
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify(newBug),
         });
+
         if (response.ok) {
             const saved = await response.json();
             setBugs(prev => [saved, ...prev]);
+        } else if (response.status === 403) {
+            const errorData = await response.json();
+            alert(`Security Alert: ${errorData.message}`);
+        } else {
+            console.error('Failed to add bug');
         }
     };
 
     const handleDeleteBug = async (id: number) => {
-        await fetch(`${API_URL}/bugs/${id}`, {
+        const response = await fetch(`${API_URL}/bugs/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` },
         });
-        setBugs(prev => prev.filter(b => b.id !== id));
+
+        if (response.ok) {
+            setBugs(prev => prev.filter(b => b.id !== id));
+        } else if (response.status === 403) {
+            const errorData = await response.json();
+            alert(`Security Alert: ${errorData.message}`);
+        }
     };
 
     const handleUpdateStatus = async (id: number, status: string) => {
-        await fetch(`${API_URL}/bugs/${id}`, {
+        const response = await fetch(`${API_URL}/bugs/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ status }),
         });
-        setBugs(prev => prev.map(b => b.id === id ? { ...b, status: status as any } : b));
+
+        if (response.ok) {
+            setBugs(prev => prev.map(b => b.id === id ? { ...b, status: status as any } : b));
+        } else if (response.status === 403) {
+            const errorData = await response.json();
+            alert(`Security Alert: ${errorData.message}`);
+        }
     };
 
     if (!token) return <Auth onLogin={handleLogin} />;
