@@ -10,8 +10,9 @@ export class AppError extends Error {
 
         Error.captureStackTrace(this, this.constructor);
     }
+}
 
-    export class UnauthorizedError extends AppError {
+export class UnauthorizedError extends AppError {
     constructor(message: string = 'Unauthorized') {
         super(message, 401);
     }
@@ -27,5 +28,4 @@ export class NotFoundError extends AppError {
     constructor(message: string = 'Not Found') {
         super(message, 404);
     }
-}
 }
