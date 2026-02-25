@@ -6,7 +6,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import authRoutes from './routes/authRoutes';
 import bugRoutes from './routes/bugRoutes';
-import { errorHandler } from './middleware/errorHandler';
+import { ErrorHandler } from './utils/ErrorHandler';
 import './database';
 
 const app: Application = express();
@@ -28,7 +28,7 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/bugs', bugRoutes);
 
-app.use(errorHandler);
+app.use(ErrorHandler.handleControllerError);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
