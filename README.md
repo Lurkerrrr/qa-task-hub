@@ -22,8 +22,9 @@ The project follows a standard MVC (Model-View-Controller) pattern adapted for a
 * **Runtime:** Node.js with TypeScript (`ts-node` for development, `tsc` for production).
 * **Framework:** Express.js for handling HTTP requests, routing, and middleware integration.
 * **Database:** SQLite (file-based relational database) for zero-configuration persistence.
-* **Authentication:** * **JsonWebToken (JWT):** Generates signed tokens for stateless authentication.
-    * **Bcrypt.js:** Implements cryptographic salting and hashing for password storage.
+* **Authentication:** 
+* **JsonWebToken (JWT):** Generates signed tokens for stateless authentication.
+* **Bcrypt.js:** Implements cryptographic salting and hashing for password storage.
 * **Security & Validation:** Joi (strict payload validation), Helmet (HTTP headers protection), Express Rate Limit (DDoS and brute-force prevention).
 * **Middleware:** CORS (Cross-Origin Resource Sharing), Custom Error Handling (`AppError` hierarchy), and Token Owner Binding.
 
