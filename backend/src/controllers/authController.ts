@@ -1,12 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
-import { authService } from '../services/authService';
+import { BaseController } from './BaseController';
+import { authService, IAuthService } from '../services/authService';
 
-class AuthController {
-    public async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+export class AuthController extends BaseController {
+    private authService: IAuthService;
+
+    constructor(authServiceInstance: IAuthService) {
+        super();
+        this.authService = authServiceInstance;
+    }
+
+    public register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { name, email, password } = req.body;
 
-            const user = await authService.register(name, email, password);
+            const { name, email, password } = req.body;
+            const user = await this.authService.register(name, email, password);
 
             res.status(201).json({
                 status: 'success',
@@ -15,22 +23,22 @@ class AuthController {
         } catch (error) {
             next(error);
         }
-    }
+    };
 
-    public async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+    public login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { email, password } = req.body;
 
-            const result = await authService.login(email, password);
+            const { email, password } = req.body;
+            const data = await this.authService.login(email, password);
 
             res.status(200).json({
                 status: 'success',
-                data: result
+                data
             });
         } catch (error) {
             next(error);
         }
-    }
+    };
 }
 
-export const authController = new AuthController();
+export const authController = new AuthController(authService);
