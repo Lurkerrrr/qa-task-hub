@@ -14,6 +14,12 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
 
     const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
+    const toggleMode = () => {
+        setIsLogin(!isLogin);
+        setFormData({ email: '', password: '', name: '' });
+        setError('');
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -39,7 +45,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
             if (isLogin && result.data) {
                 onLogin(result.data.token, result.data.user);
             } else {
-                setIsLogin(true);
+                toggleMode();
                 setError('Account created! Please login.');
             }
         } catch (err: any) {
@@ -54,15 +60,39 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                     {isLogin ? 'Login' : 'Register'}
                 </h2>
                 {error && <div className="p-3 mb-4 text-sm bg-red-50 text-red-700 rounded">{error}</div>}
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} autoComplete="off">
                     {!isLogin && (
-                        <Input label="Name" name="name" value={formData.name} onChange={handleChange} required />
+                        <Input
+                            label="Name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            autoComplete="off"
+                            required
+                        />
                     )}
-                    <Input label="Email" type="email" name="email" value={formData.email} onChange={handleChange} required />
-                    <Input label="Password" type="password" name="password" value={formData.password} onChange={handleChange} required />
+                    <Input
+                        label="Email"
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        autoComplete="off"
+                        required
+                    />
+                    <Input
+                        label="Password"
+                        type="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        autoComplete={isLogin ? "current-password" : "new-password"}
+                        required
+                    />
                     <Button type="submit">{isLogin ? 'Sign In' : 'Sign Up'}</Button>
                 </form>
-                <Button variant="ghost" onClick={() => setIsLogin(!isLogin)} className="mt-4">
+                {/* Updated: Now calls toggleMode instead of just setIsLogin */}
+                <Button variant="ghost" onClick={toggleMode} className="mt-4">
                     {isLogin ? 'Register' : 'Login'}
                 </Button>
             </div>
