@@ -76,6 +76,10 @@ const App: React.FC = () => {
         } else if (response.status === 403) {
             const errorData = await response.json();
             alert(`Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`);
+            handleLogout();
+        } else if (response.status === 400) {
+            const errorData = await response.json();
+            alert(`Validation Error:\n\n${errorData.message}`);
         } else {
             console.error('Failed to add bug');
         }
@@ -92,6 +96,7 @@ const App: React.FC = () => {
         } else if (response.status === 403) {
             const errorData = await response.json();
             alert(`Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`);
+            handleLogout();
         }
     };
 
@@ -107,6 +112,7 @@ const App: React.FC = () => {
         } else if (response.status === 403) {
             const errorData = await response.json();
             alert(`Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`);
+            handleLogout();
         }
     };
 
