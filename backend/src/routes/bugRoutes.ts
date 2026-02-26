@@ -7,11 +7,11 @@ import { verifyBugOwnership } from '../middleware/verifyBugOwnership';
 
 const router = Router();
 
-router.get('/', verifyToken, bugController.getBugs);
+router.get('/', verifyToken, bugController.getAllBugs);
 
 router.post('/', verifyToken, ownerBinding, validate('bug'), bugController.createBug);
 
-router.put('/:id', verifyToken, verifyBugOwnership, validate('bugStatus'), bugController.updateStatus);
+router.put('/:id', verifyToken, verifyBugOwnership, validate('bugStatus'), bugController.updateBugStatus);
 
 router.delete('/:id', verifyToken, verifyBugOwnership, bugController.deleteBug);
 

@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express';
-import { AuthRequest } from '../controllers/bugController';
+import { AuthRequest } from '../interfaces';
 import { AppError } from '../utils/AppError';
 
 export const checkIsAdmin = (req: AuthRequest, res: Response, next: NextFunction): void => {

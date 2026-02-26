@@ -1,52 +1,77 @@
 import { Request, Response, NextFunction } from 'express';
-import { bugService } from '../services/bugService';
+import { BaseController } from './BaseController';
+import { bugService, IBugService } from '../services/bugService';
 
-export interface AuthRequest extends Request {
-    userId?: number;
-    userRole?: string;
-    userName?: string;
-}
+export class BugController extends BaseController {
+    private bugService: IBugService;
 
-class BugController {
-    public async getBugs(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
-        try {
-            const bugs = await bugService.getAllBugs();
-            res.json(bugs);
-        } catch (err) {
-            next(err);
-        }
+    constructor(bugServiceInstance: IBugService) {
+        super();
+        this.bugService = bugServiceInstance;
     }
 
-    public async createBug(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+    public getAllBugs = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const newBug = await bugService.createBug(req.body, req.userId!);
+            const bugs = await this.bugService.getAllBugs();
+            res.status(200).json(bugs);
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    // Arrow function binds 'this' context for fetching a specific bug
+    public getBugById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const id = parseInt(req.params.id as string, 10);
+            const bug = await this.bugService.getBugById(id);
+            res.status(200).json(bug);
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    // Arrow function binds 'this' context for creating a bug
+    public createBug = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = (req as any).user.id;
+            const newBug = await this.bugService.createBug(req.body, userId);
+
             res.status(201).json(newBug);
-        } catch (err) {
-            next(err);
+        } catch (error) {
+            next(error);
         }
-    }
+    };
 
-    public async updateStatus(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+    // Arrow function binds 'this' context for updating bug status
+    public updateBugStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = parseInt(req.params.id as string, 10);
             const { status } = req.body;
-            await bugService.updateBugStatus(id, status);
-            res.json({ status: 'success', message: 'Bug status updated' });
-        } catch (err) {
-            next(err);
-        }
-    }
+            await this.bugService.updateBugStatus(id, status);
 
-    public async deleteBug(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+            res.status(200).json({
+                status: 'success',
+                message: 'Bug status updated successfully'
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    // Arrow function binds 'this' context for deleting a bug
+    public deleteBug = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = parseInt(req.params.id as string, 10);
-            await bugService.deleteBug(id);
-            res.json({ status: 'success', message: 'Bug deleted' });
-        } catch (err) {
-            next(err);
-        }
-    }
+            await this.bugService.deleteBug(id);
 
+            res.status(200).json({
+                status: 'success',
+                message: 'Bug deleted successfully'
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
 }
 
-export const bugController = new BugController();
+export const bugController = new BugController(bugService);
