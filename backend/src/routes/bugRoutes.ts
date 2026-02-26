@@ -1,18 +1,26 @@
 import { Router } from 'express';
-import { bugController } from '../controllers/bugController';
+import { BugController, bugController } from '../controllers/bugController';
 import { verifyToken } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
 import { ownerBinding } from '../middleware/ownerBinding';
 import { verifyBugOwnership } from '../middleware/verifyBugOwnership';
 
-const router = Router();
+export class BugRoutes {
+    public router: Router;
+    private bugController: BugController;
 
-router.get('/', verifyToken, bugController.getAllBugs);
+    constructor(controller: BugController) {
+        this.router = Router();
+        this.bugController = controller;
+        this.initializeRoutes();
+    }
 
-router.post('/', verifyToken, ownerBinding, validate('bug'), bugController.createBug);
+    private initializeRoutes(): void {
+        this.router.get('/', verifyToken, this.bugController.getAllBugs);
+        this.router.post('/', verifyToken, ownerBinding, validate('bug'), this.bugController.createBug);
+        this.router.put('/:id', verifyToken, verifyBugOwnership, validate('bugStatus'), this.bugController.updateBugStatus);
+        this.router.delete('/:id', verifyToken, verifyBugOwnership, this.bugController.deleteBug);
+    }
+}
 
-router.put('/:id', verifyToken, verifyBugOwnership, validate('bugStatus'), bugController.updateBugStatus);
-
-router.delete('/:id', verifyToken, verifyBugOwnership, bugController.deleteBug);
-
-export default router;
+export default new BugRoutes(bugController).router;

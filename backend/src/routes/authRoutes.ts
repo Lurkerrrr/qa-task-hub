@@ -1,10 +1,21 @@
 import { Router } from 'express';
-import { authController } from '../controllers/authController';
+import { AuthController, authController } from '../controllers/authController';
 import { loginLimiter, registerLimiter } from '../middleware/rateLimiter';
 
-const router = Router();
+export class AuthRoutes {
+    public router: Router;
+    private authController: AuthController;
 
-router.post('/register', registerLimiter, authController.register);
-router.post('/login', loginLimiter, authController.login);
+    constructor(controller: AuthController) {
+        this.router = Router();
+        this.authController = controller;
+        this.initializeRoutes();
+    }
 
-export default router;
+    private initializeRoutes(): void {
+        this.router.post('/register', registerLimiter, this.authController.register);
+        this.router.post('/login', loginLimiter, this.authController.login);
+    }
+}
+
+export default new AuthRoutes(authController).router;
