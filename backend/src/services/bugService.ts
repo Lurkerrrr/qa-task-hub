@@ -1,63 +1,85 @@
-import db from '../database';
+import Database from '../database';
+import { BaseService } from './BaseService';
 import { IBug } from '../interfaces';
 import { AppError, NotFoundError } from '../utils/AppError';
 
-class BugService {
-    public getAllBugs(): Promise<IBug[]> {
-        return new Promise((resolve, reject) => {
+// Interface definition for future Dependency Injection
+export interface IBugService {
+    getAllBugs(): Promise<IBug[]>;
+    getBugById(id: number): Promise<IBug>;
+    createBug(bugData: Omit<IBug, 'id'>, userId: number): Promise<IBug>;
+    updateBugStatus(id: number, status: string): Promise<void>;
+    deleteBug(id: number): Promise<void>;
+}
+
+export class BugService extends BaseService implements IBugService {
+    public async getAllBugs(): Promise<IBug[]> {
+        try {
             const sql = `SELECT * FROM bugs ORDER BY id DESC`;
-            db.all(sql, [], (err: Error | null, rows: IBug[]) => {
-                if (err) reject(new AppError('Failed to fetch bugs', 500));
-                resolve(rows);
-            });
-        });
+            return await Database.allAsync<IBug>(sql);
+        } catch (error) {
+            throw new AppError('Failed to fetch bugs', 500);
+        }
     }
 
-    public getBugById(id: number): Promise<IBug> {
-        return new Promise((resolve, reject) => {
+    public async getBugById(id: number): Promise<IBug> {
+        try {
             const sql = `SELECT * FROM bugs WHERE id = ?`;
-            db.get(sql, [id], (err: Error | null, row: IBug) => {
-                if (err) return reject(new AppError('Failed to fetch bug', 500));
-                if (!row) return reject(new NotFoundError(`Bug with ID ${id} not found`));
-                resolve(row);
-            });
-        });
+
+            // Using allAsync because we need to extract the first row from the array
+            const rows = await Database.allAsync<IBug>(sql, [id]);
+            const bug = rows[0];
+
+            if (!bug) throw new NotFoundError(`Bug with ID ${id} not found`);
+
+            return bug;
+        } catch (error) {
+            if (error instanceof AppError) throw error;
+            throw new AppError('Failed to fetch bug', 500);
+        }
     }
 
-    public createBug(bugData: Omit<IBug, 'id'>, userId: number): Promise<IBug> {
-        return new Promise((resolve, reject) => {
-            const { title, priority, severity, assignee, status, date } = bugData;
+    public async createBug(bugData: Omit<IBug, 'id'>, userId: number): Promise<IBug> {
+        try {
+            const title = this.formatString(bugData.title);
+            const assignee = this.formatString(bugData.assignee);
+            const { priority, severity, status, date, steps } = bugData;
+
             const sql = `INSERT INTO bugs (title, priority, severity, assignee, status, date) VALUES (?,?,?,?,?,?)`;
 
-            db.run(sql, [title, priority, severity, assignee, status, date], function (err: Error | null) {
-                if (err) reject(new AppError('Failed to create bug', 500));
+            const result = await Database.queryAsync(sql, [title, priority, severity, assignee, status, date]);
 
-                resolve({
-                    id: this.lastID,
-                    ...bugData
-                } as IBug);
-            });
-        });
+            return {
+                id: result.id,
+                title,
+                priority,
+                severity,
+                status,
+                assignee,
+                date,
+                steps
+            } as IBug;
+        } catch (error) {
+            throw new AppError('Failed to create bug', 500);
+        }
     }
 
-    public updateBugStatus(id: number, status: string): Promise<void> {
-        return new Promise((resolve, reject) => {
+    public async updateBugStatus(id: number, status: string): Promise<void> {
+        try {
             const sql = `UPDATE bugs SET status = ? WHERE id = ?`;
-            db.run(sql, [status, id], function (err: Error | null) {
-                if (err) reject(new AppError('Failed to update bug status', 500));
-                resolve();
-            });
-        });
+            await Database.queryAsync(sql, [status, id]);
+        } catch (error) {
+            throw new AppError('Failed to update bug status', 500);
+        }
     }
 
-    public deleteBug(id: number): Promise<void> {
-        return new Promise((resolve, reject) => {
+    public async deleteBug(id: number): Promise<void> {
+        try {
             const sql = `DELETE FROM bugs WHERE id = ?`;
-            db.run(sql, [id], function (err: Error | null) {
-                if (err) reject(new AppError('Failed to delete bug', 500));
-                resolve();
-            });
-        });
+            await Database.queryAsync(sql, [id]);
+        } catch (error) {
+            throw new AppError('Failed to delete bug', 500);
+        }
     }
 }
 
