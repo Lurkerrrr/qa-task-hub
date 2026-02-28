@@ -29,3 +29,19 @@ export interface IBug {
     steps?: string;
     date: string;
 }
+
+export interface IBaseResponse<T = any> {
+    status: 'success' | 'error';
+    data?: T;
+    message?: string;
+}
+
+export interface IUserResponse {
+    user: Omit<IUser, 'password'>;
+    token?: string;
+}
+
+export interface IBugResponse {
+    bug?: IBug;
+    bugs?: IBug[];
+}
