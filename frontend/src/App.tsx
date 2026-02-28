@@ -45,8 +45,9 @@ const App: React.FC = () => {
                 }
 
                 if (res.ok) {
-                    const data = await res.json();
-                    setBugs(Array.isArray(data) ? data : []);
+                    const responseBody = await res.json();
+                    const bugList = responseBody.data?.bugs || [];
+                    setBugs(Array.isArray(bugList) ? bugList : []);
                 }
             } catch (err) {
                 console.error('Fetch error:', err);
@@ -71,8 +72,11 @@ const App: React.FC = () => {
         });
 
         if (response.ok) {
-            const saved = await response.json();
-            setBugs(prev => [saved, ...prev]);
+            const responseBody = await response.json();
+            const savedBug = responseBody.data?.bug;
+            if (savedBug) {
+                setBugs(prev => [savedBug, ...prev]);
+            }
         } else if (response.status === 403) {
             const errorData = await response.json();
             alert(`Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`);
