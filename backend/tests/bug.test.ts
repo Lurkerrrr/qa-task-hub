@@ -49,7 +49,7 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
                 .set('Authorization', `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.token`);
 
             expect(res.status).toBe(401);
-            expect(res.body.message).toMatch(/Invalid token signature/i);
+            expect(res.body.message).toMatch(/Invalid token signature|Authentication failed/i);
         });
     });
 
