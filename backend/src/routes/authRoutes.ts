@@ -13,8 +13,8 @@ export class AuthRoutes {
     }
 
     private initializeRoutes(): void {
-        this.router.post('/register', registerLimiter, this.authController.register);
-        this.router.post('/login', loginLimiter, this.authController.login);
+        this.router.post('/register', registerLimiter, validationMiddleware.validate('register'), this.authController.register);
+        this.router.post('/login', loginLimiter, validationMiddleware.validate('login'), this.authController.login);
     }
 }
 
