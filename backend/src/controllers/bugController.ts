@@ -34,9 +34,9 @@ export class BugController extends BaseController {
 
     public createBug = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = (req as any).user.id;
+            const userId = (req as any).userId;
             const newBug = await this.bugService.createBug(req.body, userId);
-            // Enforce IBugResponse and utilize the BaseController helper
+
             this.sendSuccess<IBugResponse>(res, { bug: newBug }, 201);
         } catch (error) {
             this.nextError(next, error);
