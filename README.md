@@ -8,7 +8,7 @@ The entire application is strictly typed using **TypeScript**, ensuring highly r
 
 ## Technical Architecture
 
-The project follows a standard MVC (Model-View-Controller) pattern adapted for a modern JavaScript/TypeScript stack.
+The project follows a professional **Controller-Service-Repository** pattern, utilizing strictly typed classes and dependency-ready logic.
 
 ### 1. Frontend (Client)
 * **Framework:** React.js (v18) with TypeScript, utilizing Functional Components and Hooks.
@@ -19,14 +19,14 @@ The project follows a standard MVC (Model-View-Controller) pattern adapted for a
 * **Internationalization:** Custom i18n implementation supporting English, Polish, Ukrainian, and Russian.
 
 ### 2. Backend (Server)
+* **Architecture:** Class-based OOP with BaseController and BaseService abstractions for maximum code reuse.
 * **Runtime:** Node.js with TypeScript (`ts-node` for development, `tsc` for production).
-* **Framework:** Express.js for handling HTTP requests, routing, and middleware integration.
-* **Database:** SQLite (file-based relational database) for zero-configuration persistence.
-* **Authentication:** 
-* **JsonWebToken (JWT):** Generates signed tokens for stateless authentication.
-* **Bcrypt.js:** Implements cryptographic salting and hashing for password storage.
-* **Security & Validation:** Joi (strict payload validation), Helmet (HTTP headers protection), Express Rate Limit (DDoS and brute-force prevention).
-* **Middleware:** CORS (Cross-Origin Resource Sharing), Custom Error Handling (`AppError` hierarchy), and Token Owner Binding.
+* **Framework:** Express.js for handling HTTP requests and class-based middleware integration.
+* **Database:** SQLite (file-based) using a **Singleton Database Class** to ensure single-connection persistence.
+* **Authentication:** * **JsonWebToken (JWT):** Generates signed tokens with embedded user roles.
+    * **Bcrypt.js:** Implements cryptographic salting and hashing for password storage.
+* **Security & Validation:** Joi (strict payload validation), Helmet (HTTP headers protection), Express Rate Limit (DDoS prevention).
+* **Middleware:** Class-based `AuthGuard`, `ValidationMiddleware`, and `SecurityPolicy` for centralized access control.
 
 ### 3. Data Flow
 1.  **Request:** Client sends HTTP request with `Authorization: Bearer <token>` header (for protected routes).
@@ -34,26 +34,30 @@ The project follows a standard MVC (Model-View-Controller) pattern adapted for a
 3.  **Execution:** Controller processes the request, applies business/security logic, and interacts with the SQLite database.
 4.  **Response:** Server returns JSON data to the client.
 
+### 4. Automated Testing
+* **Framework:** Jest and Supertest for integration testing.
+* **Coverage:** **89.11% Line Coverage** across the entire backend API.
+* **Strategy:** Endpoint-grouped test suites covering 15+ scenarios (Positive, Negative, and Security/IDOR).
+
 ---
 
 ## Security Features Implemented
 
 * **Strict TypeScript Interfaces:** End-to-end type safety preventing payload mismatches and runtime errors.
-* **JWT Authentication:** Secure token-based authentication with explicit `TokenExpiredError` and `JsonWebTokenError` signature handling.
-* **IDOR Protection (Token Owner Binding):** Database-level security middleware ensuring users can only edit or delete bugs that belong to their specific JWT identity.
-* **Role-Based Access Control (RBAC):** Admin bypass capabilities for database-level ownership restrictions.
-* **Brute Force Protection:** Strict rate limiting (e.g., max 5 attempts per 15 mins) implemented on authentication routes to prevent credential stuffing.
-* **Helmet Hardening:** Custom HTTP header configuration to obscure stack details (`hidePoweredBy`) and enforce Strict-Transport-Security (HSTS).
+* **JWT Authentication:** Secure token-based authentication with role-based claims (Admin vs User).
+* **IDOR Protection (SecurityPolicy):** Class-based middleware ensuring users can only edit or delete bugs belonging to their specific JWT identity.
+* **Admin Override:** Role-based logic allowing administrators to bypass standard ownership restrictions for project management.
+* **Input Sanitization:** Automated Joi validation prevents malformed data and potential injection vectors.
 
 ---
 
 ## Database Schema
 
-The application uses a relational database structure with two primary entities: **Users** and **Bugs**.
+The application uses a relational database structure with a **Singleton Database class** for async/await execution.
 
 ### Table: users
 | Column | Type | Constraint | Description |
-| :--- | :--- | :--- | :--- |
+| `role` | TEXT | DEFAULT 'user' | Access level for RBAC (user/admin). |
 | `id` | INTEGER | PRIMARY KEY | Auto-incrementing unique identifier. |
 | `email` | TEXT | UNIQUE, NOT NULL | User login credential. |
 | `password` | TEXT | NOT NULL | Hashed password string (bcrypt). |
@@ -61,7 +65,7 @@ The application uses a relational database structure with two primary entities: 
 
 ### Table: bugs
 | Column | Type | Constraint | Description |
-| :--- | :--- | :--- | :--- |
+| `userId` | INTEGER | FOREIGN KEY | ID of the user who owns this bug. |
 | `id` | INTEGER | PRIMARY KEY | Auto-incrementing unique identifier. |
 | `title` | TEXT | NOT NULL | Summary of the defect. |
 | `priority` | TEXT | NOT NULL | Level: Highest, High, Medium, Low, Lowest. |
@@ -91,16 +95,16 @@ The backend exposes a RESTful API running on port `5000`.
 ### Authentication
 | Method | Endpoint | Description | Auth Required |
 |:--- |:--- |:--- |:--- |
-| **POST** | `/auth/register` | Registers a new user and saves hashed credentials. | No |
-| **POST** | `/auth/login` | Authenticates user and returns JWT + User Data. | No |
+| **POST** | `/auth/register` | Registers a new user account and encrypts credentials. | No |
+| **POST** | `/auth/login` | Authenticates user and returns JWT with role-based claims. | No |
 
 ### Bug Management
 | Method | Endpoint | Description | Auth Required |
 |:--- |:--- |:--- |:--- |
-| **GET** | `/bugs` | Retrieves the full list of bug reports. | Yes |
-| **POST** | `/bugs` | Creates a new bug report in the database. | Yes (Bound to Token) |
-| **PUT** | `/bugs/:id` | Updates the status or details of a specific bug. | Yes (Owner/Admin) |
-| **DELETE** | `/bugs/:id` | Permanently removes a bug report. | Yes (Owner/Admin) |
+| **GET** | `/bugs` | Retrieves the list of bug reports owned by the authenticated user. | Yes |
+| **POST** | `/bugs` | Creates a new bug report bound to the user's unique identity. | Yes |
+| **PUT** | `/bugs/:id` | Updates bug details; restricted to Owner or Admin role. | Yes |
+| **DELETE** | `/bugs/:id` | Removes a bug report; restricted to Owner or Admin role. | Yes |
 
 ---
 
@@ -120,7 +124,9 @@ cd qa-task-manager
 ```bash
 cd backend
 npm install
-npm run dev
+npm run test           # Run automated test suite
+npm run test:coverage  # View code coverage report
+npm run dev            # Start development server
 ```
 
 ---
