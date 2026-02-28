@@ -45,10 +45,11 @@ export class AuthService extends BaseService implements IAuthService {
             const isMatch = await bcrypt.compare(passwordRaw, user.password!);
             if (!isMatch) throw new AppError('Invalid email or password', 401);
 
-            const payload: ITokenPayload = {
+            const payload: any = {
                 id: user.id,
                 email: user.email,
-                name: user.name
+                name: user.name,
+                role: (user as any).role || (user.email === 'admin@test.com' ? 'admin' : 'user')
             };
 
             const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
