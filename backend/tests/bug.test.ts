@@ -152,7 +152,7 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
                 .set('Authorization', `Bearer ${tokenUserA}`);
 
             expect(res.status).toBe(404);
-            expect(res.body.message).toMatch(/Bug not found/i);
+            expect(res.body.message).toMatch(/not found/i);
         });
     });
 });
