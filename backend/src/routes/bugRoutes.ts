@@ -1,9 +1,8 @@
 import { Router } from 'express';
 import { BugController, bugController } from '../controllers/bugController';
-import { verifyToken } from '../middleware/authMiddleware';
-import { validate } from '../middleware/validate';
-import { ownerBinding } from '../middleware/ownerBinding';
-import { verifyBugOwnership } from '../middleware/verifyBugOwnership';
+import { authGuard } from '../middleware/authMiddleware';
+import { validationMiddleware } from '../middleware/validate';
+import { securityPolicy } from '../middleware/securityPolicy';
 
 export class BugRoutes {
     public router: Router;
@@ -16,10 +15,10 @@ export class BugRoutes {
     }
 
     private initializeRoutes(): void {
-        this.router.get('/', verifyToken, this.bugController.getAllBugs);
-        this.router.post('/', verifyToken, ownerBinding, validate('bug'), this.bugController.createBug);
-        this.router.put('/:id', verifyToken, verifyBugOwnership, validate('bugStatus'), this.bugController.updateBugStatus);
-        this.router.delete('/:id', verifyToken, verifyBugOwnership, this.bugController.deleteBug);
+        this.router.get('/', authGuard.verifyToken, this.bugController.getAllBugs);
+        this.router.post('/', authGuard.verifyToken, securityPolicy.ownerBinding, validationMiddleware.validate('bug'), this.bugController.createBug);
+        this.router.put('/:id', authGuard.verifyToken, securityPolicy.verifyBugOwnership, validationMiddleware.validate('bugStatus'), this.bugController.updateBugStatus);
+        this.router.delete('/:id', authGuard.verifyToken, securityPolicy.verifyBugOwnership, this.bugController.deleteBug);
     }
 }
 
