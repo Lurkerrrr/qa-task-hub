@@ -1,10 +1,5 @@
 import { Response } from 'express';
-
-export interface IBaseResponse<T = any> {
-    status: 'success' | 'error';
-    data?: T;
-    message?: string;
-}
+import { IBaseResponse } from '../interfaces';
 
 export abstract class BaseController {
     protected sendSuccess<T>(res: Response, data: T, statusCode: number = 200): void {
