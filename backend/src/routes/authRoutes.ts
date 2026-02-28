@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AuthController, authController } from '../controllers/authController';
 import { loginLimiter, registerLimiter } from '../middleware/rateLimiter';
+import { validationMiddleware } from '../middleware/validate';
 
 export class AuthRoutes {
     public router: Router;
