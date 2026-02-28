@@ -27,6 +27,8 @@ export class AuthGuard {
 
             req.userId = decoded.id;
             req.userName = decoded.name;
+            req.userRole = decoded.role;
+
             next();
         });
     };
