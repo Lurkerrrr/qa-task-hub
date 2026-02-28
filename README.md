@@ -56,6 +56,7 @@ The project follows a professional **Controller-Service-Repository** pattern, ut
 The application uses a relational database structure with a **Singleton Database class** for async/await execution.
 
 ### Table: users
+| :--- | :--- | :--- | :--- |
 | Column | Type | Constraint | Description |
 | `role` | TEXT | DEFAULT 'user' | Access level for RBAC (user/admin). |
 | `id` | INTEGER | PRIMARY KEY | Auto-incrementing unique identifier. |
@@ -64,6 +65,7 @@ The application uses a relational database structure with a **Singleton Database
 | `name` | TEXT | NOT NULL | Display name of the user. |
 
 ### Table: bugs
+| :--- | :--- | :--- | :--- |
 | Column | Type | Constraint | Description |
 | `userId` | INTEGER | FOREIGN KEY | ID of the user who owns this bug. |
 | `id` | INTEGER | PRIMARY KEY | Auto-incrementing unique identifier. |
