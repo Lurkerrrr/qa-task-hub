@@ -30,6 +30,10 @@ app.use('/bugs', bugRoutes);
 
 app.use(ErrorHandler.handleControllerError);
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
+
+export default app;
