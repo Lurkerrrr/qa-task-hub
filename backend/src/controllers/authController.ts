@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { BaseController } from './BaseController';
 import { authService, IAuthService } from '../services/authService';
+import { IUserResponse } from '../interfaces';
 
 export class AuthController extends BaseController {
     private authService: IAuthService;
@@ -16,12 +17,9 @@ export class AuthController extends BaseController {
             const { name, email, password } = req.body;
             const user = await this.authService.register(name, email, password);
 
-            res.status(201).json({
-                status: 'success',
-                data: { user }
-            });
+            this.sendSuccess<IUserResponse>(res, { user }, 201);
         } catch (error) {
-            next(error);
+            this.nextError(next, error);
         }
     };
 
@@ -31,12 +29,9 @@ export class AuthController extends BaseController {
             const { email, password } = req.body;
             const data = await this.authService.login(email, password);
 
-            res.status(200).json({
-                status: 'success',
-                data
-            });
+            this.sendSuccess<IUserResponse>(res, data, 200);
         } catch (error) {
-            next(error);
+            this.nextError(next, error);
         }
     };
 }
