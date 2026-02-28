@@ -1,3 +1,4 @@
+import { beforeAll, afterAll } from '@jest/globals';
 import Database from '../src/database';
 
 // Clear tables before any tests run to ensure a clean state
