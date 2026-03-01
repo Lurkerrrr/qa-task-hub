@@ -10,7 +10,14 @@ The entire application is strictly typed using **TypeScript**, ensuring highly r
 
 The project follows a professional **Controller-Service-Repository** pattern, utilizing strictly typed classes and dependency-ready logic.
 
-### 1. Frontend (Client)
+### 1. Infrastructure & Repository Hardening
+* **Monorepo Management:** Centralized root configuration for cross-project consistency.
+* **Git Hooks (Husky):** Automated pre-commit bouncer enforcing code quality.
+* **Lint-Staged:** Executes Prettier auto-formatting only on changed files to optimize speed.
+* **Type-Guard:** `tsc --noEmit` runs on every commit, blocking code with type errors from entering the history.
+* **Conventional Commits:** Enforced commit message standards via `@commitlint` for automated changelog readiness.
+
+### 2. Frontend (Client)
 * **Framework:** React.js (v18) with TypeScript, utilizing Functional Components and Hooks.
 * **Routing:** React Router DOM (v6) for client-side navigation and protected route management.
 * **State Management:** React Hooks (useState, useEffect, useCallback) for local state and global user session handling.
@@ -18,7 +25,7 @@ The project follows a professional **Controller-Service-Repository** pattern, ut
 * **UI/UX:** Tailwind CSS for utility-first styling and Framer Motion for interface transitions.
 * **Internationalization:** Custom i18n implementation supporting English, Polish, Ukrainian, and Russian.
 
-### 2. Backend (Server)
+### 3. Backend (Server)
 * **Architecture:** Class-based OOP with BaseController and BaseService abstractions for maximum code reuse.
 * **Runtime:** Node.js with TypeScript (`ts-node` for development, `tsc` for production).
 * **Framework:** Express.js for handling HTTP requests and class-based middleware integration.
@@ -28,16 +35,21 @@ The project follows a professional **Controller-Service-Repository** pattern, ut
 * **Security & Validation:** Joi (strict payload validation), Helmet (HTTP headers protection), Express Rate Limit (DDoS prevention).
 * **Middleware:** Class-based `AuthGuard`, `ValidationMiddleware`, and `SecurityPolicy` for centralized access control.
 
-### 3. Data Flow
+### 4. Data Flow
 1.  **Request:** Client sends HTTP request with `Authorization: Bearer <token>` header (for protected routes).
 2.  **Verification:** Middleware verifies the JWT signature and extracts user identity.
 3.  **Execution:** Controller processes the request, applies business/security logic, and interacts with the SQLite database.
 4.  **Response:** Server returns JSON data to the client.
 
-### 4. Automated Testing
+### 5. Automated Testing
 * **Framework:** Jest and Supertest for integration testing.
 * **Coverage:** **89.11% Line Coverage** across the entire backend API.
 * **Strategy:** Endpoint-grouped test suites covering 15+ scenarios (Positive, Negative, and Security/IDOR).
+
+### 6. CI/CD Pipeline (GitHub Actions)
+* **Automated Quality Gates:** Every Push/PR triggers an isolated Linux build.
+* **Dependency Caching:** Optimized npm caching to reduce build times.
+* **Service Containers:** Automated pipeline spins up a live **PostgreSQL 15** container for integration testing.
 
 ---
 
