@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { AuthRequest } from '../interfaces';
-import { bugService, IBugService } from '../services/bugService';
+import { IBugService } from '../services/bugService';
 import { ForbiddenError, NotFoundError } from '../utils/AppError';
 
 export class SecurityPolicy {
@@ -44,5 +44,3 @@ export class SecurityPolicy {
         }
     };
 }
-
-export const securityPolicy = new SecurityPolicy(bugService);

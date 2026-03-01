@@ -83,4 +83,3 @@ export class BugService extends BaseService implements IBugService {
     }
 }
 
-export const bugService = new BugService();

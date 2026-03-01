@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { BaseController } from './BaseController';
-import { authService, IAuthService } from '../services/authService';
+import { IAuthService } from '../services/authService';
 import { IUserResponse } from '../interfaces';
 
 export class AuthController extends BaseController {
@@ -36,4 +36,3 @@ export class AuthController extends BaseController {
     };
 }
 
-export const authController = new AuthController(authService);

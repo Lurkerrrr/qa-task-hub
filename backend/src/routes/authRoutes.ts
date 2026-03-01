@@ -1,22 +1,22 @@
 import { Router } from 'express';
-import { AuthController, authController } from '../controllers/authController';
+import { AuthController } from '../controllers/authController';
 import { loginLimiter, registerLimiter } from '../middleware/rateLimiter';
-import { validationMiddleware } from '../middleware/validate';
+import { ValidationMiddleware } from '../middleware/validate';
 
 export class AuthRoutes {
     public router: Router;
     private authController: AuthController;
+    private validationMiddleware: ValidationMiddleware;
 
-    constructor(controller: AuthController) {
+    constructor(controller: AuthController, validationMiddleware: ValidationMiddleware) {
         this.router = Router();
         this.authController = controller;
+        this.validationMiddleware = validationMiddleware;
         this.initializeRoutes();
     }
 
     private initializeRoutes(): void {
-        this.router.post('/register', registerLimiter, validationMiddleware.validate('register'), this.authController.register);
-        this.router.post('/login', loginLimiter, validationMiddleware.validate('login'), this.authController.login);
+        this.router.post('/register', registerLimiter, this.validationMiddleware.validate('register'), this.authController.register);
+        this.router.post('/login', loginLimiter, this.validationMiddleware.validate('login'), this.authController.login);
     }
 }
-
-export default new AuthRoutes(authController).router;

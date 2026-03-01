@@ -63,4 +63,3 @@ export class AuthService extends BaseService implements IAuthService {
     }
 }
 
-export const authService = new AuthService();

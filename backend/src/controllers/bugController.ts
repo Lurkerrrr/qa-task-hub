@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { BaseController } from './BaseController';
-import { bugService, IBugService } from '../services/bugService';
+import { IBugService } from '../services/bugService';
 import { IBugResponse } from '../interfaces';
 
 export class BugController extends BaseController {
@@ -69,4 +69,3 @@ export class BugController extends BaseController {
     };
 }
 
-export const bugController = new BugController(bugService);
