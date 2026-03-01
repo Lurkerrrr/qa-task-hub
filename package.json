@@ -1,14 +1,28 @@
 {
-    "name": "qa-task-hub",
-    "version": "1.0.0",
-    "private": true,
-    "scripts": {
-        "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
-        "frontend": "cd frontend && npm start",
-        "backend": "cd backend && npm run dev",
-        "dev": "concurrently \"npm run backend\" \"npm run frontend\""
-    },
-    "devDependencies": {
-        "concurrently": "^9.2.1"
-    }
+  "name": "qa-task-hub",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "frontend": "cd frontend && npm start",
+    "backend": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "backend/**/*.ts": [
+      "prettier --write"
+    ],
+    "frontend/**/*.{ts,tsx}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.4.2",
+    "@commitlint/config-conventional": "^20.4.2",
+    "concurrently": "^9.2.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.1",
+    "prettier": "^3.8.1"
+  }
 }

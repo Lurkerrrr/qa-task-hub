@@ -1,0 +1,5 @@
+#!/bin/sh
+
+npm --prefix backend run typecheck
+
+npx lint-staged
