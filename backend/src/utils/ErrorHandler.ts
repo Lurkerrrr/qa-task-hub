@@ -1,9 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from './AppError';
 
+// Interface for Express body-parser size limit errors
+interface IBodyParserError extends Error {
+    type?: string;
+}
+
 export class ErrorHandler {
     public static handleControllerError(
-        err: any,
+        err: unknown,
         req: Request,
         res: Response,
         next: NextFunction
@@ -14,9 +19,12 @@ export class ErrorHandler {
         if (err instanceof AppError) {
             statusCode = err.statusCode;
             message = err.message;
-        } else if (err.type === 'entity.too.large') {
-            statusCode = 413;
-            message = 'Payload too large. Maximum size allowed is 100kb.';
+        } else if (err instanceof Error) {
+            const bpError = err as IBodyParserError;
+            if (bpError.type === 'entity.too.large') {
+                statusCode = 413;
+                message = 'Payload too large. Maximum size allowed is 100kb.';
+            }
         }
 
         res.status(statusCode).json({
