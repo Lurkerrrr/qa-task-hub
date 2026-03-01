@@ -3,7 +3,7 @@ import { AppError } from './AppError';
 
 export class ErrorHandler {
     public static handleControllerError(
-        err: Error | AppError,
+        err: any,
         req: Request,
         res: Response,
         next: NextFunction
@@ -14,6 +14,9 @@ export class ErrorHandler {
         if (err instanceof AppError) {
             statusCode = err.statusCode;
             message = err.message;
+        } else if (err.type === 'entity.too.large') {
+            statusCode = 413;
+            message = 'Payload too large. Maximum size allowed is 100kb.';
         } else {
             console.error('UNEXPECTED ERROR:', err);
         }

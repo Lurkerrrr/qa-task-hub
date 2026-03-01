@@ -51,6 +51,18 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
             expect(res.status).toBe(401);
             expect(res.body.message).toMatch(/Invalid token signature|Authentication failed/i);
         });
+
+        it('Category B: The "User-as-Admin" Trick should fail', async () => {
+            const res = await request(app)
+                .get('/bugs')
+                .set('Authorization', `Bearer ${tokenUserA}`)
+                .set('role', 'admin');
+
+            expect(res.status).toBe(200);
+            const allBugs = res.body.data.bugs;
+            const hasUserBBugs = allBugs.some((bug: any) => bug.assignee === 'User B');
+            expect(hasUserBBugs).toBe(false);
+        });
     });
 
     describe('POST /bugs', () => {
@@ -71,7 +83,6 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
             expect(res.body.data.bug).toHaveProperty('id');
             expect(res.body.data.bug.title).toBe('Login button missing');
 
-            // Save this ID for the PUT and DELETE tests below
             bugIdA = res.body.data.bug.id;
         });
 
@@ -90,6 +101,37 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
             expect(res.status).toBe(400);
             expect(res.body.message).toMatch(/Validation error/i);
         });
+        it('Category D: SQL Injection Attempt in Search/Creation', async () => {
+            const res = await request(app)
+                .post('/bugs')
+                .set('Authorization', `Bearer ${tokenUserA}`)
+                .send({
+                    title: "' OR 1=1 --",
+                    priority: 'Medium',
+                    severity: 'Low',
+                    status: 'Open',
+                    date: '2026-03-01'
+                });
+
+            expect(res.status).toBe(201);
+            expect(res.body.data.bug.title).toBe("' OR 1=1 --");
+        });
+
+        it('Category D: XSS Payload Storage Verification', async () => {
+            const res = await request(app)
+                .post('/bugs')
+                .set('Authorization', `Bearer ${tokenUserA}`)
+                .send({
+                    title: "<script>alert('hack')</script>",
+                    priority: 'Medium',
+                    severity: 'Low',
+                    status: 'Open',
+                    date: '2026-03-01'
+                });
+
+            expect(res.status).toBe(201);
+            expect(res.body.data.bug.title).toBe("<script>alert('hack')</script>");
+        });
     });
 
     describe('PUT /bugs/:id', () => {
@@ -104,13 +146,11 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
         });
 
         it('Negative: Should block IDOR Attack (User A modifying User B\'s bug)', async () => {
-            // Setup: User B creates a new bug
             const createRes = await request(app).post('/bugs').set('Authorization', `Bearer ${tokenUserB}`).send({
                 title: 'Another Bug B', priority: 'Low', severity: 'Low', status: 'Open', date: '2026-02-28', assignee: 'User B'
             });
             const newBugIdB = createRes.body.data.bug.id;
 
-            // Attack: User A attempts to update it
             const attackRes = await request(app)
                 .put(`/bugs/${newBugIdB}`)
                 .set('Authorization', `Bearer ${tokenUserA}`)
@@ -118,6 +158,15 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
 
             expect(attackRes.status).toBe(403);
             expect(attackRes.body.message).toMatch(/do not have permission/i);
+        });
+        it('Category C: Unauthorized Multi-Update Attempt', async () => {
+            const res = await request(app)
+                .put(`/bugs/[${bugIdA}, 999]`)
+                .set('Authorization', `Bearer ${tokenUserA}`)
+                .send({ status: 'Done' });
+
+            expect(res.status).toBe(404);
+            expect(res.body.message).toMatch(/Invalid bug ID format/i);
         });
     });
 

@@ -19,10 +19,7 @@ export class AuthGuard {
                 if (err.name === 'TokenExpiredError') {
                     return next(new UnauthorizedError('Token has expired. Please log in again.'));
                 }
-                if (err.name === 'JsonWebTokenError') {
-                    return next(new UnauthorizedError('Invalid token signature.'));
-                }
-                return next(new UnauthorizedError('Authentication failed.'));
+                return next(new UnauthorizedError('Invalid token signature.'));
             }
 
             req.userId = decoded.id;
