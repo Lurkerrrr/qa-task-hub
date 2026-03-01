@@ -1,0 +1,5 @@
+#!/bin/sh
+MSG_FILE=$(pwd)/$1
+
+cd backend
+npx --no -- commitlint --edit "$MSG_FILE"
