@@ -45,7 +45,6 @@ export class ValidationMiddleware {
 
             if (error) {
                 const errorMessages = error.details.map(detail => detail.message).join(', ');
-                console.error('Validation Error Details:', errorMessages);
                 res.status(400).json({ status: 'error', message: `Validation error: ${errorMessages}` });
                 return;
             }

@@ -17,8 +17,6 @@ export class ErrorHandler {
         } else if (err.type === 'entity.too.large') {
             statusCode = 413;
             message = 'Payload too large. Maximum size allowed is 100kb.';
-        } else {
-            console.error('UNEXPECTED ERROR:', err);
         }
 
         res.status(statusCode).json({
