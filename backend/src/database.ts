@@ -3,17 +3,23 @@ import path from 'path';
 
 export class Database {
     private static instance: Database;
-    public db: sqlite3.Database;
+    public db!: sqlite3.Database;
+    public isInitialized: Promise<void>;
 
     private constructor() {
         const dbPath = path.join(__dirname, '../database.sqlite');
-        this.db = new sqlite3.Database(dbPath, (err: Error | null) => {
-            if (err) {
-                console.error('Error connecting to SQLite database:', err.message);
-            } else {
-                console.log('Connected to SQLite database.');
-                this.init();
-            }
+
+        // Wrap the connection and initialization in a Promise
+        this.isInitialized = new Promise((resolve, reject) => {
+            this.db = new sqlite3.Database(dbPath, (err: Error | null) => {
+                if (err) {
+                    console.error('Error connecting to SQLite database:', err.message);
+                    reject(err);
+                } else {
+                    console.log('Connected to SQLite database.');
+                    this.init(resolve, reject);
+                }
+            });
         });
     }
 
@@ -24,43 +30,65 @@ export class Database {
         return Database.instance;
     }
 
-    private init(): void {
+    private init(resolve: () => void, reject: (err: Error) => void): void {
         this.db.serialize(() => {
-            this.db.run(`
-                CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    email TEXT UNIQUE NOT NULL,
-                    password TEXT NOT NULL,
-                    name TEXT NOT NULL
-                )
-            `);
+            try {
+                this.db.run(`
+                    CREATE TABLE IF NOT EXISTS users (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        email TEXT UNIQUE NOT NULL,
+                        password TEXT NOT NULL,
+                        name TEXT NOT NULL
+                    )
+                `);
 
-            this.db.run(`
-                CREATE TABLE IF NOT EXISTS bugs (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    title TEXT NOT NULL,
-                    priority TEXT NOT NULL,
-                    severity TEXT NOT NULL,
-                    status TEXT DEFAULT 'Open',
-                    assignee TEXT,
-                    date TEXT NOT NULL
-                )
-            `);
+                this.db.run(
+                    `
+                    CREATE TABLE IF NOT EXISTS bugs (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        title TEXT NOT NULL,
+                        priority TEXT NOT NULL,
+                        severity TEXT NOT NULL,
+                        status TEXT DEFAULT 'Open',
+                        assignee TEXT,
+                        date TEXT NOT NULL
+                    )
+                `,
+                    (err: Error | null) => {
+                        if (err) reject(err);
+                        else resolve(); // Resolve the promise once tables are created
+                    }
+                );
+            } catch (err) {
+                reject(err as Error);
+            }
         });
     }
 
     // Legacy wrappers for procedural compatibility
-    public run(sql: string, params: any[], callback?: (this: sqlite3.RunResult, err: Error | null) => void): this {
+    public run(
+        sql: string,
+        params: any[],
+        callback?: (this: sqlite3.RunResult, err: Error | null) => void
+    ): this {
         this.db.run(sql, params, callback);
         return this;
     }
 
-    public get(sql: string, params: any[], callback?: (this: sqlite3.Statement, err: Error | null, row: any) => void): this {
+    public get(
+        sql: string,
+        params: any[],
+        callback?: (this: sqlite3.Statement, err: Error | null, row: any) => void
+    ): this {
         this.db.get(sql, params, callback);
         return this;
     }
 
-    public all(sql: string, params: any[], callback?: (this: sqlite3.Statement, err: Error | null, rows: any[]) => void): this {
+    public all(
+        sql: string,
+        params: any[],
+        callback?: (this: sqlite3.Statement, err: Error | null, rows: any[]) => void
+    ): this {
         this.db.all(sql, params, callback);
         return this;
     }
