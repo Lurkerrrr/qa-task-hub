@@ -1,26 +1,20 @@
-import sqlite3 from 'sqlite3';
-import path from 'path';
+import { Pool } from 'pg';
 
 export class Database {
     private static instance: Database;
-    public db!: sqlite3.Database;
+    public pool!: Pool;
     public isInitialized: Promise<void>;
 
     private constructor() {
-        const dbPath = path.join(__dirname, '../database.sqlite');
-
-        // Wrap the connection and initialization in a Promise
-        this.isInitialized = new Promise((resolve, reject) => {
-            this.db = new sqlite3.Database(dbPath, (err: Error | null) => {
-                if (err) {
-                    console.error('Error connecting to SQLite database:', err.message);
-                    reject(err);
-                } else {
-                    console.log('Connected to SQLite database.');
-                    this.init(resolve, reject);
-                }
-            });
+        this.pool = new Pool({
+            user: process.env.POSTGRES_USER || 'testuser',
+            password: process.env.POSTGRES_PASSWORD || 'testpassword',
+            host: process.env.POSTGRES_HOST || 'localhost',
+            database: process.env.POSTGRES_DB || 'qataskdb',
+            port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
         });
+
+        this.isInitialized = this.init();
     }
 
     public static getInstance(): Database {
@@ -30,95 +24,56 @@ export class Database {
         return Database.instance;
     }
 
-    private init(resolve: () => void, reject: (err: Error) => void): void {
-        this.db.serialize(() => {
-            try {
-                this.db.run(`
-                    CREATE TABLE IF NOT EXISTS users (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        email TEXT UNIQUE NOT NULL,
-                        password TEXT NOT NULL,
-                        name TEXT NOT NULL
-                    )
-                `);
+    private async init(): Promise<void> {
+        try {
+            await this.pool.query(`
+                CREATE TABLE IF NOT EXISTS users (
+                    id SERIAL PRIMARY KEY,
+                    email VARCHAR(255) UNIQUE NOT NULL,
+                    password TEXT NOT NULL,
+                    name VARCHAR(255) NOT NULL
+                )
+            `);
 
-                this.db.run(
-                    `
-                    CREATE TABLE IF NOT EXISTS bugs (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        title TEXT NOT NULL,
-                        priority TEXT NOT NULL,
-                        severity TEXT NOT NULL,
-                        status TEXT DEFAULT 'Open',
-                        assignee TEXT,
-                        date TEXT NOT NULL
-                    )
-                `,
-                    (err: Error | null) => {
-                        if (err) reject(err);
-                        else resolve(); // Resolve the promise once tables are created
-                    }
-                );
-            } catch (err) {
-                reject(err as Error);
-            }
-        });
+            await this.pool.query(`
+                CREATE TABLE IF NOT EXISTS bugs (
+                    id SERIAL PRIMARY KEY,
+                    title TEXT NOT NULL,
+                    priority VARCHAR(50) NOT NULL,
+                    severity VARCHAR(50) NOT NULL,
+                    status VARCHAR(50) DEFAULT 'Open',
+                    assignee VARCHAR(255),
+                    date VARCHAR(255) NOT NULL
+                )
+            `);
+            console.log('Connected to PostgreSQL database and verified tables.');
+        } catch (err) {
+            console.error('Error initializing PostgreSQL database:', err);
+            throw err;
+        }
     }
 
-    // Legacy wrappers for procedural compatibility
-    public run(
-        sql: string,
-        params: any[],
-        callback?: (this: sqlite3.RunResult, err: Error | null) => void
-    ): this {
-        this.db.run(sql, params, callback);
-        return this;
-    }
-
-    public get(
-        sql: string,
-        params: any[],
-        callback?: (this: sqlite3.Statement, err: Error | null, row: any) => void
-    ): this {
-        this.db.get(sql, params, callback);
-        return this;
-    }
-
-    public all(
-        sql: string,
-        params: any[],
-        callback?: (this: sqlite3.Statement, err: Error | null, rows: any[]) => void
-    ): this {
-        this.db.all(sql, params, callback);
-        return this;
-    }
-
-    // Promisified methods for OOP architecture
     public async queryAsync(sql: string, params: any[] = []): Promise<any> {
-        return new Promise((resolve, reject) => {
-            this.db.run(sql, params, function (err) {
-                if (err) reject(err);
-                else resolve({ id: this.lastID, changes: this.changes });
-            });
-        });
+        const result = await this.pool.query(sql, params);
+        return {
+            id: result.rows[0]?.id,
+            changes: result.rowCount,
+        };
     }
 
     public async allAsync<T>(sql: string, params: any[] = []): Promise<T[]> {
-        return new Promise((resolve, reject) => {
-            this.db.all(sql, params, (err, rows: T[]) => {
-                if (err) reject(err);
-                else resolve(rows);
-            });
-        });
+        const result = await this.pool.query(sql, params);
+        return result.rows as T[];
     }
 
-    public close(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.db.close((err) => {
-                if (err) reject(err);
-                else resolve();
-            });
-        });
+    public async getAsync<T>(sql: string, params: any[] = []): Promise<T | undefined> {
+        const result = await this.pool.query(sql, params);
+        return result.rows[0] as T | undefined;
+    }
+
+    public async close(): Promise<void> {
+        await this.pool.end();
+        console.log('PostgreSQL connection pool closed.');
     }
 }
 

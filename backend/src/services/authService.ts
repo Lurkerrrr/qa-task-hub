@@ -8,35 +8,50 @@ import { JWT_SECRET } from '../utils/config';
 
 export interface IAuthService {
     register(name: string, email: string, passwordRaw: string): Promise<Omit<IUser, 'password'>>;
-    login(email: string, passwordRaw: string): Promise<{ token: string; user: Omit<IUser, 'password'> }>;
+    login(
+        email: string,
+        passwordRaw: string
+    ): Promise<{ token: string; user: Omit<IUser, 'password'> }>;
 }
 
 export class AuthService extends BaseService implements IAuthService {
-    public async register(name: string, email: string, passwordRaw: string): Promise<Omit<IUser, 'password'>> {
+    public async register(
+        name: string,
+        email: string,
+        passwordRaw: string
+    ): Promise<Omit<IUser, 'password'>> {
         const formattedName = this.formatString(name);
         const formattedEmail = this.formatString(email).toLowerCase();
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(passwordRaw, salt);
 
-        const sql = `INSERT INTO users (name, email, password) VALUES (?, ?, ?)`;
+        const sql = `INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id`;
 
         try {
-            const result = await Database.queryAsync(sql, [formattedName, formattedEmail, hashedPassword]);
+            const result = await Database.queryAsync(sql, [
+                formattedName,
+                formattedEmail,
+                hashedPassword,
+            ]);
             return { id: result.id, name: formattedName, email: formattedEmail };
         } catch (error: unknown) {
             const dbError = error as { message?: string };
 
-            if (dbError.message && dbError.message.includes('UNIQUE constraint failed')) {
+            if (dbError.message && dbError.message.includes('unique constraint')) {
                 throw new AppError('User already exists', 400);
             }
             throw new AppError('Database error', 500);
         }
     }
 
-    public async login(email: string, passwordRaw: string): Promise<{ token: string; user: Omit<IUser, 'password'> }> {
+    public async login(
+        email: string,
+        passwordRaw: string
+    ): Promise<{ token: string; user: Omit<IUser, 'password'> }> {
         const formattedEmail = this.formatString(email).toLowerCase();
-        const sql = `SELECT * FROM users WHERE email = ?`;
+
+        const sql = `SELECT * FROM users WHERE email = $1`;
 
         try {
             const users = await Database.allAsync<IUser>(sql, [formattedEmail]);
@@ -57,7 +72,7 @@ export class AuthService extends BaseService implements IAuthService {
                 id: user.id,
                 email: user.email,
                 name: user.name,
-                role: userWithRole.role || (user.email === 'admin@test.com' ? 'admin' : 'user')
+                role: userWithRole.role || (user.email === 'admin@test.com' ? 'admin' : 'user'),
             };
 
             const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });

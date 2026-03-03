@@ -3,7 +3,6 @@ import { BaseService } from './BaseService';
 import { IBug } from '../interfaces';
 import { AppError, NotFoundError } from '../utils/AppError';
 
-// Interface definition for future Dependency Injection
 export interface IBugService {
     getAllBugs(): Promise<IBug[]>;
     getBugById(id: number): Promise<IBug>;
@@ -24,9 +23,8 @@ export class BugService extends BaseService implements IBugService {
 
     public async getBugById(id: number): Promise<IBug> {
         try {
-            const sql = `SELECT * FROM bugs WHERE id = ?`;
+            const sql = `SELECT * FROM bugs WHERE id = $1`;
 
-            // Using allAsync because we need to extract the first row from the array
             const rows = await Database.allAsync<IBug>(sql, [id]);
             const bug = rows[0];
 
@@ -45,9 +43,16 @@ export class BugService extends BaseService implements IBugService {
             const assignee = this.formatString(bugData.assignee);
             const { priority, severity, status, date, steps } = bugData;
 
-            const sql = `INSERT INTO bugs (title, priority, severity, assignee, status, date) VALUES (?,?,?,?,?,?)`;
+            const sql = `INSERT INTO bugs (title, priority, severity, assignee, status, date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`;
 
-            const result = await Database.queryAsync(sql, [title, priority, severity, assignee, status, date]);
+            const result = await Database.queryAsync(sql, [
+                title,
+                priority,
+                severity,
+                assignee,
+                status,
+                date,
+            ]);
 
             return {
                 id: result.id,
@@ -57,7 +62,7 @@ export class BugService extends BaseService implements IBugService {
                 status,
                 assignee,
                 date,
-                steps
+                steps,
             } as IBug;
         } catch (error) {
             throw new AppError('Failed to create bug', 500);
@@ -66,7 +71,7 @@ export class BugService extends BaseService implements IBugService {
 
     public async updateBugStatus(id: number, status: string): Promise<void> {
         try {
-            const sql = `UPDATE bugs SET status = ? WHERE id = ?`;
+            const sql = `UPDATE bugs SET status = $1 WHERE id = $2`;
             await Database.queryAsync(sql, [status, id]);
         } catch (error) {
             throw new AppError('Failed to update bug status', 500);
@@ -75,11 +80,10 @@ export class BugService extends BaseService implements IBugService {
 
     public async deleteBug(id: number): Promise<void> {
         try {
-            const sql = `DELETE FROM bugs WHERE id = ?`;
+            const sql = `DELETE FROM bugs WHERE id = $1`;
             await Database.queryAsync(sql, [id]);
         } catch (error) {
             throw new AppError('Failed to delete bug', 500);
         }
     }
 }
-
