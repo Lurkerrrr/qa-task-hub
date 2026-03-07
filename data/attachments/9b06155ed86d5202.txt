@@ -1,0 +1,1 @@
+{"status":"success","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJwb3N0bWFucWFAdGVzdC5jb20iLCJuYW1lIjoiUG9zdG1hbiBRQSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzcyOTI1MDk4LCJleHAiOjE3NzMwMTE0OTh9.x0-HsXSCHbDvnT3UvIeNHXqz20vRZgeXhWh1I9TwMuQ","user":{"id":3,"email":"postmanqa@test.com","name":"Postman QA"}}}
