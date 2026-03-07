@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { TranslationSchema } from '../locales/translations';
 import { IBug } from '../types/interfaces';
 
 interface PrioritySelectorProps {
     priority: IBug['priority'];
     setPriority: (p: IBug['priority']) => void;
-    t: any;
+    t: TranslationSchema;
 }
 
 const PrioritySelector: React.FC<PrioritySelectorProps> = ({ priority, setPriority, t }) => {
