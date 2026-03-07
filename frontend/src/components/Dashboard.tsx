@@ -169,7 +169,7 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                     </div>
                     {activeCriticalBugs > 0 && (
                         <p className="text-red-500 text-xs font-bold mt-1 animate-pulse">
-                            {(t as any).attention || 'Requires attention!'}
+                            {t.attention || 'Requires attention!'}
                         </p>
                     )}
                 </motion.div>
@@ -204,13 +204,13 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
                     <h3 className="text-xl font-bold text-slate-800 mb-6">
-                        {(t as any).project_health || 'Project Health'}
+                        {t.project_health || 'Project Health'}
                     </h3>
                     <div className="space-y-6">
                         <div>
                             <div className="flex justify-between mb-2">
                                 <span className="text-sm font-medium text-slate-600">
-                                    {(t as any).success_rate || 'Success Rate'}
+                                    {t.success_rate || 'Success Rate'}
                                 </span>
                                 <span className="text-sm font-bold text-slate-600">
                                     {successRate}%
@@ -226,7 +226,7 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                         <div>
                             <div className="flex justify-between mb-2">
                                 <span className="text-sm font-medium text-slate-600">
-                                    {(t as any).critical_density || 'Critical Density'}
+                                    {t.critical_density || 'Critical Density'}
                                 </span>
                                 <span
                                     className={`text-sm font-bold ${criticalDensity >= 80 ? 'text-red-600' : 'text-slate-600'}`}
@@ -245,9 +245,7 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                         {showWarningBanner && (
                             <div className="mt-4 p-4 bg-red-50 rounded-xl border border-red-100 animate-pulse">
                                 <div className="flex items-center gap-3 text-red-600 font-bold">
-                                    <span>
-                                        {(t as any).risk_high || '⚠️ High Risk! Action needed.'}
-                                    </span>
+                                    <span>{t.risk_high || '⚠️ High Risk! Action needed.'}</span>
                                 </div>
                             </div>
                         )}
