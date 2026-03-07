@@ -1,4 +1,5 @@
 import React from 'react';
+import { TranslationSchema } from '../locales/translations';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IUser } from '../types/interfaces';
@@ -7,7 +8,7 @@ import LanguageSelector from './LanguageSelector';
 interface HeaderProps {
     language: string;
     setLanguage: (lang: string) => void;
-    t: any;
+    t: TranslationSchema;
     user: IUser | null;
     onLogout: () => void;
 }
