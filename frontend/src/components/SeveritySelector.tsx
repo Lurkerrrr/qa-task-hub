@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TranslationSchema } from '../locales/translations';
 import { IBug } from '../types/interfaces';
 
 interface SeverityLevel {
@@ -11,7 +12,7 @@ interface SeverityLevel {
 interface SeveritySelectorProps {
     severity: IBug['severity'];
     setSeverity: (val: IBug['severity']) => void;
-    t: any;
+    t: TranslationSchema;
 }
 
 const SeveritySelector: React.FC<SeveritySelectorProps> = ({ severity, setSeverity, t }) => {
