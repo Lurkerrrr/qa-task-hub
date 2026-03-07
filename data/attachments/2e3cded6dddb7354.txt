@@ -1,0 +1,5 @@
+{
+    "name": "Postman QA",
+    "email": "postmanqa@test.com",
+    "password": "password123"
+}
