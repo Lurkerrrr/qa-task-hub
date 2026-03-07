@@ -28,7 +28,7 @@ const BugTracker: React.FC<BugTrackerProps> = ({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newBug, setNewBug] = useState('');
     const [priority, setPriority] = useState<IBug['priority']>('Medium');
-    const [severity, setSeverity] = useState<IBug['severity']>('Moderate' as any);
+    const [severity, setSeverity] = useState<IBug['severity']>('Moderate');
 
     const [assignee, setAssignee] = useState(currentUser.name);
 
@@ -63,7 +63,7 @@ const BugTracker: React.FC<BugTrackerProps> = ({
             id: Date.now(),
             title: newBug,
             priority,
-            severity: severity as any,
+            severity: severity,
             assignee,
             steps,
             status: 'Open',
