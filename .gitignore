@@ -24,3 +24,7 @@ yarn-error.log*
 # --- BACKEND & DB ---
 *.sqlite
 *.db
+
+# Allure Reports
+allure-results/
+allure-report/
