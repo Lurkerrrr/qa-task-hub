@@ -75,11 +75,11 @@ jobs:
 
       - name: Run Postman Auth Tests via Newman
         working-directory: ./backend
-        run: npx newman run ../postman/collections/auth.collection.json -e ../postman/environments/local.env.json
+        run: npx newman run ../postman/collections/auth.collection.json -e ../postman/environments/local.env.json --export-environment ../postman/environments/ci-env.json
 
       - name: Run Postman Bug Tests via Newman
         working-directory: ./backend
-        run: npx newman run ../postman/collections/bug.collection.json -e ../postman/environments/local.env.json    
+        run: npx newman run ../postman/collections/bug.collection.json -e ../postman/environments/ci-env.json    
 
       - name: Upload Coverage Artifact
         uses: actions/upload-artifact@v4
