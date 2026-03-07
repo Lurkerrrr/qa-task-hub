@@ -1,4 +1,4 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","134","Login & Store Token","Auth API Tests","2026-03-07","passed","2026-03-07","","","",""
-"","62","Get All Bugs","Bug API Tests","2026-03-07","passed","2026-03-07","","","",""
-"","186","Register User","Auth API Tests","2026-03-07","passed","2026-03-07","","","",""
+"","106","Login & Store Token","Auth API Tests","2026-03-07","passed","2026-03-07","","","",""
+"","174","Register User","Auth API Tests","2026-03-07","passed","2026-03-07","","","",""
+"","57","Get All Bugs","Bug API Tests","2026-03-07","passed","2026-03-07","","","",""
