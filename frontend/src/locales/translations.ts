@@ -204,7 +204,8 @@ export const translations: Record<string, TranslationSchema> = {
         tracker_title: '🐞 Баг Трекер',
         search_placeholder: '🔍 Знайти баг...',
         placeholder_title: 'Назва багу...',
-        placeholder_steps: 'Наприклад: 1. Відкрити сторінку, 2. Натиснути кнопку, 3. Побачити помилку...',
+        placeholder_steps:
+            'Наприклад: 1. Відкрити сторінку, 2. Натиснути кнопку, 3. Побачити помилку...',
         btn_add: '+ Створити Баг',
         err_title: "⚠️ Назва обов'язкова!",
         err_steps: "⚠️ Кроки обов'язкові!",

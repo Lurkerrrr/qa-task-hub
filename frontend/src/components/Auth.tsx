@@ -59,7 +59,9 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                 <h2 className="mb-6 text-3xl font-bold text-center text-slate-800">
                     {isLogin ? 'Login' : 'Register'}
                 </h2>
-                {error && <div className="p-3 mb-4 text-sm bg-red-50 text-red-700 rounded">{error}</div>}
+                {error && (
+                    <div className="p-3 mb-4 text-sm bg-red-50 text-red-700 rounded">{error}</div>
+                )}
                 <form onSubmit={handleSubmit} autoComplete="off">
                     {!isLogin && (
                         <Input
@@ -86,7 +88,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        autoComplete={isLogin ? "current-password" : "new-password"}
+                        autoComplete={isLogin ? 'current-password' : 'new-password'}
                         required
                     />
                     <Button type="submit">{isLogin ? 'Sign In' : 'Sign Up'}</Button>

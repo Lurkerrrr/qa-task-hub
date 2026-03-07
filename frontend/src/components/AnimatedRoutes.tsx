@@ -22,7 +22,7 @@ const AnimatedRoutes: React.FC<AnimatedRoutesProps> = ({
     onAddBug,
     onDeleteBug,
     onUpdateStatus,
-    t
+    t,
 }) => {
     const location = useLocation();
 
@@ -42,39 +42,56 @@ const AnimatedRoutes: React.FC<AnimatedRoutesProps> = ({
     const variants = {
         initial: (dir: number) => ({ opacity: 0, x: dir > 0 ? 50 : -50 }),
         enter: { opacity: 1, x: 0, transition: { duration: 0.3, ease: 'easeOut' } },
-        exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -50 : 50, transition: { duration: 0.2 } }),
+        exit: (dir: number) => ({
+            opacity: 0,
+            x: dir > 0 ? -50 : 50,
+            transition: { duration: 0.2 },
+        }),
     };
 
     return (
         <AnimatePresence mode="wait" custom={direction}>
             <Routes location={location} key={location.pathname}>
-                <Route path="/" element={
-                    <PageWrapper custom={direction} variants={variants}>
-                        <Dashboard bugs={bugs} t={t} />
-                    </PageWrapper>
-                } />
-                <Route path="/tracker" element={
-                    <PageWrapper custom={direction} variants={variants}>
-                        <BugTracker
-                            bugs={bugs}
-                            t={t}
-                            onAddBug={onAddBug}
-                            onDeleteBug={onDeleteBug}
-                            onUpdateStatus={onUpdateStatus}
-                        />
-                    </PageWrapper>
-                } />
-                <Route path="/api" element={
-                    <PageWrapper custom={direction} variants={variants}>
-                        <ExternalAPI t={t} />
-                    </PageWrapper>
-                } />
+                <Route
+                    path="/"
+                    element={
+                        <PageWrapper custom={direction} variants={variants}>
+                            <Dashboard bugs={bugs} t={t} />
+                        </PageWrapper>
+                    }
+                />
+                <Route
+                    path="/tracker"
+                    element={
+                        <PageWrapper custom={direction} variants={variants}>
+                            <BugTracker
+                                bugs={bugs}
+                                t={t}
+                                onAddBug={onAddBug}
+                                onDeleteBug={onDeleteBug}
+                                onUpdateStatus={onUpdateStatus}
+                            />
+                        </PageWrapper>
+                    }
+                />
+                <Route
+                    path="/api"
+                    element={
+                        <PageWrapper custom={direction} variants={variants}>
+                            <ExternalAPI t={t} />
+                        </PageWrapper>
+                    }
+                />
             </Routes>
         </AnimatePresence>
     );
 };
 
-const PageWrapper: React.FC<{ children: React.ReactNode; custom: number; variants: any }> = ({ children, custom, variants }) => (
+const PageWrapper: React.FC<{ children: React.ReactNode; custom: number; variants: any }> = ({
+    children,
+    custom,
+    variants,
+}) => (
     <motion.div
         custom={custom}
         variants={variants}

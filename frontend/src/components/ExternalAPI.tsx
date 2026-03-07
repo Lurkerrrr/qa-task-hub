@@ -58,7 +58,9 @@ const ExternalAPI: React.FC<ExternalAPIProps> = ({ t }) => {
 
     return (
         <div className="space-y-6 animate-fade-in">
-            <h2 className="text-3xl font-bold text-gray-800">{(t as any).api_title || 'API Explorer'}</h2>
+            <h2 className="text-3xl font-bold text-gray-800">
+                {(t as any).api_title || 'API Explorer'}
+            </h2>
 
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
@@ -67,10 +69,11 @@ const ExternalAPI: React.FC<ExternalAPIProps> = ({ t }) => {
                             <button
                                 key={item.id}
                                 onClick={() => setResource(item.id)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm ${resource === item.id
-                                    ? 'bg-blue-600 text-white shadow-md ring-2 ring-blue-300'
-                                    : 'bg-slate-100 text-gray-600 hover:bg-slate-200'
-                                    }`}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm ${
+                                    resource === item.id
+                                        ? 'bg-blue-600 text-white shadow-md ring-2 ring-blue-300'
+                                        : 'bg-slate-100 text-gray-600 hover:bg-slate-200'
+                                }`}
                             >
                                 {item.label}
                             </button>
@@ -94,18 +97,23 @@ const ExternalAPI: React.FC<ExternalAPIProps> = ({ t }) => {
 
                         <div className="flex items-center gap-4">
                             <div>
-                                <span className="text-gray-500 mr-2">{(t as any).status || 'Status'}:</span>
+                                <span className="text-gray-500 mr-2">
+                                    {(t as any).status || 'Status'}:
+                                </span>
                                 <span
-                                    className={`font-bold ${status && status >= 200 && status < 300
-                                        ? 'text-green-400'
-                                        : 'text-red-500'
-                                        }`}
+                                    className={`font-bold ${
+                                        status && status >= 200 && status < 300
+                                            ? 'text-green-400'
+                                            : 'text-red-500'
+                                    }`}
                                 >
                                     {status || '...'}
                                 </span>
                             </div>
                             <div>
-                                <span className="text-gray-500 mr-2">{(t as any).time || 'Time'}:</span>
+                                <span className="text-gray-500 mr-2">
+                                    {(t as any).time || 'Time'}:
+                                </span>
                                 <span className="text-yellow-400">{duration}ms</span>
                             </div>
                         </div>

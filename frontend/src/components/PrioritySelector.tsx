@@ -56,8 +56,18 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({ priority, setPriori
                     {icons[priority]}
                     <span className="font-medium text-gray-700">{t.priority[priority]}</span>
                 </div>
-                <svg className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                <svg
+                    className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                    />
                 </svg>
             </button>
 
@@ -75,7 +85,9 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({ priority, setPriori
                                 className={`flex items-center gap-3 p-2.5 cursor-pointer hover:bg-gray-50 transition border-l-4 ${priority === opt ? 'border-blue-500 bg-blue-50' : 'border-transparent'}`}
                             >
                                 {icons[opt]}
-                                <span className="text-sm font-medium text-gray-700">{t.priority[opt]}</span>
+                                <span className="text-sm font-medium text-gray-700">
+                                    {t.priority[opt]}
+                                </span>
                             </div>
                         ))}
                     </div>

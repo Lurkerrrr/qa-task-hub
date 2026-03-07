@@ -11,7 +11,7 @@ import {
     Tooltip,
     Legend,
     ArcElement,
-    ChartOptions
+    ChartOptions,
 } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
 
@@ -34,7 +34,9 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
     ];
 
     const doneCount = safeBugs.filter((b) => b.status === 'Done').length;
-    const wipCount = safeBugs.filter((b) => b.status === 'In Progress' || b.status === 'InProgress').length;
+    const wipCount = safeBugs.filter(
+        (b) => b.status === 'In Progress' || b.status === 'InProgress'
+    ).length;
     const openCount = safeBugs.filter((b) => b.status === 'Open').length;
 
     const totalBugs = safeBugs.length;
@@ -45,7 +47,8 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
         (b) => (b.priority === 'Highest' || b.priority === 'Critical') && b.status !== 'Done'
     ).length;
 
-    const criticalDensity = totalBugs === 0 ? 0 : Math.round((activeCriticalBugs / totalBugs) * 100);
+    const criticalDensity =
+        totalBugs === 0 ? 0 : Math.round((activeCriticalBugs / totalBugs) * 100);
     const showWarningBanner = totalBugs > 0 && criticalDensity >= 80;
 
     const barOptions: ChartOptions<'bar'> = {
@@ -59,15 +62,15 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                 beginAtZero: true,
                 ticks: {
                     stepSize: 1,
-                    font: { weight: 'bold' }
+                    font: { weight: 'bold' },
                 },
-                grid: { color: '#f1f5f9' }
+                grid: { color: '#f1f5f9' },
             },
             x: {
                 grid: { display: false },
-                ticks: { font: { weight: 'bold' } }
-            }
-        }
+                ticks: { font: { weight: 'bold' } },
+            },
+        },
     };
 
     const doughnutOptions: ChartOptions<'doughnut'> = {
@@ -80,29 +83,39 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                 labels: {
                     padding: 20,
                     usePointStyle: true,
-                    font: { size: 12, weight: 'bold' }
-                }
-            }
-        }
+                    font: { size: 12, weight: 'bold' },
+                },
+            },
+        },
     };
 
     const barData = {
-        labels: [t.priority.Highest, t.priority.High, t.priority.Medium, t.priority.Low, t.priority.Lowest],
-        datasets: [{
-            data: priorityCounts,
-            backgroundColor: ['#DC2626', '#EA580C', '#EAB308', '#22C55E', '#64748B'],
-            borderRadius: 6,
-            barThickness: 25,
-        }],
+        labels: [
+            t.priority.Highest,
+            t.priority.High,
+            t.priority.Medium,
+            t.priority.Low,
+            t.priority.Lowest,
+        ],
+        datasets: [
+            {
+                data: priorityCounts,
+                backgroundColor: ['#DC2626', '#EA580C', '#EAB308', '#22C55E', '#64748B'],
+                borderRadius: 6,
+                barThickness: 25,
+            },
+        ],
     };
 
     const doughnutData = {
         labels: [t.status_opt.Done, t.status_opt.InProgress, t.status_opt.Open],
-        datasets: [{
-            data: totalBugs === 0 ? [0, 0, 1] : [doneCount, wipCount, openCount],
-            backgroundColor: totalBugs === 0 ? ['#F3F4F6'] : ['#22C55E', '#3B82F6', '#EF4444'],
-            borderWidth: 0,
-        }],
+        datasets: [
+            {
+                data: totalBugs === 0 ? [0, 0, 1] : [doneCount, wipCount, openCount],
+                backgroundColor: totalBugs === 0 ? ['#F3F4F6'] : ['#22C55E', '#3B82F6', '#EF4444'],
+                borderWidth: 0,
+            },
+        ],
     };
 
     const recentActivity = [...safeBugs].sort((a, b) => b.id - a.id).slice(0, 5);
@@ -124,7 +137,9 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                     whileHover={{ y: -5 }}
                     className="bg-white p-8 rounded-2xl shadow-sm border-l-[6px] border-blue-500 flex flex-col justify-center min-h-[160px]"
                 >
-                    <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">{t.total_bugs}</p>
+                    <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">
+                        {t.total_bugs}
+                    </p>
                     <h3 className="text-5xl font-black text-slate-800 mt-2">{totalBugs}</h3>
                 </motion.div>
 
@@ -132,7 +147,9 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                     whileHover={{ y: -5 }}
                     className="bg-white p-8 rounded-2xl shadow-sm border-l-[6px] border-green-500 flex flex-col justify-center min-h-[160px]"
                 >
-                    <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">{t.fixed}</p>
+                    <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">
+                        {t.fixed}
+                    </p>
                     <h3 className="text-5xl font-black text-green-600 mt-2">{doneCount}</h3>
                 </motion.div>
 
@@ -140,9 +157,13 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                     whileHover={{ y: -5 }}
                     className="bg-white p-8 rounded-2xl shadow-sm border-l-[6px] border-red-500 flex flex-col justify-center min-h-[160px]"
                 >
-                    <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">{t.critical}</p>
+                    <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">
+                        {t.critical}
+                    </p>
                     <div className="flex items-baseline gap-2">
-                        <h3 className={`text-5xl font-black mt-2 ${activeCriticalBugs > 0 ? 'text-red-600' : 'text-slate-800'}`}>
+                        <h3
+                            className={`text-5xl font-black mt-2 ${activeCriticalBugs > 0 ? 'text-red-600' : 'text-slate-800'}`}
+                        >
                             {activeCriticalBugs}
                         </h3>
                     </div>
@@ -169,7 +190,9 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                             <Doughnut data={doughnutData} options={doughnutOptions} />
                         </div>
                         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none translate-y-[-20px]">
-                            <span className="text-4xl font-black text-slate-800 leading-none">{successRate}%</span>
+                            <span className="text-4xl font-black text-slate-800 leading-none">
+                                {successRate}%
+                            </span>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
                                 {t.status_opt.Done}
                             </span>
@@ -180,12 +203,18 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                    <h3 className="text-xl font-bold text-slate-800 mb-6">{(t as any).project_health || 'Project Health'}</h3>
+                    <h3 className="text-xl font-bold text-slate-800 mb-6">
+                        {(t as any).project_health || 'Project Health'}
+                    </h3>
                     <div className="space-y-6">
                         <div>
                             <div className="flex justify-between mb-2">
-                                <span className="text-sm font-medium text-slate-600">{(t as any).success_rate || 'Success Rate'}</span>
-                                <span className="text-sm font-bold text-slate-600">{successRate}%</span>
+                                <span className="text-sm font-medium text-slate-600">
+                                    {(t as any).success_rate || 'Success Rate'}
+                                </span>
+                                <span className="text-sm font-bold text-slate-600">
+                                    {successRate}%
+                                </span>
                             </div>
                             <div className="w-full bg-slate-100 rounded-full h-3">
                                 <div
@@ -196,8 +225,12 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                         </div>
                         <div>
                             <div className="flex justify-between mb-2">
-                                <span className="text-sm font-medium text-slate-600">{(t as any).critical_density || 'Critical Density'}</span>
-                                <span className={`text-sm font-bold ${criticalDensity >= 80 ? 'text-red-600' : 'text-slate-600'}`}>
+                                <span className="text-sm font-medium text-slate-600">
+                                    {(t as any).critical_density || 'Critical Density'}
+                                </span>
+                                <span
+                                    className={`text-sm font-bold ${criticalDensity >= 80 ? 'text-red-600' : 'text-slate-600'}`}
+                                >
                                     {criticalDensity}%
                                 </span>
                             </div>
@@ -212,7 +245,9 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                         {showWarningBanner && (
                             <div className="mt-4 p-4 bg-red-50 rounded-xl border border-red-100 animate-pulse">
                                 <div className="flex items-center gap-3 text-red-600 font-bold">
-                                    <span>{(t as any).risk_high || '⚠️ High Risk! Action needed.'}</span>
+                                    <span>
+                                        {(t as any).risk_high || '⚠️ High Risk! Action needed.'}
+                                    </span>
                                 </div>
                             </div>
                         )}
@@ -222,37 +257,42 @@ const Dashboard: React.FC<DashboardProps> = ({ t, bugs = [] }) => {
                 <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
                     <h3 className="text-xl font-bold text-slate-800 mb-6">{t.recent_activity}</h3>
                     <div className="space-y-4">
-                        {recentActivity.length > 0 ? recentActivity.map((bug) => (
-                            <div
-                                key={bug.id}
-                                className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-lg transition border-b border-slate-50 last:border-0"
-                            >
+                        {recentActivity.length > 0 ? (
+                            recentActivity.map((bug) => (
                                 <div
-                                    className={`w-2 h-2 rounded-full flex-shrink-0 ${bug.priority === 'Highest' || bug.priority === 'Critical'
-                                        ? 'bg-red-500'
-                                        : bug.priority === 'High'
-                                            ? 'bg-orange-500'
-                                            : 'bg-blue-500'
-                                        }`}
-                                ></div>
-                                <div className="overflow-hidden flex-grow">
-                                    <p className="text-sm font-bold text-slate-800 truncate">
-                                        {bug.title}
-                                    </p>
-                                    <p className="text-xs text-slate-400">
-                                        {bug.date} • {bug.assignee || 'Unassigned'}
-                                    </p>
-                                </div>
-                                <span
-                                    className={`ml-auto text-[10px] px-2 py-0.5 rounded font-bold uppercase ${bug.status === 'Done'
-                                        ? 'bg-green-100 text-green-700'
-                                        : 'bg-blue-50 text-blue-700'
-                                        }`}
+                                    key={bug.id}
+                                    className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-lg transition border-b border-slate-50 last:border-0"
                                 >
-                                    {bug.status === 'Done' ? 'DONE' : 'WIP'}
-                                </span>
-                            </div>
-                        )) : (
+                                    <div
+                                        className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                                            bug.priority === 'Highest' ||
+                                            bug.priority === 'Critical'
+                                                ? 'bg-red-500'
+                                                : bug.priority === 'High'
+                                                  ? 'bg-orange-500'
+                                                  : 'bg-blue-500'
+                                        }`}
+                                    ></div>
+                                    <div className="overflow-hidden flex-grow">
+                                        <p className="text-sm font-bold text-slate-800 truncate">
+                                            {bug.title}
+                                        </p>
+                                        <p className="text-xs text-slate-400">
+                                            {bug.date} • {bug.assignee || 'Unassigned'}
+                                        </p>
+                                    </div>
+                                    <span
+                                        className={`ml-auto text-[10px] px-2 py-0.5 rounded font-bold uppercase ${
+                                            bug.status === 'Done'
+                                                ? 'bg-green-100 text-green-700'
+                                                : 'bg-blue-50 text-blue-700'
+                                        }`}
+                                    >
+                                        {bug.status === 'Done' ? 'DONE' : 'WIP'}
+                                    </span>
+                                </div>
+                            ))
+                        ) : (
                             <p className="text-slate-400 text-center py-4">No recent activity</p>
                         )}
                     </div>

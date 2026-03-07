@@ -13,11 +13,14 @@ const App: React.FC = () => {
         try {
             const savedUser = localStorage.getItem('user');
             return savedUser ? JSON.parse(savedUser) : null;
-        } catch { return null; }
+        } catch {
+            return null;
+        }
     });
 
     const [language, setLanguage] = useState<string>(localStorage.getItem('language') || 'en');
-    const t: TranslationSchema = translations[language as keyof typeof translations] || translations.en;
+    const t: TranslationSchema =
+        translations[language as keyof typeof translations] || translations.en;
     const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
     const handleLogout = useCallback((): void => {
@@ -34,8 +37,8 @@ const App: React.FC = () => {
             try {
                 const res = await fetch(`${API_URL}/bugs`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
                     },
                 });
 
@@ -67,7 +70,7 @@ const App: React.FC = () => {
     const handleAddBug = async (newBug: Omit<IBug, 'id'>) => {
         const response = await fetch(`${API_URL}/bugs`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify(newBug),
         });
 
@@ -75,11 +78,13 @@ const App: React.FC = () => {
             const responseBody = await response.json();
             const savedBug = responseBody.data?.bug;
             if (savedBug) {
-                setBugs(prev => [savedBug, ...prev]);
+                setBugs((prev) => [savedBug, ...prev]);
             }
         } else if (response.status === 403) {
             const errorData = await response.json();
-            alert(`Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`);
+            alert(
+                `Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`
+            );
             handleLogout();
         } else if (response.status === 400) {
             const errorData = await response.json();
@@ -92,14 +97,16 @@ const App: React.FC = () => {
     const handleDeleteBug = async (id: number) => {
         const response = await fetch(`${API_URL}/bugs/${id}`, {
             method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` },
+            headers: { Authorization: `Bearer ${token}` },
         });
 
         if (response.ok) {
-            setBugs(prev => prev.filter(b => b.id !== id));
+            setBugs((prev) => prev.filter((b) => b.id !== id));
         } else if (response.status === 403) {
             const errorData = await response.json();
-            alert(`Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`);
+            alert(
+                `Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`
+            );
             handleLogout();
         }
     };
@@ -107,15 +114,17 @@ const App: React.FC = () => {
     const handleUpdateStatus = async (id: number, status: string) => {
         const response = await fetch(`${API_URL}/bugs/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ status }),
         });
 
         if (response.ok) {
-            setBugs(prev => prev.map(b => b.id === id ? { ...b, status: status as any } : b));
+            setBugs((prev) => prev.map((b) => (b.id === id ? { ...b, status: status as any } : b)));
         } else if (response.status === 403) {
             const errorData = await response.json();
-            alert(`Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`);
+            alert(
+                `Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`
+            );
             handleLogout();
         }
     };

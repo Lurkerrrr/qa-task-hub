@@ -42,9 +42,15 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, t, user, onLogou
                     </Link>
 
                     <nav className="hidden md:flex space-x-1">
-                        <Link to="/" className={getLinkClass('/')}>{t.menu.dashboard}</Link>
-                        <Link to="/tracker" className={getLinkClass('/tracker')}>{t.menu.tracker}</Link>
-                        <Link to="/api" className={getLinkClass('/api')}>{t.menu.api}</Link>
+                        <Link to="/" className={getLinkClass('/')}>
+                            {t.menu.dashboard}
+                        </Link>
+                        <Link to="/tracker" className={getLinkClass('/tracker')}>
+                            {t.menu.tracker}
+                        </Link>
+                        <Link to="/api" className={getLinkClass('/api')}>
+                            {t.menu.api}
+                        </Link>
                     </nav>
                 </div>
 
