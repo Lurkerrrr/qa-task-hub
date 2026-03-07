@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
+import { TranslationSchema } from '../locales/translations';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IBug } from '../types/interfaces';
 import PrioritySelector from './PrioritySelector';
@@ -8,7 +9,7 @@ import SeveritySelector from './SeveritySelector';
 
 interface BugTrackerProps {
     bugs: IBug[];
-    t: any;
+    t: TranslationSchema;
     onAddBug: (bug: IBug) => void;
     onDeleteBug: (id: number) => void;
     onUpdateStatus: (id: number, status: string) => void;
