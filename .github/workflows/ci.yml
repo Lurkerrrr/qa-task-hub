@@ -83,6 +83,10 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
+      - name: Run Code Linter
+        working-directory: ./frontend
+        run: npm run lint  
+
       - name: Verify Production Build
         working-directory: ./frontend
         run: npm run build
