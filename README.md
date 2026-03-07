@@ -1,6 +1,6 @@
 # QA Task Manager
 
-**QA Task Manager** is a full-stack web application designed for tracking software quality assurance metrics, managing bug lifecycles, and visualizing project health data. The system utilizes a React-based frontend for the user interface and a Node.js/Express backend with SQLite for persistent data storage.
+**QA Task Manager** is a full-stack web application designed for tracking software quality assurance metrics, managing bug lifecycles, and visualizing project health data. The system utilizes a React-based frontend for the user interface and a Node.js/Express backend with PostgreSQL for persistent data storage.
 
 The entire application is strictly typed using **TypeScript**, ensuring highly reliable code, predictable data models, and a robust developer experience. It implements a decoupled client-server architecture with stateless authentication via JSON Web Tokens (JWT), ensuring secure and scalable user session management.
 
@@ -16,6 +16,7 @@ The project follows a professional **Controller-Service-Repository** pattern, ut
 * **Lint-Staged:** Executes Prettier auto-formatting only on changed files to optimize speed.
 * **Type-Guard:** `tsc --noEmit` runs on every commit, blocking code with type errors from entering the history.
 * **Conventional Commits:** Enforced commit message standards via `@commitlint` for automated changelog readiness.
+* **Release Automation:** `semantic-release` automatically calculates semantic versions (v1.x.x), generates `CHANGELOG.md`, and publishes GitHub Releases based on commit history.
 
 ### 2. Frontend (Client)
 * **Framework:** React.js (v18) with TypeScript, utilizing Functional Components and Hooks.
@@ -38,18 +39,24 @@ The project follows a professional **Controller-Service-Repository** pattern, ut
 ### 4. Data Flow
 1.  **Request:** Client sends HTTP request with `Authorization: Bearer <token>` header (for protected routes).
 2.  **Verification:** Middleware verifies the JWT signature and extracts user identity.
-3.  **Execution:** Controller processes the request, applies business/security logic, and interacts with the SQLite database.
+3.  **Execution:** Controller processes the request, applies business/security logic, and interacts with the PostgreSQL database.
 4.  **Response:** Server returns JSON data to the client.
 
 ### 5. Automated Testing
 * **Framework:** Jest and Supertest for integration testing.
 * **Coverage:** **89.11% Line Coverage** across the entire backend API.
 * **Strategy:** Endpoint-grouped test suites covering 15+ scenarios (Positive, Negative, and Security/IDOR).
+* **API Automation (Postman & Newman):** * Maintained Postman collections (`auth.collection.json`, `bug.collection.json`) for endpoint validation.
+    * Automated state management using local and CI environment variables for dynamic token injection.
+    * Headless execution via Newman integrated directly into the build pipeline.
 
 ### 6. CI/CD Pipeline (GitHub Actions)
-* **Automated Quality Gates:** Every Push/PR triggers an isolated Linux build.
+* **Automated Quality Gates:** Every Push/PR triggers concurrent, isolated Linux builds for frontend and backend.
 * **Dependency Caching:** Optimized npm caching to reduce build times.
-* **Service Containers:** Automated pipeline spins up a live **PostgreSQL 15** container for integration testing.
+* **Service Containers:** Automated pipeline spins up a live **PostgreSQL 15** container for integration and E2E testing.
+* **Headless QA Execution:** Pipeline spins up the backend server in the background and runs the Postman collections via Newman.
+* **Visual Reporting:** Automatically generates an interactive **Allure Report** from Newman XML data and deploys it to a live `gh-pages` branch.
+* **Automated Versioning:** Dedicated release job executes `semantic-release` to handle semantic versioning and changelogs on successful builds.
 
 ---
 
@@ -124,7 +131,7 @@ The backend exposes a RESTful API running on port `5000`.
 
 ## Installation and Setup
 
-**Prerequisites:** Node.js (v18+) and npm.
+**Prerequisites:** Node.js (v20+) and npm.
 
 ### 1. Clone the Repository
 ```bash
@@ -149,5 +156,19 @@ npm run dev            # Start development server
 ```bash
 cd frontend
 npm install
+npm run lint          # Run ESLint validation
 npm start
+```
+
+---
+
+### 4. API Automation (Postman & Newman)
+To execute the automated API test suites locally, ensure the backend development server is running (`npm run dev` in the `backend` folder), then execute:
+```bash
+cd backend
+npm run test:api
+```
+Note: This executes the Auth and Bug collections sequentially. To view the local visual report after running the tests, execute:
+```bash
+npx allure serve allure-results
 ```
