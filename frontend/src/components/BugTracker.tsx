@@ -37,7 +37,7 @@ const BugTracker: React.FC<BugTrackerProps> = ({
     const [searchQuery, setSearchQuery] = useState('');
 
     const validateForm = () => {
-        let tempErrors: { title?: string } = {};
+        const tempErrors: { title?: string } = {};
         if (!newBug.trim()) tempErrors.title = t.err_title;
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
