@@ -20,7 +20,7 @@ const App: React.FC = () => {
     const [language, setLanguage] = useState<string>(localStorage.getItem('language') || 'en');
     const t: TranslationSchema =
         translations[language as keyof typeof translations] || translations.en;
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
     const handleLogout = useCallback(async (): Promise<void> => {
         try {
