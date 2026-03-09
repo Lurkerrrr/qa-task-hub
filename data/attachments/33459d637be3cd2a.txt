@@ -1,0 +1,1 @@
+{"status":"success","data":{"user":{"id":3,"email":"postmanqa@test.com","name":"Postman QA"}}}

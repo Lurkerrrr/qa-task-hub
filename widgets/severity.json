@@ -1,1 +1,1 @@
-[]
+[{"uid":"f638c73b90e7728e","name":"Login & Store Token","time":{"start":1773033387612,"stop":1773033387730,"duration":118},"status":"failed","severity":"normal"},{"uid":"11f2f94b0029e397","name":"Register User","time":{"start":1773033387437,"stop":1773033387608,"duration":171},"status":"passed","severity":"normal"}]
