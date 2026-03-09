@@ -8,6 +8,13 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
     let tokenAdmin: string;
     let bugIdA: number;
 
+    // Helper to extract the JWT string from the Set-Cookie header
+    const extractToken = (res: request.Response) => {
+        const cookieHeader = res.headers['set-cookie'][0];
+        const match = cookieHeader.match(/token=([^;]+)/);
+        return match ? match[1] : '';
+    };
+
     // SETUP: Register our 3 test users before running the scenarios
     beforeAll(async () => {
         // 1. Register the users
@@ -15,22 +22,22 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
         await request(app).post('/auth/register').send({ name: 'User B', email: 'userb@test.com', password: 'password123', role: 'user' });
         await request(app).post('/auth/register').send({ name: 'Admin User', email: 'admin@test.com', password: 'password123', role: 'admin' });
 
-        // 2. Log them in to extract the JWT tokens
+        // 2. Log them in to extract the JWT tokens from the cookies
         const loginA = await request(app).post('/auth/login').send({ email: 'usera@test.com', password: 'password123' });
-        tokenUserA = loginA.body.data.token;
+        tokenUserA = extractToken(loginA);
 
         const loginB = await request(app).post('/auth/login').send({ email: 'userb@test.com', password: 'password123' });
-        tokenUserB = loginB.body.data.token;
+        tokenUserB = extractToken(loginB);
 
         const loginAdmin = await request(app).post('/auth/login').send({ email: 'admin@test.com', password: 'password123' });
-        tokenAdmin = loginAdmin.body.data.token;
+        tokenAdmin = extractToken(loginAdmin);
     });
 
     describe('GET /bugs', () => {
         it('Positive: Should return bugs for valid user', async () => {
             const res = await request(app)
                 .get('/bugs')
-                .set('Authorization', `Bearer ${tokenUserA}`);
+                .set('Cookie', `token=${tokenUserA}`);
 
             expect(res.status).toBe(200);
             expect(res.body.status).toBe('success');
@@ -38,7 +45,7 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
         });
 
         it('Negative: Should block request without token (Ghost Request)', async () => {
-            const res = await request(app).get('/bugs'); // No Authorization header
+            const res = await request(app).get('/bugs'); // No Cookie header
             expect(res.status).toBe(401);
             expect(res.body.message).toMatch(/No token provided/i);
         });
@@ -46,7 +53,7 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
         it('Negative: Should block forged token with invalid signature', async () => {
             const res = await request(app)
                 .get('/bugs')
-                .set('Authorization', `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.token`);
+                .set('Cookie', `token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.token`);
 
             expect(res.status).toBe(401);
             expect(res.body.message).toMatch(/Invalid token signature|Authentication failed/i);
@@ -55,8 +62,8 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
         it('Category B: The "User-as-Admin" Trick should fail', async () => {
             const res = await request(app)
                 .get('/bugs')
-                .set('Authorization', `Bearer ${tokenUserA}`)
-                .set('role', 'admin');
+                .set('Cookie', `token=${tokenUserA}`)
+                .set('role', 'admin'); // Injecting fake role header
 
             expect(res.status).toBe(200);
             const allBugs = res.body.data.bugs;
@@ -69,7 +76,7 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
         it('Positive: Should create a valid bug', async () => {
             const res = await request(app)
                 .post('/bugs')
-                .set('Authorization', `Bearer ${tokenUserA}`)
+                .set('Cookie', `token=${tokenUserA}`)
                 .send({
                     title: 'Login button missing',
                     priority: 'High',
@@ -89,7 +96,7 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
         it('Negative: Should block data mismatch (invalid enum value) via Joi Validation', async () => {
             const res = await request(app)
                 .post('/bugs')
-                .set('Authorization', `Bearer ${tokenUserA}`)
+                .set('Cookie', `token=${tokenUserA}`)
                 .send({
                     title: 'Bad Priority Bug',
                     priority: 'SuperHigh', // Invalid enum!
@@ -101,10 +108,11 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
             expect(res.status).toBe(400);
             expect(res.body.message).toMatch(/Validation error/i);
         });
+
         it('Category D: SQL Injection Attempt in Search/Creation', async () => {
             const res = await request(app)
                 .post('/bugs')
-                .set('Authorization', `Bearer ${tokenUserA}`)
+                .set('Cookie', `token=${tokenUserA}`)
                 .send({
                     title: "' OR 1=1 --",
                     priority: 'Medium',
@@ -120,7 +128,7 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
         it('Category D: XSS Payload Storage Verification', async () => {
             const res = await request(app)
                 .post('/bugs')
-                .set('Authorization', `Bearer ${tokenUserA}`)
+                .set('Cookie', `token=${tokenUserA}`)
                 .send({
                     title: "<script>alert('hack')</script>",
                     priority: 'Medium',
@@ -138,7 +146,7 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
         it('Positive: Should successfully update bug status', async () => {
             const res = await request(app)
                 .put(`/bugs/${bugIdA}`)
-                .set('Authorization', `Bearer ${tokenUserA}`)
+                .set('Cookie', `token=${tokenUserA}`)
                 .send({ status: 'In Progress' });
 
             expect(res.status).toBe(200);
@@ -146,23 +154,24 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
         });
 
         it('Negative: Should block IDOR Attack (User A modifying User B\'s bug)', async () => {
-            const createRes = await request(app).post('/bugs').set('Authorization', `Bearer ${tokenUserB}`).send({
+            const createRes = await request(app).post('/bugs').set('Cookie', `token=${tokenUserB}`).send({
                 title: 'Another Bug B', priority: 'Low', severity: 'Low', status: 'Open', date: '2026-02-28', assignee: 'User B'
             });
             const newBugIdB = createRes.body.data.bug.id;
 
             const attackRes = await request(app)
                 .put(`/bugs/${newBugIdB}`)
-                .set('Authorization', `Bearer ${tokenUserA}`)
+                .set('Cookie', `token=${tokenUserA}`)
                 .send({ status: 'Done' });
 
             expect(attackRes.status).toBe(403);
             expect(attackRes.body.message).toMatch(/do not have permission/i);
         });
+
         it('Category C: Unauthorized Multi-Update Attempt', async () => {
             const res = await request(app)
                 .put(`/bugs/[${bugIdA}, 999]`)
-                .set('Authorization', `Bearer ${tokenUserA}`)
+                .set('Cookie', `token=${tokenUserA}`)
                 .send({ status: 'Done' });
 
             expect(res.status).toBe(404);
@@ -174,7 +183,7 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
         it('Positive: Should successfully delete own bug', async () => {
             const res = await request(app)
                 .delete(`/bugs/${bugIdA}`)
-                .set('Authorization', `Bearer ${tokenUserA}`);
+                .set('Cookie', `token=${tokenUserA}`);
 
             expect(res.status).toBe(200);
             expect(res.body.data.message).toMatch(/deleted successfully/i);
@@ -182,7 +191,7 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
 
         it('Positive: Admin should override ownership and delete any bug', async () => {
             // Setup: User B creates a bug
-            const createRes = await request(app).post('/bugs').set('Authorization', `Bearer ${tokenUserB}`).send({
+            const createRes = await request(app).post('/bugs').set('Cookie', `token=${tokenUserB}`).send({
                 title: 'Test Bug B', priority: 'Medium', severity: 'Moderate', status: 'Open', date: '2026-02-28', assignee: 'User B'
             });
             const bugIdB = createRes.body.data.bug.id;
@@ -190,7 +199,7 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
             // Admin deletes User B's bug successfully
             const deleteRes = await request(app)
                 .delete(`/bugs/${bugIdB}`)
-                .set('Authorization', `Bearer ${tokenAdmin}`);
+                .set('Cookie', `token=${tokenAdmin}`);
 
             expect(deleteRes.status).toBe(200);
         });
@@ -198,7 +207,7 @@ describe('Bug API Endpoints (10 QA Scenarios)', () => {
         it('Negative: Should safely handle "Phantom Bug" deletion attempt (404)', async () => {
             const res = await request(app)
                 .delete('/bugs/9999999') // ID does not exist
-                .set('Authorization', `Bearer ${tokenUserA}`);
+                .set('Cookie', `token=${tokenUserA}`);
 
             expect(res.status).toBe(404);
             expect(res.body.message).toMatch(/not found/i);

@@ -16,7 +16,19 @@ export class AuthRoutes {
     }
 
     private initializeRoutes(): void {
-        this.router.post('/register', registerLimiter, this.validationMiddleware.validate('register'), this.authController.register);
-        this.router.post('/login', loginLimiter, this.validationMiddleware.validate('login'), this.authController.login);
+        this.router.post(
+            '/register',
+            registerLimiter,
+            this.validationMiddleware.validate('register'),
+            this.authController.register
+        );
+        this.router.post(
+            '/login',
+            loginLimiter,
+            this.validationMiddleware.validate('login'),
+            this.authController.login
+        );
+
+        this.router.post('/logout', this.authController.logout);
     }
 }

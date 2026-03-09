@@ -4,7 +4,7 @@ import Input from './ui/Input';
 import { IUser, IAuthResponse } from '../types/interfaces';
 
 interface AuthProps {
-    onLogin: (token: string, user: IUser) => void;
+    onLogin: (user: IUser) => void;
 }
 
 const Auth: React.FC<AuthProps> = ({ onLogin }) => {
@@ -33,6 +33,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
             const response = await fetch(`${API_URL}${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify(formData),
             });
 
@@ -42,8 +43,8 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                 throw new Error(result.message || 'Authentication failed');
             }
 
-            if (isLogin && result.data) {
-                onLogin(result.data.token, result.data.user);
+            if (isLogin && result.data && result.data.user) {
+                onLogin(result.data.user);
             } else {
                 toggleMode();
                 setError('Account created! Please login.');
@@ -93,7 +94,6 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                     />
                     <Button type="submit">{isLogin ? 'Sign In' : 'Sign Up'}</Button>
                 </form>
-                {/* Updated: Now calls toggleMode instead of just setIsLogin */}
                 <Button variant="ghost" onClick={toggleMode} className="mt-4">
                     {isLogin ? 'Register' : 'Login'}
                 </Button>

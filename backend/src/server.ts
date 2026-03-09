@@ -4,6 +4,7 @@ dotenv.config();
 import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import './database';
 
 import { AuthService } from './services/authService';
@@ -17,18 +18,14 @@ import { AuthRoutes } from './routes/authRoutes';
 import { BugRoutes } from './routes/bugRoutes';
 import { ErrorHandler } from './utils/ErrorHandler';
 
-// 1. Instantiate Services
 const authService = new AuthService();
 const bugService = new BugService();
 
-// 2. Instantiate Middleware with Dependencies
 const securityPolicy = new SecurityPolicy(bugService);
 
-// 3. Instantiate Controllers with Services
 const authController = new AuthController(authService);
 const bugController = new BugController(bugService);
 
-// 4. Instantiate Routes with Controllers and Middleware
 const authRoutes = new AuthRoutes(authController, validationMiddleware);
 const bugRoutes = new BugRoutes(bugController, authGuard, securityPolicy, validationMiddleware);
 
@@ -54,8 +51,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
+app.use(cookieParser());
 
-// Inject Routers
 app.use('/auth', authRoutes.router);
 app.use('/bugs', bugRoutes.router);
 

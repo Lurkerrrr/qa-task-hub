@@ -13,7 +13,7 @@
                     "script": {
                         "exec": [
                             "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
+                            "    pm.expect(pm.response.code).to.be.equal(200);",
                             "});",
                             "pm.test(\"Bugs array is present\", function () {",
                             "    var jsonData = pm.response.json();",
@@ -28,8 +28,8 @@
                 "method": "GET",
                 "header": [
                     {
-                        "key": "Authorization",
-                        "value": "Bearer {{token}}"
+                        "key": "Cookie",
+                        "value": "token={{token}}"
                     }
                 ],
                 "url": {

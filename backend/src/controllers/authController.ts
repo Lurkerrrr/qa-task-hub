@@ -13,7 +13,6 @@ export class AuthController extends BaseController {
 
     public register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-
             const { name, email, password } = req.body;
             const user = await this.authService.register(name, email, password);
 
@@ -25,14 +24,32 @@ export class AuthController extends BaseController {
 
     public login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-
             const { email, password } = req.body;
-            const data = await this.authService.login(email, password);
+            const { token, user } = await this.authService.login(email, password);
 
-            this.sendSuccess<IUserResponse>(res, data, 200);
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 24 * 60 * 60 * 1000,
+            });
+
+            this.sendSuccess(res, { user }, 200);
+        } catch (error) {
+            this.nextError(next, error);
+        }
+    };
+
+    public logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            res.cookie('token', '', {
+                httpOnly: true,
+                expires: new Date(0),
+            });
+
+            this.sendSuccess(res, { message: 'Logged out successfully' }, 200);
         } catch (error) {
             this.nextError(next, error);
         }
     };
 }
-

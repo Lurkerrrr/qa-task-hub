@@ -4,7 +4,6 @@ import { AuthRequest } from '../interfaces';
 import { UnauthorizedError } from '../utils/AppError';
 import { JWT_SECRET } from '../utils/config';
 
-// Interface defining the expected token payload
 interface IDecodedToken extends JwtPayload {
     id: number;
     name: string;
@@ -12,10 +11,8 @@ interface IDecodedToken extends JwtPayload {
 }
 
 export class AuthGuard {
-    // Arrow function ensures correct context binding in routes
     public verifyToken = (req: AuthRequest, res: Response, next: NextFunction): void => {
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
+        const token = req.cookies?.token;
 
         if (!token) {
             return next(new UnauthorizedError('No token provided'));
