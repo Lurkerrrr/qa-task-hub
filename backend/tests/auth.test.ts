@@ -53,7 +53,11 @@ describe('Auth API Endpoints', () => {
 
             expect(res.status).toBe(200);
             expect(res.body.status).toBe('success');
-            expect(res.body.data).toHaveProperty('token');
+
+            // Check that the HttpOnly cookie was successfully set
+            expect(res.headers['set-cookie']).toBeDefined();
+            expect(res.headers['set-cookie'][0]).toMatch(/token=eyJ/);
+
             expect(res.body.data.user.email).toBe(testUser.email);
         });
 
@@ -69,6 +73,7 @@ describe('Auth API Endpoints', () => {
             expect(res.body.message).toMatch(/invalid email or password/i);
         });
     });
+
     describe('Category A: Token & Session Hardening', () => {
         it('The Expired Session: Should block expired tokens', async () => {
             const jwt = require('jsonwebtoken');
@@ -76,16 +81,14 @@ describe('Auth API Endpoints', () => {
 
             const res = await request(app)
                 .get('/bugs')
-                .set('Authorization', `Bearer ${expiredToken}`);
-
+                .set('Cookie', `token=${expiredToken}`);
             expect(res.status).toBe(401);
             expect(res.body.message).toMatch(/Token has expired/i);
         });
 
-        it('The Empty Bearer: Should block empty authorization headers', async () => {
+        it('The Missing Cookie: Should block requests without token cookies', async () => {
             const res = await request(app)
-                .get('/bugs')
-                .set('Authorization', 'Bearer ');
+                .get('/bugs');
 
             expect(res.status).toBe(401);
             expect(res.body.message).toMatch(/No token provided/i);
@@ -96,7 +99,7 @@ describe('Auth API Endpoints', () => {
 
             const res = await request(app)
                 .get('/bugs')
-                .set('Authorization', `Bearer ${unsignedToken}`);
+                .set('Cookie', `token=${unsignedToken}`);
 
             expect(res.status).toBe(401);
             expect(res.body.message).toMatch(/invalid token signature/i);
