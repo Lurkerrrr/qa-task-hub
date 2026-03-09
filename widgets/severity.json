@@ -1,1 +1,1 @@
-[{"uid":"110d4e0bb2601bd7","name":"Get All Bugs","time":{"start":1772926982485,"stop":1772926982545,"duration":60},"status":"passed","severity":"normal"},{"uid":"553db94b3a7d1da","name":"Login & Store Token","time":{"start":1772926981330,"stop":1772926981438,"duration":108},"status":"passed","severity":"normal"},{"uid":"170fc4be573d4e5c","name":"Register User","time":{"start":1772926981146,"stop":1772926981326,"duration":180},"status":"passed","severity":"normal"}]
+[]

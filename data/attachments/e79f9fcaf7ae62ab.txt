@@ -1,3 +1,0 @@
-pm.test("Status code is 201 or 400 (if exists)", function () {
-    pm.expect(pm.response.code).to.be.oneOf([201, 400]);
-});
