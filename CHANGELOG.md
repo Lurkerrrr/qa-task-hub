@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/Lurkerrrr/qa-task-hub/compare/v1.0.0...v1.1.0) (2026-03-09)
+
+
+### Features
+
+* secure auth and httpOnly cookies ([#5](https://github.com/Lurkerrrr/qa-task-hub/issues/5)) ([fbd228b](https://github.com/Lurkerrrr/qa-task-hub/commit/fbd228bd550258a1014c5569e2578fcf7a6d816c))
+
 # 1.0.0 (2026-03-07)
 
 
