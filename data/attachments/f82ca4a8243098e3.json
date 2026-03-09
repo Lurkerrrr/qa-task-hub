@@ -18,11 +18,11 @@
     "RateLimit-Limit": "5",
     "RateLimit-Remaining": "4",
     "RateLimit-Reset": "900",
-    "Set-Cookie": "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJwb3N0bWFucWFAdGVzdC5jb20iLCJuYW1lIjoiUG9zdG1hbiBRQSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzczMDk5MTI0LCJleHAiOjE3NzMxODU1MjR9.zWUvprz5p92MEh56nuQbHFYaS2mLPxgWnnTrgeXWD3o; Max-Age=86400; Path=/; Expires=Tue, 10 Mar 2026 23:32:04 GMT; HttpOnly; SameSite=Strict",
+    "Set-Cookie": "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJwb3N0bWFucWFAdGVzdC5jb20iLCJuYW1lIjoiUG9zdG1hbiBRQSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzczMDk5MzkwLCJleHAiOjE3NzMxODU3OTB9.Q4olpc1XvSFcKwcXc3em7NwmPBMIqZXUd41uOzV33z0; Max-Age=86400; Path=/; Expires=Tue, 10 Mar 2026 23:36:30 GMT; HttpOnly; SameSite=Strict",
     "Content-Type": "application/json; charset=utf-8",
     "Content-Length": "94",
     "ETag": "W/\"5e-NlW4S49dJsDnhZE0PpXz0GBhL/8\"",
-    "Date": "Mon, 09 Mar 2026 23:32:04 GMT",
+    "Date": "Mon, 09 Mar 2026 23:36:30 GMT",
     "Connection": "keep-alive",
     "Keep-Alive": "timeout=5"
 }
