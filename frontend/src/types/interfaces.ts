@@ -19,7 +19,7 @@ export interface IAuthResponse {
     status: string;
     message?: string;
     data?: {
-        token: string;
+        token?: string;
         user: IUser;
     };
 }

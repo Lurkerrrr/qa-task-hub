@@ -8,7 +8,6 @@ import { IUser, IBug } from './types/interfaces';
 
 const App: React.FC = () => {
     const [bugs, setBugs] = useState<IBug[]>([]);
-    const [token, setToken] = useState<string>(localStorage.getItem('token') || '');
     const [user, setUser] = useState<IUser | null>(() => {
         try {
             const savedUser = localStorage.getItem('user');
@@ -23,21 +22,31 @@ const App: React.FC = () => {
         translations[language as keyof typeof translations] || translations.en;
     const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-    const handleLogout = useCallback((): void => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setToken('');
-        setUser(null);
-    }, []);
+    const handleLogout = useCallback(async (): Promise<void> => {
+        try {
+            // Hit the backend logout endpoint to destroy the HttpOnly cookie
+            await fetch(`${API_URL}/auth/logout`, {
+                method: 'POST',
+                credentials: 'include',
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            localStorage.removeItem('token'); // Clear legacy token if it exists
+            localStorage.removeItem('user');
+            setUser(null);
+        }
+    }, [API_URL]);
 
     useEffect(() => {
-        if (!token) return;
+        // Rely on user state instead of token state
+        if (!user?.id) return;
 
         const loadBugs = async () => {
             try {
                 const res = await fetch(`${API_URL}/bugs`, {
+                    credentials: 'include', // Browser automatically attaches cookie
                     headers: {
-                        Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                 });
@@ -58,19 +67,18 @@ const App: React.FC = () => {
         };
 
         loadBugs();
-    }, [token, API_URL, handleLogout]);
+    }, [user?.id, API_URL, handleLogout]);
 
-    const handleLogin = (newToken: string, newUser: IUser): void => {
-        localStorage.setItem('token', newToken);
+    const handleLogin = (newUser: IUser): void => {
         localStorage.setItem('user', JSON.stringify(newUser));
-        setToken(newToken);
         setUser(newUser);
     };
 
     const handleAddBug = async (newBug: Omit<IBug, 'id'>) => {
         const response = await fetch(`${API_URL}/bugs`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            credentials: 'include', // Required for authenticated requests
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newBug),
         });
 
@@ -97,7 +105,7 @@ const App: React.FC = () => {
     const handleDeleteBug = async (id: number) => {
         const response = await fetch(`${API_URL}/bugs/${id}`, {
             method: 'DELETE',
-            headers: { Authorization: `Bearer ${token}` },
+            credentials: 'include', // Required for authenticated requests
         });
 
         if (response.ok) {
@@ -114,7 +122,8 @@ const App: React.FC = () => {
     const handleUpdateStatus = async (id: number, status: string) => {
         const response = await fetch(`${API_URL}/bugs/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            credentials: 'include', // Required for authenticated requests
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status }),
         });
 
@@ -129,7 +138,7 @@ const App: React.FC = () => {
         }
     };
 
-    if (!token) return <Auth onLogin={handleLogin} />;
+    if (!user) return <Auth onLogin={handleLogin} />;
 
     return (
         <div className="flex flex-col min-h-screen bg-[#f8fafc]">
