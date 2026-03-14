@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/Lurkerrrr/qa-task-hub/compare/v1.1.0...v1.2.0) (2026-03-14)
+
+
+### Features
+
+* implement global state with React Query and Zod validation ([#7](https://github.com/Lurkerrrr/qa-task-hub/issues/7)) ([586ed84](https://github.com/Lurkerrrr/qa-task-hub/commit/586ed8461e9d21da42e019a23928942ea56adad5))
+
 # [1.1.0](https://github.com/Lurkerrrr/qa-task-hub/compare/v1.0.0...v1.1.0) (2026-03-09)
 
 
