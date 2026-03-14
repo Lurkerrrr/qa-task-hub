@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { TranslationSchema } from '../locales/translations';
 import { motion, AnimatePresence } from 'framer-motion';
