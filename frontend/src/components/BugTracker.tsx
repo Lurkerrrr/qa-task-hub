@@ -6,14 +6,27 @@ import { IBug } from '../types/interfaces';
 import PrioritySelector from './PrioritySelector';
 import UserSelector from './UserSelector';
 import SeveritySelector from './SeveritySelector';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
 interface BugTrackerProps {
     bugs: IBug[];
     t: TranslationSchema;
-    onAddBug: (bug: IBug) => void;
+    onAddBug: (bug: Omit<IBug, 'id'>) => void;
     onDeleteBug: (id: number) => void;
     onUpdateStatus: (id: number, status: string) => void;
 }
+
+const bugSchema = z.object({
+    title: z.string().min(3, 'Title must be at least 3 characters').max(100, 'Title must be under 100 characters'),
+    priority: z.enum(['Highest', 'High', 'Medium', 'Low', 'Lowest', 'Critical']),
+    severity: z.enum(['Critical', 'Major', 'Moderate', 'Low']),
+    assignee: z.string().optional(),
+    steps: z.string().optional(),
+});
+
+type BugFormData = z.infer<typeof bugSchema>;
 
 const BugTracker: React.FC<BugTrackerProps> = ({
     bugs,
@@ -26,51 +39,44 @@ const BugTracker: React.FC<BugTrackerProps> = ({
     const currentUser = savedUser ? JSON.parse(savedUser) : { name: 'Unassigned' };
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newBug, setNewBug] = useState('');
-    const [priority, setPriority] = useState<IBug['priority']>('Medium');
-    const [severity, setSeverity] = useState<IBug['severity']>('Moderate');
-
-    const [assignee, setAssignee] = useState(currentUser.name);
-
-    const [steps, setSteps] = useState('');
-    const [errors, setErrors] = useState<{ title?: string }>({});
     const [searchQuery, setSearchQuery] = useState('');
 
-    const validateForm = () => {
-        const tempErrors: { title?: string } = {};
-        if (!newBug.trim()) tempErrors.title = t.err_title;
-        setErrors(tempErrors);
-        return Object.keys(tempErrors).length === 0;
-    };
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        watch,
+        reset,
+        formState: { errors, isSubmitting },
+    } = useForm<BugFormData>({
+        resolver: zodResolver(bugSchema),
+        defaultValues: {
+            title: '',
+            priority: 'Medium',
+            severity: 'Moderate',
+            assignee: currentUser.name,
+            steps: '',
+        },
+        mode: 'onChange',
+    });
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setNewBug('');
-        setSteps('');
-        setPriority('Medium');
-        setSeverity('Moderate' as any);
-
-        setAssignee(currentUser.name);
-
-        setErrors({});
+        reset();
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!validateForm()) return;
-
-        const bug: IBug = {
-            id: Date.now(),
-            title: newBug,
-            priority,
-            severity: severity,
-            assignee,
-            steps,
+    const onSubmit = (data: BugFormData) => {
+        const newBug: Omit<IBug, 'id'> = {
+            title: data.title,
+            priority: data.priority,
+            severity: data.severity,
+            assignee: data.assignee || 'Unassigned',
+            steps: data.steps,
             status: 'Open',
             date: new Date().toISOString().split('T')[0],
         };
 
-        onAddBug(bug);
+        onAddBug(newBug);
         handleCloseModal();
     };
 
@@ -94,11 +100,7 @@ const BugTracker: React.FC<BugTrackerProps> = ({
                 );
             case 'Medium':
                 return (
-                    <svg
-                        className="w-4 h-4 text-orange-500"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                    >
+                    <svg className="w-4 h-4 text-orange-500" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M4 11h16v2H4z" />
                     </svg>
                 );
@@ -128,9 +130,7 @@ const BugTracker: React.FC<BugTrackerProps> = ({
         };
         const config = map[s] || map['Moderate'];
         return (
-            <span
-                className={`${config.color} text-white text-[10px] font-bold px-1.5 py-0.5 rounded mr-1`}
-            >
+            <span className={`${config.color} text-white text-[10px] font-bold px-1.5 py-0.5 rounded mr-1`}>
                 {config.label}
             </span>
         );
@@ -214,13 +214,12 @@ const BugTracker: React.FC<BugTrackerProps> = ({
 
                                 <div className="flex flex-row md:flex-col items-center md:items-end gap-3 w-full md:w-auto mt-2 md:mt-0">
                                     <select
-                                        className={`text-sm border rounded-lg px-3 py-1.5 outline-none cursor-pointer font-medium transition ${
-                                            bug.status === 'Done'
-                                                ? 'bg-green-50 text-green-700 border-green-200'
-                                                : bug.status === 'In Progress'
-                                                  ? 'bg-purple-50 text-purple-700 border-purple-200'
-                                                  : 'bg-white text-gray-600 border-gray-200'
-                                        }`}
+                                        className={`text-sm border rounded-lg px-3 py-1.5 outline-none cursor-pointer font-medium transition ${bug.status === 'Done'
+                                            ? 'bg-green-50 text-green-700 border-green-200'
+                                            : bug.status === 'In Progress' || bug.status === 'InProgress'
+                                                ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                                : 'bg-white text-gray-600 border-gray-200'
+                                            }`}
                                         value={bug.status}
                                         onChange={(e) => onUpdateStatus(bug.id, e.target.value)}
                                     >
@@ -229,7 +228,7 @@ const BugTracker: React.FC<BugTrackerProps> = ({
                                                 key={key}
                                                 value={key === 'InProgress' ? 'In Progress' : key}
                                             >
-                                                {t.status_opt[key]}
+                                                {t.status_opt[key as keyof typeof t.status_opt]}
                                             </option>
                                         ))}
                                     </select>
@@ -260,7 +259,6 @@ const BugTracker: React.FC<BugTrackerProps> = ({
                 )}
             </div>
 
-            {/* Portal required to ignore parent layout constraints */}
             {ReactDOM.createPortal(
                 <AnimatePresence>
                     {isModalOpen && (
@@ -307,23 +305,19 @@ const BugTracker: React.FC<BugTrackerProps> = ({
                                     </div>
 
                                     <div className="p-6">
-                                        <form onSubmit={handleSubmit} className="space-y-5">
+                                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    {t.placeholder_title}{' '}
-                                                    <span className="text-red-500">*</span>
+                                                    {t.placeholder_title} <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
                                                     placeholder={t.placeholder_desc}
-                                                    className={`w-full p-3 border rounded-lg outline-none transition ${errors.title ? 'border-red-500' : 'border-gray-200 focus:ring-blue-500 focus:border-blue-500'}`}
-                                                    value={newBug}
-                                                    onChange={(e) => setNewBug(e.target.value)}
+                                                    {...register('title')}
+                                                    className={`w-full p-3 border rounded-lg outline-none transition ${errors.title ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'}`}
                                                 />
                                                 {errors.title && (
-                                                    <p className="text-red-500 text-sm mt-1">
-                                                        {errors.title}
-                                                    </p>
+                                                    <p className="text-red-500 text-xs font-medium mt-1">{errors.title.message}</p>
                                                 )}
                                             </div>
 
@@ -333,8 +327,8 @@ const BugTracker: React.FC<BugTrackerProps> = ({
                                                         {t.label_priority}
                                                     </label>
                                                     <PrioritySelector
-                                                        priority={priority}
-                                                        setPriority={setPriority}
+                                                        priority={watch('priority')}
+                                                        setPriority={(val) => setValue('priority', val)}
                                                         t={t}
                                                     />
                                                 </div>
@@ -343,8 +337,8 @@ const BugTracker: React.FC<BugTrackerProps> = ({
                                                         {t.label_severity}
                                                     </label>
                                                     <SeveritySelector
-                                                        severity={severity}
-                                                        setSeverity={setSeverity}
+                                                        severity={watch('severity')}
+                                                        setSeverity={(val) => setValue('severity', val)}
                                                         t={t}
                                                     />
                                                 </div>
@@ -353,8 +347,8 @@ const BugTracker: React.FC<BugTrackerProps> = ({
                                                         {t.label_assignee}
                                                     </label>
                                                     <UserSelector
-                                                        assignee={assignee}
-                                                        setAssignee={setAssignee}
+                                                        assignee={watch('assignee')!}
+                                                        setAssignee={(val) => setValue('assignee', val)}
                                                     />
                                                 </div>
                                             </div>
@@ -365,9 +359,8 @@ const BugTracker: React.FC<BugTrackerProps> = ({
                                                 </label>
                                                 <textarea
                                                     placeholder={t.placeholder_steps}
+                                                    {...register('steps')}
                                                     className="w-full p-3 border border-gray-200 rounded-lg h-32 resize-none outline-none focus:ring-blue-500 focus:border-blue-500 transition"
-                                                    value={steps}
-                                                    onChange={(e) => setSteps(e.target.value)}
                                                 />
                                             </div>
 
@@ -381,9 +374,10 @@ const BugTracker: React.FC<BugTrackerProps> = ({
                                                 </button>
                                                 <button
                                                     type="submit"
-                                                    className="bg-blue-600 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 hover:shadow-blue-300 transform active:scale-95"
+                                                    disabled={isSubmitting}
+                                                    className="bg-blue-600 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 hover:shadow-blue-300 transform active:scale-95 disabled:opacity-50"
                                                 >
-                                                    {t.btn_add}
+                                                    {isSubmitting ? '...' : t.btn_add}
                                                 </button>
                                             </div>
                                         </form>

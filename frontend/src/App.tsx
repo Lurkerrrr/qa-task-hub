@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import Header from './components/Header';
 import Auth from './components/Auth';
 import AnimatedRoutes from './components/AnimatedRoutes';
 import { translations, TranslationSchema } from './locales/translations';
 import ScrollToTop from './components/ScrollToTop';
 import { IUser, IBug } from './types/interfaces';
+import { useBugs, useCreateBug, useDeleteBug, useUpdateBugStatus } from './hooks/useBugs';
+import { useLogout } from './hooks/useAuth';
 
 const App: React.FC = () => {
-    const [bugs, setBugs] = useState<IBug[]>([]);
     const [user, setUser] = useState<IUser | null>(() => {
         try {
             const savedUser = localStorage.getItem('user');
@@ -18,56 +19,23 @@ const App: React.FC = () => {
     });
 
     const [language, setLanguage] = useState<string>(localStorage.getItem('language') || 'en');
-    const t: TranslationSchema =
-        translations[language as keyof typeof translations] || translations.en;
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const t: TranslationSchema = translations[language as keyof typeof translations] || translations.en;
 
-    const handleLogout = useCallback(async (): Promise<void> => {
-        try {
-            // Hit the backend logout endpoint to destroy the HttpOnly cookie
-            await fetch(`${API_URL}/auth/logout`, {
-                method: 'POST',
-                credentials: 'include',
-            });
-        } catch (error) {
-            console.error('Logout error:', error);
-        } finally {
-            localStorage.removeItem('token'); // Clear legacy token if it exists
-            localStorage.removeItem('user');
-            setUser(null);
-        }
-    }, [API_URL]);
+    const { data: bugs = [], isLoading } = useBugs(user?.id);
+    const { mutate: createBug } = useCreateBug();
+    const { mutate: deleteBug } = useDeleteBug();
+    const { mutate: updateBugStatus } = useUpdateBugStatus();
+    const { mutate: logoutUser } = useLogout();
 
-    useEffect(() => {
-        // Rely on user state instead of token state
-        if (!user?.id) return;
-
-        const loadBugs = async () => {
-            try {
-                const res = await fetch(`${API_URL}/bugs`, {
-                    credentials: 'include', // Browser automatically attaches cookie
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (res.status === 401 || res.status === 403) {
-                    handleLogout();
-                    return;
-                }
-
-                if (res.ok) {
-                    const responseBody = await res.json();
-                    const bugList = responseBody.data?.bugs || [];
-                    setBugs(Array.isArray(bugList) ? bugList : []);
-                }
-            } catch (err) {
-                console.error('Fetch error:', err);
+    const handleLogout = useCallback(() => {
+        logoutUser(undefined, {
+            onSettled: () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                setUser(null);
             }
-        };
-
-        loadBugs();
-    }, [user?.id, API_URL, handleLogout]);
+        });
+    }, [logoutUser]);
 
     const handleLogin = (newUser: IUser): void => {
         localStorage.setItem('user', JSON.stringify(newUser));
@@ -75,67 +43,30 @@ const App: React.FC = () => {
     };
 
     const handleAddBug = async (newBug: Omit<IBug, 'id'>) => {
-        const response = await fetch(`${API_URL}/bugs`, {
-            method: 'POST',
-            credentials: 'include', // Required for authenticated requests
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newBug),
-        });
-
-        if (response.ok) {
-            const responseBody = await response.json();
-            const savedBug = responseBody.data?.bug;
-            if (savedBug) {
-                setBugs((prev) => [savedBug, ...prev]);
+        createBug(newBug, {
+            onError: (error: any) => {
+                alert(error.message || 'Failed to add bug');
+                if (error.message.includes('Unauthorized') || error.message.includes('forbidden')) handleLogout();
             }
-        } else if (response.status === 403) {
-            const errorData = await response.json();
-            alert(
-                `Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`
-            );
-            handleLogout();
-        } else if (response.status === 400) {
-            const errorData = await response.json();
-            alert(`Validation Error:\n\n${errorData.message}`);
-        } else {
-            console.error('Failed to add bug');
-        }
+        });
     };
 
     const handleDeleteBug = async (id: number) => {
-        const response = await fetch(`${API_URL}/bugs/${id}`, {
-            method: 'DELETE',
-            credentials: 'include', // Required for authenticated requests
+        deleteBug(id, {
+            onError: (error: any) => {
+                alert(error.message || 'Failed to delete bug');
+                if (error.message.includes('Unauthorized') || error.message.includes('forbidden')) handleLogout();
+            }
         });
-
-        if (response.ok) {
-            setBugs((prev) => prev.filter((b) => b.id !== id));
-        } else if (response.status === 403) {
-            const errorData = await response.json();
-            alert(
-                `Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`
-            );
-            handleLogout();
-        }
     };
 
     const handleUpdateStatus = async (id: number, status: string) => {
-        const response = await fetch(`${API_URL}/bugs/${id}`, {
-            method: 'PUT',
-            credentials: 'include', // Required for authenticated requests
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status }),
+        updateBugStatus({ id, status }, {
+            onError: (error: any) => {
+                alert(error.message || 'Failed to update bug');
+                if (error.message.includes('Unauthorized') || error.message.includes('forbidden')) handleLogout();
+            }
         });
-
-        if (response.ok) {
-            setBugs((prev) => prev.map((b) => (b.id === id ? { ...b, status: status as any } : b)));
-        } else if (response.status === 403) {
-            const errorData = await response.json();
-            alert(
-                `Security Alert:\n\n${errorData.message || 'Action forbidden by security policy.'}`
-            );
-            handleLogout();
-        }
     };
 
     if (!user) return <Auth onLogin={handleLogin} />;
@@ -151,14 +82,20 @@ const App: React.FC = () => {
             />
 
             <main className="flex-grow w-full max-w-7xl mx-auto px-4 pt-28 pb-12">
-                <AnimatedRoutes
-                    bugs={bugs}
-                    setBugs={setBugs}
-                    onAddBug={handleAddBug}
-                    onDeleteBug={handleDeleteBug}
-                    onUpdateStatus={handleUpdateStatus}
-                    t={t}
-                />
+                {isLoading ? (
+                    <div className="flex justify-center items-center h-64">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                    </div>
+                ) : (
+                    <AnimatedRoutes
+                        bugs={bugs}
+                        setBugs={() => { }}
+                        onAddBug={handleAddBug}
+                        onDeleteBug={handleDeleteBug}
+                        onUpdateStatus={handleUpdateStatus}
+                        t={t}
+                    />
+                )}
             </main>
 
             <footer className="w-full bg-white border-t border-slate-200 py-8 text-center">
