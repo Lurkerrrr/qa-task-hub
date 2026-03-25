@@ -27,8 +27,31 @@ export class BugRoutes {
 
     private initializeRoutes(): void {
         this.router.get('/', this.authGuard.verifyToken, this.bugController.getAllBugs);
-        this.router.post('/', this.authGuard.verifyToken, this.securityPolicy.ownerBinding, this.validationMiddleware.validate('bug'), this.bugController.createBug);
-        this.router.put('/:id', this.authGuard.verifyToken, this.securityPolicy.verifyBugOwnership, this.validationMiddleware.validate('bugStatus'), this.bugController.updateBugStatus);
-        this.router.delete('/:id', this.authGuard.verifyToken, this.securityPolicy.verifyBugOwnership, this.bugController.deleteBug);
+        this.router.get(
+            '/:id',
+            this.authGuard.verifyToken,
+            this.securityPolicy.verifyBugOwnership,
+            this.bugController.getBugById
+        );
+        this.router.post(
+            '/',
+            this.authGuard.verifyToken,
+            this.securityPolicy.ownerBinding,
+            this.validationMiddleware.validate('bug'),
+            this.bugController.createBug
+        );
+        this.router.put(
+            '/:id',
+            this.authGuard.verifyToken,
+            this.securityPolicy.verifyBugOwnership,
+            this.validationMiddleware.validate('bugStatus'),
+            this.bugController.updateBugStatus
+        );
+        this.router.delete(
+            '/:id',
+            this.authGuard.verifyToken,
+            this.securityPolicy.verifyBugOwnership,
+            this.bugController.deleteBug
+        );
     }
 }
