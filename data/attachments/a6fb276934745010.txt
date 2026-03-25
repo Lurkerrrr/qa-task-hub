@@ -1,0 +1,8 @@
+pm.test("Status code is 404", function () {
+    pm.response.to.have.status(404);
+});
+
+pm.test("Error message confirms bug is missing", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.message).to.include("not found");
+});

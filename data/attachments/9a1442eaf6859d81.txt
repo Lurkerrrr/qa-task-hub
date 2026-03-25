@@ -1,0 +1,8 @@
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+pm.test("Bug title matches creation data", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.data.bug.title).to.eql("Newman Automated Bug");
+});
