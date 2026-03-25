@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/Lurkerrrr/qa-task-hub/compare/v1.2.0...v1.2.1) (2026-03-25)
+
+
+### Bug Fixes
+
+* **ci:** remove duplicate 'on' key and set write permissions ([#10](https://github.com/Lurkerrrr/qa-task-hub/issues/10)) ([38dc600](https://github.com/Lurkerrrr/qa-task-hub/commit/38dc60009d6732ccb0e9a3b938d119468577639d))
+
 # [1.2.0](https://github.com/Lurkerrrr/qa-task-hub/compare/v1.1.0...v1.2.0) (2026-03-14)
 
 
