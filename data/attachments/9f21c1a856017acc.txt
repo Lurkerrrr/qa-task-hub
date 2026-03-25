@@ -3,7 +3,7 @@
     "priority": "High",
     "severity": "Major",
     "status": "Open",
-    "assignee": "postmanqa@test.com",
+    "assignee": "Postman QA",
     "date": "2026-03-25",
     "steps": "1. Run Newman\n2. Observe bug creation"
 }

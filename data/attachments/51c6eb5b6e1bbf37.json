@@ -14,10 +14,15 @@
     "Access-Control-Allow-Origin": "http://localhost:3000",
     "Vary": "Origin",
     "Access-Control-Allow-Credentials": "true",
+    "RateLimit-Policy": "5;w=900",
+    "RateLimit-Limit": "5",
+    "RateLimit-Remaining": "4",
+    "RateLimit-Reset": "900",
+    "Set-Cookie": "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJwb3N0bWFucWFAdGVzdC5jb20iLCJuYW1lIjoiUG9zdG1hbiBRQSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzc0NDczODYyLCJleHAiOjE3NzQ1NjAyNjJ9.AZl4ova1sg0dreRIEiSYZUduZKlpYcj1HIZjwJKg05k; Max-Age=86400; Path=/; Expires=Thu, 26 Mar 2026 21:24:22 GMT; HttpOnly; SameSite=Strict",
     "Content-Type": "application/json; charset=utf-8",
-    "Content-Length": "69",
-    "ETag": "W/\"45-MF6ktQNTZqE9b4junr9vK0TNHFk\"",
-    "Date": "Wed, 25 Mar 2026 21:17:58 GMT",
+    "Content-Length": "94",
+    "ETag": "W/\"5e-NlW4S49dJsDnhZE0PpXz0GBhL/8\"",
+    "Date": "Wed, 25 Mar 2026 21:24:22 GMT",
     "Connection": "keep-alive",
     "Keep-Alive": "timeout=5"
 }
