@@ -40,7 +40,7 @@
                 ],
                 "body": {
                     "mode": "raw",
-                    "raw": "{\n    \"title\": \"Newman Automated Bug\",\n    \"priority\": \"High\",\n    \"severity\": \"Major\",\n    \"status\": \"Open\",\n    \"assignee\": \"postmanqa@test.com\",\n    \"date\": \"2026-03-25\",\n    \"steps\": \"1. Run Newman\\n2. Observe bug creation\"\n}"
+                    "raw": "{\n    \"title\": \"Newman Automated Bug\",\n    \"priority\": \"High\",\n    \"severity\": \"Major\",\n    \"status\": \"Open\",\n    \"assignee\": \"Postman QA\",\n    \"date\": \"2026-03-25\",\n    \"steps\": \"1. Run Newman\\n2. Observe bug creation\"\n}"
                 },
                 "url": {
                     "raw": "{{baseUrl}}/bugs",
