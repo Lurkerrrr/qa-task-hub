@@ -14,10 +14,14 @@
     "Access-Control-Allow-Origin": "http://localhost:3000",
     "Vary": "Origin",
     "Access-Control-Allow-Credentials": "true",
+    "RateLimit-Policy": "10;w=3600",
+    "RateLimit-Limit": "10",
+    "RateLimit-Remaining": "9",
+    "RateLimit-Reset": "3600",
     "Content-Type": "application/json; charset=utf-8",
-    "Content-Length": "73",
-    "ETag": "W/\"49-vgS29FsOR5ZvvjT5OErLLeiM+Co\"",
-    "Date": "Wed, 25 Mar 2026 21:26:51 GMT",
+    "Content-Length": "94",
+    "ETag": "W/\"5e-yHe9LUBJhJLCrQeQ2+xg4A+hcU0\"",
+    "Date": "Wed, 25 Mar 2026 21:40:08 GMT",
     "Connection": "keep-alive",
     "Keep-Alive": "timeout=5"
 }
