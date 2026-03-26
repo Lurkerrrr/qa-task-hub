@@ -5,6 +5,8 @@ import { BaseService } from './BaseService';
 import { AppError } from '../utils/AppError';
 import { IUser, ITokenPayload } from '../interfaces';
 import { JWT_SECRET } from '../utils/config';
+import { users } from '../schema';
+import { eq } from 'drizzle-orm';
 
 export interface IAuthService {
     register(name: string, email: string, passwordRaw: string): Promise<Omit<IUser, 'password'>>;
@@ -26,21 +28,29 @@ export class AuthService extends BaseService implements IAuthService {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(passwordRaw, salt);
 
-        const sql = `INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id`;
-
         try {
-            const result = await Database.queryAsync(sql, [
-                formattedName,
-                formattedEmail,
-                hashedPassword,
-            ]);
-            return { id: result.id, name: formattedName, email: formattedEmail };
-        } catch (error: unknown) {
-            const dbError = error as { message?: string };
+            const result = await Database.db
+                .insert(users)
+                .values({
+                    name: formattedName,
+                    email: formattedEmail,
+                    password: hashedPassword,
+                })
+                .returning({ id: users.id, name: users.name, email: users.email });
 
-            if (dbError.message && dbError.message.includes('unique constraint')) {
+            return result[0];
+        } catch (error: any) {
+            const dbErrorCode = error?.cause?.code || error?.code;
+            const errorMsg = String(error?.cause?.message || error?.message || error);
+
+            if (
+                dbErrorCode === '23505' ||
+                errorMsg.includes('duplicate key') ||
+                errorMsg.includes('unique constraint')
+            ) {
                 throw new AppError('User already exists', 400);
             }
+            console.error('Registration DB Error:', error);
             throw new AppError('Database error', 500);
         }
     }
@@ -51,28 +61,23 @@ export class AuthService extends BaseService implements IAuthService {
     ): Promise<{ token: string; user: Omit<IUser, 'password'> }> {
         const formattedEmail = this.formatString(email).toLowerCase();
 
-        const sql = `SELECT * FROM users WHERE email = $1`;
-
         try {
-            const users = await Database.allAsync<IUser>(sql, [formattedEmail]);
-            const user = users[0];
+            const dbUsers = await Database.db
+                .select()
+                .from(users)
+                .where(eq(users.email, formattedEmail));
+            const user = dbUsers[0];
 
             if (!user) throw new AppError('Invalid email or password', 401);
 
-            const isMatch = await bcrypt.compare(passwordRaw, user.password!);
+            const isMatch = await bcrypt.compare(passwordRaw, user.password);
             if (!isMatch) throw new AppError('Invalid email or password', 401);
-
-            interface IUserWithRole extends IUser {
-                role?: string;
-            }
-
-            const userWithRole = user as IUserWithRole;
 
             const payload: ITokenPayload & { role: string } = {
                 id: user.id,
                 email: user.email,
                 name: user.name,
-                role: userWithRole.role || (user.email === 'admin@test.com' ? 'admin' : 'user'),
+                role: user.email === 'admin@test.com' ? 'admin' : 'user',
             };
 
             const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });

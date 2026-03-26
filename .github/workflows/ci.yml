@@ -45,6 +45,10 @@ jobs:
         working-directory: ./backend
         run: npm ci
 
+      - name: Check Database Schema
+        working-directory: ./backend
+        run: npx drizzle-kit check
+
       - name: Run security audit
         working-directory: ./backend
         run: npm audit --audit-level=high || true

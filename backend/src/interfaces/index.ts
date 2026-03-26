@@ -1,11 +1,11 @@
 import { Request } from 'express';
+import { users, bugs } from '../schema';
 
-export interface IUser {
-    id: number;
-    email: string;
-    password?: string;
-    name: string;
-}
+export type IUser = typeof users.$inferSelect;
+export type INewUser = typeof users.$inferInsert;
+
+export type IBug = typeof bugs.$inferSelect;
+export type INewBug = typeof bugs.$inferInsert;
 
 export interface ITokenPayload {
     id: number;
@@ -17,17 +17,6 @@ export interface AuthRequest extends Request {
     userId?: number;
     userRole?: string;
     userName?: string;
-}
-
-export interface IBug {
-    id: number;
-    title: string;
-    priority: 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
-    severity: 'Critical' | 'Major' | 'Moderate' | 'Low';
-    status: 'Open' | 'In Progress' | 'Done';
-    assignee?: string;
-    steps?: string;
-    date: string;
 }
 
 export interface IBaseResponse<T = any> {
