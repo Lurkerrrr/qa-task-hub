@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/Lurkerrrr/qa-task-hub/compare/v1.2.1...v1.3.0) (2026-03-26)
+
+
+### Features
+
+* implement Drizzle ORM for PostgreSQL ([#13](https://github.com/Lurkerrrr/qa-task-hub/issues/13)) ([c357eff](https://github.com/Lurkerrrr/qa-task-hub/commit/c357effb008ad08d0407da03c7d05bd5d49923b9))
+
 ## [1.2.1](https://github.com/Lurkerrrr/qa-task-hub/compare/v1.2.0...v1.2.1) (2026-03-25)
 
 
