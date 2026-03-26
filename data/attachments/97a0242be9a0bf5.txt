@@ -1,1 +1,0 @@
-{"status":"success","data":{"bug":{"id":1,"title":"Newman Automated Bug","priority":"High","severity":"Major","status":"Open","assignee":"Postman QA","date":"2026-03-25"}}}

@@ -1,0 +1,12 @@
+{
+    "Content-Type": "application/json",
+    "Cookie": "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJwb3N0bWFucWFAdGVzdC5jb20iLCJuYW1lIjoiUG9zdG1hbiBRQSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzc0NTY1OTU4LCJleHAiOjE3NzQ2NTIzNTh9.sze-Lf-qX2O9HepKlkuzllv9NQ4Pe0upbvCixolSviQ",
+    "User-Agent": "PostmanRuntime/7.39.1",
+    "Accept": "*/*",
+    "Cache-Control": "no-cache",
+    "Postman-Token": "29205174-600f-49e2-961b-cdd92c493b30",
+    "Host": "localhost:5000",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Content-Length": "221"
+}
