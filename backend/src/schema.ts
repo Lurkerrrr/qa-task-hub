@@ -14,5 +14,6 @@ export const bugs = pgTable('bugs', {
     severity: varchar('severity', { length: 50 }).notNull(),
     status: varchar('status', { length: 50 }).default('Open'),
     assignee: varchar('assignee', { length: 255 }),
+    steps: text('steps'),
     date: varchar('date', { length: 255 }).notNull(),
 });

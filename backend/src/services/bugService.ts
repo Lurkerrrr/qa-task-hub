@@ -2,6 +2,8 @@ import Database from '../database';
 import { BaseService } from './BaseService';
 import { IBug } from '../interfaces';
 import { AppError, NotFoundError } from '../utils/AppError';
+import { bugs } from '../schema';
+import { eq, desc } from 'drizzle-orm';
 
 export interface IBugService {
     getAllBugs(): Promise<IBug[]>;
@@ -14,8 +16,7 @@ export interface IBugService {
 export class BugService extends BaseService implements IBugService {
     public async getAllBugs(): Promise<IBug[]> {
         try {
-            const sql = `SELECT * FROM bugs ORDER BY id DESC`;
-            return await Database.allAsync<IBug>(sql);
+            return await Database.db.select().from(bugs).orderBy(desc(bugs.id));
         } catch (error) {
             throw new AppError('Failed to fetch bugs', 500);
         }
@@ -23,10 +24,8 @@ export class BugService extends BaseService implements IBugService {
 
     public async getBugById(id: number): Promise<IBug> {
         try {
-            const sql = `SELECT * FROM bugs WHERE id = $1`;
-
-            const rows = await Database.allAsync<IBug>(sql, [id]);
-            const bug = rows[0];
+            const result = await Database.db.select().from(bugs).where(eq(bugs.id, id));
+            const bug = result[0];
 
             if (!bug) throw new NotFoundError(`Bug with ID ${id} not found`);
 
@@ -40,30 +39,23 @@ export class BugService extends BaseService implements IBugService {
     public async createBug(bugData: Omit<IBug, 'id'>, userId: number): Promise<IBug> {
         try {
             const title = this.formatString(bugData.title);
-            const assignee = this.formatString(bugData.assignee);
+            const assignee = this.formatString(bugData.assignee || '');
             const { priority, severity, status, date, steps } = bugData;
 
-            const sql = `INSERT INTO bugs (title, priority, severity, assignee, status, date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`;
+            const result = await Database.db
+                .insert(bugs)
+                .values({
+                    title,
+                    priority,
+                    severity,
+                    assignee,
+                    status: status || 'Open',
+                    date,
+                    steps,
+                })
+                .returning();
 
-            const result = await Database.queryAsync(sql, [
-                title,
-                priority,
-                severity,
-                assignee,
-                status,
-                date,
-            ]);
-
-            return {
-                id: result.id,
-                title,
-                priority,
-                severity,
-                status,
-                assignee,
-                date,
-                steps,
-            } as IBug;
+            return result[0];
         } catch (error) {
             throw new AppError('Failed to create bug', 500);
         }
@@ -71,8 +63,7 @@ export class BugService extends BaseService implements IBugService {
 
     public async updateBugStatus(id: number, status: string): Promise<void> {
         try {
-            const sql = `UPDATE bugs SET status = $1 WHERE id = $2`;
-            await Database.queryAsync(sql, [status, id]);
+            await Database.db.update(bugs).set({ status }).where(eq(bugs.id, id));
         } catch (error) {
             throw new AppError('Failed to update bug status', 500);
         }
@@ -80,8 +71,7 @@ export class BugService extends BaseService implements IBugService {
 
     public async deleteBug(id: number): Promise<void> {
         try {
-            const sql = `DELETE FROM bugs WHERE id = $1`;
-            await Database.queryAsync(sql, [id]);
+            await Database.db.delete(bugs).where(eq(bugs.id, id));
         } catch (error) {
             throw new AppError('Failed to delete bug', 500);
         }
