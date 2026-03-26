@@ -1,8 +1,11 @@
 import { Pool } from 'pg';
+import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
+import * as schema from './schema';
 
 export class Database {
     private static instance: Database;
     public pool!: Pool;
+    public db!: NodePgDatabase<typeof schema>;
     public isInitialized: Promise<void>;
 
     private constructor() {
@@ -13,6 +16,8 @@ export class Database {
             database: process.env.POSTGRES_DB || 'qataskdb',
             port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
         });
+
+        this.db = drizzle(this.pool, { schema });
 
         this.isInitialized = this.init();
     }
@@ -53,6 +58,7 @@ export class Database {
         }
     }
 
+    // --- Legacy Raw SQL Methods (To be removed later) ---
     public async queryAsync(sql: string, params: any[] = []): Promise<any> {
         const result = await this.pool.query(sql, params);
         return {
