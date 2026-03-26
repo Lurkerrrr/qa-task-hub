@@ -10,7 +10,9 @@
     "test": "jest --runInBand",
     "test:coverage": "jest --runInBand --coverage",
     "test:api": "newman run ../postman/collections/auth.collection.json -e ../postman/environments/local.env.json --export-environment ../postman/environments/ci-env.json && newman run ../postman/collections/bug.collection.json -e ../postman/environments/ci-env.json",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
