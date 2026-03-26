@@ -48,6 +48,7 @@ export class Database {
                     severity VARCHAR(50) NOT NULL,
                     status VARCHAR(50) DEFAULT 'Open',
                     assignee VARCHAR(255),
+                    steps TEXT,  /* <-- ADD THIS LINE */
                     date VARCHAR(255) NOT NULL
                 )
             `);

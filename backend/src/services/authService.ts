@@ -40,12 +40,17 @@ export class AuthService extends BaseService implements IAuthService {
 
             return result[0];
         } catch (error: any) {
+            const dbErrorCode = error?.cause?.code || error?.code;
+            const errorMsg = String(error?.cause?.message || error?.message || error);
+
             if (
-                error.code === '23505' ||
-                (error.message && error.message.includes('unique constraint'))
+                dbErrorCode === '23505' ||
+                errorMsg.includes('duplicate key') ||
+                errorMsg.includes('unique constraint')
             ) {
                 throw new AppError('User already exists', 400);
             }
+            console.error('Registration DB Error:', error);
             throw new AppError('Database error', 500);
         }
     }
