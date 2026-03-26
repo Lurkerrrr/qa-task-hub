@@ -1,3 +1,17 @@
+# [1.3.0](https://github.com/Lurkerrrr/qa-task-hub/compare/v1.2.1...v1.3.0) (2026-03-26)
+
+
+### Features
+
+* implement Drizzle ORM for PostgreSQL ([#13](https://github.com/Lurkerrrr/qa-task-hub/issues/13)) ([c357eff](https://github.com/Lurkerrrr/qa-task-hub/commit/c357effb008ad08d0407da03c7d05bd5d49923b9))
+
+## [1.2.1](https://github.com/Lurkerrrr/qa-task-hub/compare/v1.2.0...v1.2.1) (2026-03-25)
+
+
+### Bug Fixes
+
+* **ci:** remove duplicate 'on' key and set write permissions ([#10](https://github.com/Lurkerrrr/qa-task-hub/issues/10)) ([38dc600](https://github.com/Lurkerrrr/qa-task-hub/commit/38dc60009d6732ccb0e9a3b938d119468577639d))
+
 # [1.2.0](https://github.com/Lurkerrrr/qa-task-hub/compare/v1.1.0...v1.2.0) (2026-03-14)
 
 
