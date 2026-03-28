@@ -14,10 +14,15 @@
     "Access-Control-Allow-Origin": "http://localhost:3000",
     "Vary": "Origin",
     "Access-Control-Allow-Credentials": "true",
+    "RateLimit-Policy": "5;w=900",
+    "RateLimit-Limit": "5",
+    "RateLimit-Remaining": "4",
+    "RateLimit-Reset": "900",
+    "Set-Cookie": "csrf_token=6b1e24b53c3162ba52eba80169db8dd166f1b1a992c54d9677fd27169152b012; Max-Age=86400; Path=/; Expires=Sun, 29 Mar 2026 01:06:41 GMT; SameSite=Lax",
     "Content-Type": "application/json; charset=utf-8",
-    "Content-Length": "73",
-    "ETag": "W/\"49-vgS29FsOR5ZvvjT5OErLLeiM+Co\"",
-    "Date": "Sat, 28 Mar 2026 01:04:23 GMT",
+    "Content-Length": "94",
+    "ETag": "W/\"5e-NlW4S49dJsDnhZE0PpXz0GBhL/8\"",
+    "Date": "Sat, 28 Mar 2026 01:06:41 GMT",
     "Connection": "keep-alive",
     "Keep-Alive": "timeout=5"
 }
