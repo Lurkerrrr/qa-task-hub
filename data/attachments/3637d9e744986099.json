@@ -14,10 +14,15 @@
     "Access-Control-Allow-Origin": "http://localhost:3000",
     "Vary": "Origin",
     "Access-Control-Allow-Credentials": "true",
+    "RateLimit-Policy": "5;w=900",
+    "RateLimit-Limit": "5",
+    "RateLimit-Remaining": "4",
+    "RateLimit-Reset": "900",
+    "Set-Cookie": "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJwb3N0bWFucWFAdGVzdC5jb20iLCJuYW1lIjoiUG9zdG1hbiBRQSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzc0NjU4MzIyLCJleHAiOjE3NzQ3NDQ3MjJ9.8ZCpcJRQgx_JyPFcVbglqnjHgm4j9fFCfUcwn2NLCu8; Max-Age=86400; Path=/; Expires=Sun, 29 Mar 2026 00:38:42 GMT; HttpOnly; SameSite=Strict",
     "Content-Type": "application/json; charset=utf-8",
-    "Content-Length": "96",
-    "ETag": "W/\"60-0GIJk/7KECcu1utlf4+9yrzS+a4\"",
-    "Date": "Sat, 28 Mar 2026 00:28:57 GMT",
+    "Content-Length": "94",
+    "ETag": "W/\"5e-NlW4S49dJsDnhZE0PpXz0GBhL/8\"",
+    "Date": "Sat, 28 Mar 2026 00:38:41 GMT",
     "Connection": "keep-alive",
     "Keep-Alive": "timeout=5"
 }
