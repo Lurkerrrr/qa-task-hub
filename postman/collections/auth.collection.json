@@ -23,10 +23,7 @@
             "request": {
                 "method": "POST",
                 "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                    }
+                    { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                     "mode": "raw",
@@ -34,13 +31,8 @@
                 },
                 "url": {
                     "raw": "{{baseUrl}}/auth/register",
-                    "host": [
-                        "{{baseUrl}}"
-                    ],
-                    "path": [
-                        "auth",
-                        "register"
-                    ]
+                    "host": [ "{{baseUrl}}" ],
+                    "path": [ "auth", "register" ]
                 }
             }
         },
@@ -58,12 +50,13 @@
                             "pm.test(\"Extract Auth and CSRF Tokens\", function () {",
                             "    var cookies = pm.response.headers.all().filter(h => h.key.toLowerCase() === 'set-cookie');",
                             "    cookies.forEach(c => {",
-                            "        if (c.value.includes('token=')) {",
-                            "            var token = c.value.split('token=')[1].split(';')[0];",
+                            "        var cookieString = c.value.trim();",
+                            "        if (cookieString.startsWith('token=')) {",
+                            "            var token = cookieString.split('token=')[1].split(';')[0];",
                             "            pm.environment.set(\"token\", token);",
                             "        }",
-                            "        if (c.value.includes('csrf_token=')) {",
-                            "            var csrfToken = c.value.split('csrf_token=')[1].split(';')[0];",
+                            "        if (cookieString.startsWith('csrf_token=')) {",
+                            "            var csrfToken = cookieString.split('csrf_token=')[1].split(';')[0];",
                             "            pm.environment.set(\"csrf_token\", csrfToken);",
                             "        }",
                             "    });",
@@ -76,10 +69,7 @@
             "request": {
                 "method": "POST",
                 "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                    }
+                    { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                     "mode": "raw",
@@ -87,13 +77,8 @@
                 },
                 "url": {
                     "raw": "{{baseUrl}}/auth/login",
-                    "host": [
-                        "{{baseUrl}}"
-                    ],
-                    "path": [
-                        "auth",
-                        "login"
-                    ]
+                    "host": [ "{{baseUrl}}" ],
+                    "path": [ "auth", "login" ]
                 }
             }
         }
