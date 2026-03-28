@@ -1,0 +1,10 @@
+{
+    "Cookie": "token=d076fd27bc03af72b7eb19e480d55496fb27d4c579ebd93af97deebf3ca2c1e1; csrf_token=d076fd27bc03af72b7eb19e480d55496fb27d4c579ebd93af97deebf3ca2c1e1",
+    "User-Agent": "PostmanRuntime/7.39.1",
+    "Accept": "*/*",
+    "Cache-Control": "no-cache",
+    "Postman-Token": "082139db-7a6b-4902-b5b4-672fa147a065",
+    "Host": "localhost:5000",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive"
+}
