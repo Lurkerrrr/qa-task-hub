@@ -14,6 +14,7 @@ import { BugController } from './controllers/bugController';
 import { SecurityPolicy } from './middleware/securityPolicy';
 import { authGuard } from './middleware/authMiddleware';
 import { validationMiddleware } from './middleware/validate';
+import { csrfGuard } from './middleware/csrfMiddleware';
 import { AuthRoutes } from './routes/authRoutes';
 import { BugRoutes } from './routes/bugRoutes';
 import { ErrorHandler } from './utils/ErrorHandler';
@@ -35,11 +36,7 @@ const PORT = process.env.PORT || 5000;
 app.use(
     helmet({
         hidePoweredBy: true,
-        hsts: {
-            maxAge: 31536000,
-            includeSubDomains: true,
-            preload: true,
-        },
+        hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
         crossOriginResourcePolicy: { policy: 'cross-origin' },
     })
 );
@@ -49,12 +46,11 @@ const corsOptions = {
     credentials: true,
 };
 app.use(cors(corsOptions));
-
 app.use(express.json());
 app.use(cookieParser());
 
 app.use('/auth', authRoutes.router);
-app.use('/bugs', bugRoutes.router);
+app.use('/bugs', csrfGuard.verifyDoubleSubmit, bugRoutes.router);
 
 app.use(ErrorHandler.handleControllerError);
 

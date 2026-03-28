@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import crypto from 'crypto';
 import { BaseController } from './BaseController';
 import { IAuthService } from '../services/authService';
 import { IUserResponse } from '../interfaces';
@@ -34,6 +35,14 @@ export class AuthController extends BaseController {
                 maxAge: 24 * 60 * 60 * 1000,
             });
 
+            const csrfToken = crypto.randomBytes(32).toString('hex');
+            res.cookie('csrf_token', csrfToken, {
+                httpOnly: false,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                maxAge: 24 * 60 * 60 * 1000,
+            });
+
             this.sendSuccess(res, { user }, 200);
         } catch (error) {
             this.nextError(next, error);
@@ -42,10 +51,8 @@ export class AuthController extends BaseController {
 
     public logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            res.cookie('token', '', {
-                httpOnly: true,
-                expires: new Date(0),
-            });
+            res.cookie('token', '', { httpOnly: true, expires: new Date(0) });
+            res.cookie('csrf_token', '', { httpOnly: false, expires: new Date(0) });
 
             this.sendSuccess(res, { message: 'Logged out successfully' }, 200);
         } catch (error) {
