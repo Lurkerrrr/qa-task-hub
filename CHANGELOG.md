@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/Lurkerrrr/qa-task-hub/compare/v1.3.0...v1.4.0) (2026-03-28)
+
+
+### Features
+
+* implement double-submit CSRF protection ([#15](https://github.com/Lurkerrrr/qa-task-hub/issues/15)) ([35132bd](https://github.com/Lurkerrrr/qa-task-hub/commit/35132bdd80db4fc3703ee26e95a0c09bf925288f))
+
 # [1.3.0](https://github.com/Lurkerrrr/qa-task-hub/compare/v1.2.1...v1.3.0) (2026-03-26)
 
 
