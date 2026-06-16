@@ -1,0 +1,10 @@
+{
+    "Cookie": "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJwb3N0bWFucWFAdGVzdC5jb20iLCJuYW1lIjoiUG9zdG1hbiBRQSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzgxNjM2OTA1LCJleHAiOjE3ODE3MjMzMDV9.sYVeVhQm6vBysIusEVazu9giDLSNewWYPra2PUKNwAM; csrf_token=9fb63f8c4d3f57bf741628650545a1fde6d46b821f898a20aaf984891a3e352f",
+    "User-Agent": "PostmanRuntime/7.39.1",
+    "Accept": "*/*",
+    "Cache-Control": "no-cache",
+    "Postman-Token": "70659e5c-c539-4661-9803-da30fba277e0",
+    "Host": "localhost:5000",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive"
+}
